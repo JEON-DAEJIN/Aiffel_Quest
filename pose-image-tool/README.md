@@ -1,5 +1,18 @@
 # 원하는 포즈로 이미지 만드는 도구
 
+## 진행 히스토리와 개발 배경
+
+이 프로젝트는 N017 "이미지 생성 어플리케이션 만들기" 챕터 8 과제로, Claude Code와 함께 Google Colab에서 단계별로 진행했습니다. 학습서 내용을 함께 검토해 과제 방향(공개 데이터셋의 표준 포즈 이미지 사용)을 정하고, 노트북을 업로드 → 포즈 추출 → 모델 로드 → 프롬프트 설정 → 이미지 생성 → 결과 다운로드 순서로 한 단계씩 직접 실행하며 완성했습니다.
+
+**모델 선택에 대한 가정**
+
+> N017 강의에서 다룬 FLUX.2-klein 모델은 ControlNet과 같이 쓰면 무료 T4 GPU에서 메모리가 빠듯할 수 있습니다. 그래서 이번 과제에는 Stable Diffusion 1.5 + ControlNet Pose(lllyasviel/sd-controlnet-openpose) 조합을 씁니다 — ControlNet을 처음 만든 곳에서 직접 공개한 조합이라 검증이 잘 되어 있고, T4에서 여유 있게 돌아갑니다. 개념(Pose로 자세 고정하기)은 강의에서 배운 것과 완전히 동일합니다.
+
+**개발환경**
+- 실행 환경: Google Colab, 런타임 유형 T4 GPU(무료 등급)
+- 핵심 라이브러리: `diffusers`, `controlnet_aux`(포즈 추출용 `OpenposeDetector`)
+- 모델: `runwayml/stable-diffusion-v1-5` + `lllyasviel/sd-controlnet-openpose`
+
 ## 도구 설명
 참조 사진에서 사람의 관절 위치(포즈)만 뽑아 스켈레톤으로 바꾸고, ControlNet의 Pose 조건으로 그 자세를 그대로 유지한 채 완전히 새로운 피사체·배경·스타일의 이미지를 생성하는 Colab 노트북입니다. (N017 "이미지 생성 어플리케이션 만들기" 챕터 8 과제)
 
