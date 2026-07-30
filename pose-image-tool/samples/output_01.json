@@ -1,0 +1,6 @@
+{
+  "prompt": "a warrior in bronze armor standing on a mountain cliff at sunrise, golden hour lighting, cinematic photography, epic fantasy style",
+  "negative_prompt": "low quality, blurry, bad anatomy, extra limbs, watermark",
+  "seed": 42,
+  "model": "runwayml/stable-diffusion-v1-5 + lllyasviel/sd-controlnet-openpose"
+}

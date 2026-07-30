@@ -1,0 +1,6 @@
+{
+  "prompt": "a dancer in a flowing red silk dress on a rainy city street at night, neon lights reflecting on wet pavement, cinematic photography",
+  "negative_prompt": "low quality, blurry, bad anatomy, extra limbs, watermark",
+  "seed": 42,
+  "model": "runwayml/stable-diffusion-v1-5 + lllyasviel/sd-controlnet-openpose"
+}
