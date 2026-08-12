@@ -1,0 +1,7 @@
+{
+  "set": "세트2_액션장면",
+  "prompt": "a determined heroine in a flowing battle cloak, leaning to the side while blocking an incoming attack, dynamic action pose, dramatic lighting, Korean webtoon illustration style, bold linework, vivid colors",
+  "negative_prompt": "low quality, blurry, bad anatomy, extra limbs, watermark, photo, 3d render",
+  "seed": 42,
+  "model": "runwayml/stable-diffusion-v1-5 (A: 텍스트만 / B: + lllyasviel/sd-controlnet-openpose)"
+}

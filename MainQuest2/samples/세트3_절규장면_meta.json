@@ -1,0 +1,7 @@
+{
+  "set": "세트3_절규장면",
+  "prompt": "a heartbroken protagonist kneeling on the ground in the rain, arms raised toward the sky in anguish, emotional webtoon panel, dramatic chiaroscuro lighting, Korean manhwa illustration style",
+  "negative_prompt": "low quality, blurry, bad anatomy, extra limbs, watermark, photo, 3d render",
+  "seed": 42,
+  "model": "runwayml/stable-diffusion-v1-5 (A: 텍스트만 / B: + lllyasviel/sd-controlnet-openpose)"
+}

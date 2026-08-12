@@ -1,0 +1,7 @@
+{
+  "set": "세트1_수련장면",
+  "prompt": "a young swordsman in traditional training robes standing in a quiet mountain temple courtyard at dawn, meditative atmosphere, Korean webtoon illustration style, clean digital linework, soft cel shading, dramatic backlight",
+  "negative_prompt": "low quality, blurry, bad anatomy, extra limbs, watermark, photo, 3d render",
+  "seed": 42,
+  "model": "runwayml/stable-diffusion-v1-5 (A: 텍스트만 / B: + lllyasviel/sd-controlnet-openpose)"
+}
