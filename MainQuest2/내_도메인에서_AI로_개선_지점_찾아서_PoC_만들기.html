@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 도메인에서 AI로 개선 지점 찾아서 PoC 만들기</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; display: block; overflow-x: auto; }
+  thead, tbody { display: table; width: 100%; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>내 도메인에서 AI로 개선 지점 찾아서 PoC 만들기</h1>
+<p class="subtitle">N021 강의(PoC 판단법)를 실전에 적용한 기록 기반 · 버전 1.0 · 2026-08-12</p>
+
+<div class="lede">아이펠 N021 강의(<code>강의정리/N021/N021_AI적용판단(poc).md</code>)의 이론을 실전에서 그대로 써먹은 기록을 바탕으로 쓴 매뉴얼입니다. 강의가 "무엇을 판단해야 하는가"를 다뤘다면, 이 매뉴얼은 거기에 더해 "실제로 해보니 이론만으로는 안 채워지던 빈틈"을 채웁니다 — 특히 6·7장은 오늘 웹툰 PoC를 실제로 돌려보고서야 알게 된 원칙입니다.</div>
+
+<div class="keysum"><strong>핵심 한 문장 요약</strong><br>"어떤 AI가 좋을까"가 아니라 "내 업무의 어디가 막혀 있을까"에서 시작해, 만들기 전에 성공 기준을 정하고, 조건을 공정하게 비교하도록 설계한 뒤, 결과가 그럴듯해 보여도 원본 데이터까지 대조해서 정직하게 판단한다.</div>
+
+<nav class="toc">
+<h2>목차</h2>
+<ol>
+<li><a href="#s1">이 매뉴얼로 할 수 있는 것</a></li>
+<li><a href="#s2">PoC란 무엇인가</a></li>
+<li><a href="#s3">내 도메인의 병목을 찾는다</a></li>
+<li><a href="#s4">문제 정의서 쓰기</a></li>
+<li><a href="#s5">AI 모델·후보 선정</a></li>
+<li><a href="#s6">PoC를 공정하게 설계하기</a></li>
+<li><a href="#s7">결과를 정직하게 검증하기</a></li>
+<li><a href="#s8">노트북/코드로 구현하기</a></li>
+<li><a href="#s9">실전 예시로 뜯어보기</a></li>
+<li><a href="#s10">체크리스트</a></li>
+</ol>
+</nav>
+
+<h2 id="s1">1. 이 매뉴얼로 할 수 있는 것</h2>
+<p>이 매뉴얼을 따라가면, 자기 업무·관심 도메인 어디서든 다음을 혼자(또는 클로드와 함께) 할 수 있습니다.</p>
+<ul>
+<li>"이 업무에 AI를 쓸 가치가 있는가"를 감이 아니라 구조로 판단하기</li>
+<li>문제 정의서 한 장으로 PoC의 범위를 명확히 하기</li>
+<li>여러 AI 후보 중 내 상황에 맞는 것을 공정하게 고르기</li>
+<li>실제로 동작하는 최소한의 프로토타입(PoC)을 클로드와 함께 만들기</li>
+<li>결과가 좋아 보여도 성급히 "성공"이라 하지 않고, 원본 데이터까지 대조해 정직하게 검증하기</li>
+</ul>
+<div class="callout tip"><span class="label">💡 팁</span><p>이 흐름은 딱 하나의 도메인에 갇혀 있지 않습니다. 오늘 실전 예시는 "웹소설→웹툰 전환"이지만, 같은 순서를 회사 서비스 점검·고객 문의 분류·문서 정리 어디에든 그대로 적용할 수 있습니다.</p></div>
+
+<h2 id="s2">2. PoC란 무엇인가</h2>
+<p><strong>PoC(Proof of Concept, 개념검증)</strong>는 실제로 구축할 값이 있는지 <strong>판단</strong>하기 위해 최소한만 만들어 보는 단계입니다.</p>
+<table>
+<thead><tr><th></th><th>완성품</th><th>PoC</th></tr></thead>
+<tbody>
+<tr><td>목적</td><td>쓰이는 것</td><td>판단이 서는 것</td></tr>
+<tr><td>필요한 것</td><td>화면 완성도, 안정성</td><td>미리 적은 기준 + 실행 후 나온 숫자(또는 정성적 관찰)</td></tr>
+<tr><td>기준 미달 시</td><td>실패</td><td>그 자체로 결과 (왜 안 되는지 알게 됨)</td></tr>
+</tbody>
+</table>
+<div class="callout summary"><span class="label">📌 요약</span><p>PoC는 "잘 만드는 것"이 아니라 "판단이 서는 것"이 목적입니다. 기준을 못 넘어도 그 이유를 알아냈다면 PoC는 목적을 달성한 것입니다. 이 원칙은 7장에서 실제로 어떻게 적용되는지 다시 다룹니다.</p></div>
+<h3>흐름의 역전 — 도구에서 출발하지 않고 업무에서 출발합니다</h3>
+<div class="ascii-diagram">기존 방식: 도구 선택 → 기능 개발 → 시연 → 쓸 곳 찾기
+이 매뉴얼의 방식: 업무 병목 발견 → 후보 선정 → 작은 실험(PoC) → 결과 측정 → 구축 여부 판단</div>
+<div class="callout warning"><span class="label">⚠️ 주의</span><p>"요즘 이 AI가 좋다던데 한번 써볼까?"로 시작하면, 도구에 업무를 끼워 맞추게 되고 결과는 아무도 안 쓰는 시연으로 끝납니다. 항상 "이걸로 누가 어떤 일을 하나요?"라는 질문에 먼저 답할 수 있어야 합니다.</p></div>
+
+<h2 id="s3">3. 내 도메인의 병목을 찾는다</h2>
+<p>업무에서 출발하면, AI가 들어갈 자리는 크게 네 가지 유형으로 정리됩니다. 유형이 정해지면 병목도, 도입 근거도 함께 정해집니다.</p>
+<table>
+<thead><tr><th>업무 유형</th><th>하는 일</th><th>진짜 병목</th><th>대표 기술</th></tr></thead>
+<tbody>
+<tr><td>검색</td><td>자료는 있는데 찾지 못한다</td><td>자료에 설명(태그)이 없다</td><td>임베딩 검색</td></tr>
+<tr><td>검사와 판독</td><td>사람이 보고 등급·합격을 정한다</td><td>정확도가 아니라 판정의 일관성과 지속 시간</td><td>객체 탐지·분할, 자세 추정</td></tr>
+<tr><td>분류와 배분</td><td>들어온 걸 나눠 담당자에게 보낸다</td><td>한 건은 쉬운데 판단의 총량이 많다</td><td>분류 모델, 구조화 출력</td></tr>
+<tr><td>입력과 전사</td><td>한 형식을 다른 형식으로 옮긴다</td><td>판단이 아니라 사람의 손</td><td>OCR·문서 이해, 음성 인식</td></tr>
+</tbody>
+</table>
+<div class="callout warning"><span class="label">⚠️ 주의</span><p><strong>"검사와 판독" 유형의 함정</strong> — 이 유형에서 도입 근거를 "AI가 사람보다 정확한가?"로 잡으면 대개 "도입할 값이 없다"는 결론이 나옵니다. 숙련자는 이미 정확하기 때문입니다. 진짜 병목은 정확도가 아니라 사람이 계속 집중해야 하는 시간과 여러 건을 동시에 봐야 하는 부담입니다.</p></div>
+<h3>적용하지 않을 업무 — 먼저 걸러야 할 세 가지 신호</h3>
+<table>
+<thead><tr><th>신호</th><th>왜 안 되는가</th><th>먼저 할 일</th></tr></thead>
+<tbody>
+<tr><td>판정 기준이 사람마다 다르다</td><td>학습시킬 정답도, 채점 방법도 없다</td><td>기준을 문서로 먼저 만든다</td></tr>
+<tr><td>틀렸을 때 되돌릴 수 없다</td><td>고객·신체·자격·법적 효력에 영향</td><td>AI를 최종 판정이 아니라 후보를 좁혀 사람에게 넘기는 앞단에만 배치</td></tr>
+<tr><td>판정 기록이 없다</td><td>무엇으로 채점할지 모른다</td><td>PoC보다 기록을 남기는 절차부터 만든다</td></tr>
+</tbody>
+</table>
+<div class="callout example"><span class="label">🧪 예제</span><p><strong>오늘 실전에서는 이렇게 걸렀다</strong> — 오늘의 도메인(웹소설→웹툰 포즈 전달)은 "검사와 판독"에 가까운 문제였지만, 실제로는 AI가 무언가를 대신 판정하는 게 아니라 사람(원작자)의 의도를 시각 자료로 바꿔주는 문제였습니다. 그래서 "적용하지 않을 업무 3신호" 중 어디에도 걸리지 않았고, 되돌릴 수 없는 결정(예: 실제 서비스 배포)도 아니라서 PoC로 바로 진행하기 좋은 지점이었습니다.</p></div>
+
+<h2 id="s4">4. 문제 정의서 쓰기</h2>
+<p>적용 지점을 찾았으면, 만들기 <strong>전에</strong> 문제 정의서 한 장을 씁니다. 다섯 요소를 채웁니다.</p>
+<table>
+<thead><tr><th>요소</th><th>채우는 질문</th></tr></thead>
+<tbody>
+<tr><td>도메인 설명</td><td>어떤 업무·현장·관심 영역인가?</td></tr>
+<tr><td>현재의 문제</td><td>지금은 어떻게 하고 있고, 어디가 번거로운가?</td></tr>
+<tr><td>개선 가설</td><td>AI를 어떤 단계에 넣으면 어떻게 나아지는가?</td></tr>
+<tr><td>대상 사용자</td><td>누가 이 개선의 덕을 보는가? (나 자신이어도 된다)</td></tr>
+<tr><td>성공 기준</td><td>무엇이 얼마나 좋아지면 성공인가?</td></tr>
+</tbody>
+</table>
+<h3>성공 기준 — 정량 vs 정성, 언제 무엇을 쓸까</h3>
+<p>N021 강의는 성공 기준을 항상 숫자(정량)로 잡으라고 강조합니다 — "질의 10건 중 8건", "20건 중 18건 일치" 같은 식입니다. 이건 검색·검사판독·분류배분·입력전사처럼 "맞았다/틀렸다"를 셀 수 있는 업무에서는 맞습니다.</p>
+<p>하지만 오늘처럼 결과물의 품질이 주관적으로만 판단되는 업무(이미지·글 생성물이 "의도한 느낌"을 재현했는가 등)에서는 숫자 하나로 뭉뚱그리기 어렵습니다. 이럴 땐 정성 비교를 씁니다.</p>
+<div class="callout summary"><span class="label">📌 요약</span><p><strong>정성 비교의 최소 조건</strong> — 1) 비교할 조건 두 가지 (예: "AI 없이 하던 방식" vs "AI를 넣은 방식") 2) 비교할 사례를 3개 이상 — 하나만 보면 우연인지 아닌지 알 수 없습니다 3) "무엇을 봤을 때 개선됐다고 판단할지"를 실행 전에 문장으로 적어 둡니다. 정량이든 정성이든, 핵심 원칙은 같습니다 — 만들기 전에 성공 기준을 적어 두는 것. 순서가 바뀌면 PoC가 아니라 자기 확신 강화가 됩니다.</p></div>
+<div class="callout example"><span class="label">🧪 예제</span><p><strong>오늘 실제로 쓴 문제 정의서 (요약)</strong> — 도메인: 웹소설→웹툰 전환 시 원작자-웹툰작가 협업 / 현재 문제: 포즈·구도를 말로 설명하거나 레퍼런스를 따로 찾아 전달 → 시간 소요, 의도와 다른 결과 / 개선 가설: 참조 포즈 사진 + 장면 프롬프트를 ControlNet Pose에 넣으면 의도한 자세 그대로 웹툰풍 컷 생성 가능 / 대상 사용자: 웹소설 원작자, 웹툰화 담당 작가·PD / 성공 기준(정성): 3개 세트에서 "AI 없이(텍스트만)" vs "ControlNet 사용"을 비교해, 후자가 의도한 자세를 명확히 더 정확히 재현하면 성공</p></div>
+
+<h2 id="s5">5. AI 모델·후보 선정</h2>
+<h3>크기가 아니라 종류로 벌린다</h3>
+<p>후보를 "큰 모델/중간 모델/작은 모델"로만 늘어놓으면 "큰 게 정확하고 느리다"는, 재보기 전에도 알던 결론만 나옵니다. 대신 성격이 다른 축으로 벌립니다.</p>
+<table>
+<thead><tr><th>축</th><th>갈리는 것</th></tr></thead>
+<tbody>
+<tr><td>실행 위치</td><td>노트북 / 사내 서버 / 외부 API → 자료가 어디까지 나가는지</td></tr>
+<tr><td>만들어진 목적</td><td>범용 모델 / 전용 모델</td></tr>
+<tr><td>결과의 형태</td><td>점수만 / 점수+근거(위치·과정)</td></tr>
+</tbody>
+</table>
+<h3>조건(필터)과 점수(비교)를 절대 섞지 않는다</h3>
+<p>실행 위치·라이선스 같은 조건은 점수와 섞으면 안 됩니다. 섞으면 "못 쓰는 후보"가 다른 항목 점수 덕에 표의 1위로 올라올 수 있습니다.</p>
+<div class="ascii-diagram">후보 목록 → [자료가 외부로 나가도 되는가?] → [라이선스가 이 용도를 허용하는가?] → 남은 후보만 점수로 비교</div>
+<h3>기준선을 반드시 후보에 넣는다</h3>
+<p>지금 쓰는 방식(수작업, 기존 도구 등)을 후보에서 빼면 "새로 만든 게 나아졌는지" 잴 기준이 없습니다. 기준선이 이겨도 그건 "AI가 쓸모없다"가 아니라 "이 업무엔 지금 방식이 낫다"는 정직한 결과입니다.</p>
+<h3>이미 검증된 조합을 재사용한다</h3>
+<p>새 문제라고 매번 새 모델을 찾을 필요는 없습니다. 비슷한 문제(같은 유형)에서 이미 검증된 조합이 있다면 그대로 재사용하고, 새로 검증해야 할 변수에만 실험을 집중하는 게 효율적입니다.</p>
+<div class="callout example"><span class="label">🧪 예제</span><p><strong>오늘은 이렇게 재사용했다</strong> — 오늘 PoC는 완전히 새로운 모델을 찾지 않았습니다. 앞서 다른 과제(N017)에서 이미 "Stable Diffusion 1.5 + ControlNet Pose" 조합이 참조 포즈를 정확히 재현한다는 걸 확인해 뒀고, 그 조합을 그대로 가져와 "이 조합이 웹툰 도메인에서도 통하는가"라는 새로운 질문 하나에만 검증을 집중했습니다.</p></div>
+
+<h2 id="s6">6. PoC를 공정하게 설계하기</h2>
+<p>여기서부터는 강의에 없는, 오늘 실제로 손으로 만들면서 확립한 원칙입니다.</p>
+<h3>원칙 1 — 비교하려면 변수를 하나로 좁혀라</h3>
+<p>"A 방식과 B 방식을 비교한다"고 할 때, 정말 그 하나의 차이만 비교하고 있는지 점검해야 합니다. 서로 다른 모델·다른 설정을 쓰면, 결과가 달라져도 그게 "의도한 차이" 때문인지 "다른 조건" 때문인지 알 수 없습니다.</p>
+<div class="callout tip"><span class="label">💡 팁</span><p><strong>컴포넌트 공유 기법</strong> — 이미지 생성 모델(Diffusion 계열)로 조건 A/B를 비교한다면, 같은 베이스 체크포인트에서 핵심 구성요소(가중치)를 공유하는 두 파이프라인을 만드세요. 조건 A(텍스트만)와 조건 B(포즈 조건 추가)가 같은 언어모델·같은 이미지 생성 코어·같은 시드를 쓰게 하면, 결과의 차이가 오직 "포즈 조건을 줬는가" 하나에서만 나오게 됩니다.</p></div>
+<h3>원칙 2 — 비교 조건에 "구도·형식"까지 명시하라</h3>
+<p>텍스트 프롬프트만으로는 포즈뿐 아니라 구도(전신/클로즈업 등)조차 매번 다르게 나올 수 있습니다. 조건 A와 B를 공정하게 비교하려면, 두 조건 모두에 "어떤 틀 안에서 비교할지"를 미리 명시해야 합니다.</p>
+<div class="callout warning"><span class="label">⚠️ 주의</span><p><strong>오늘 실제로 겪은 실패</strong> — 오늘 세트 2(액션 장면)에서, 조건 A(텍스트만)가 우연히 인물 클로즈업 구도로 나왔습니다. 그러다 보니 전신 포즈 자체가 안 보여서 "포즈를 재현했는가"를 비교할 수 있는 사례가 아니게 됐습니다. 다음엔 프롬프트에 "전신 샷(full-body shot)"처럼 구도까지 명시해서, 조건 A·B 모두 같은 틀 안에서 비교되도록 해야 한다는 걸 이 실패에서 배웠습니다.</p></div>
+
+<h2 id="s7">7. 결과를 정직하게 검증하기</h2>
+<p>결과가 그럴듯해 보여도, 진짜 검증은 여기서부터입니다.</p>
+<h3>원칙 1 — 결과물만 보지 말고 원본 입력을 대조하라</h3>
+<p>결과 이미지·텍스트만 보고 "의도한 대로 나왔다"고 판단하면, 정말 그 결과가 의도한 조건 때문에 나온 건지 알 수 없습니다. 참조 데이터(사진, 원본 자료) 자체가 잘못돼 있었는데 우연히 그럴듯한 결과가 나왔을 수도 있습니다.</p>
+<div class="callout warning"><span class="label">⚠️ 주의</span><p><strong>오늘 실제로 겪은 사례</strong> — 세트 3(절규 장면)에서, ControlNet 결과 이미지만 보면 "무릎 꿇고 두 팔을 하늘로"라는 의도한 자세가 잘 재현된 것처럼 보였습니다. 그런데 참조 사진(pose_03.jpg) 원본을 직접 열어보니, 사진 자체가 90도 회전되어 있고 실제로는 "한쪽 팔만 위로 뻗은" 전혀 다른 자세였습니다. 결과만 보고 "성공"이라 적었다면, 이 불일치를 영영 몰랐을 것입니다. 참조 데이터를 눈으로 직접 확인하는 절차 없이는, "재현에 성공했다"는 결론을 신뢰할 수 없습니다.</p></div>
+<h3>원칙 2 — 애매한 성공을 "성공"으로 포장하지 마라</h3>
+<p>모든 사례가 깔끔하게 성공하지는 않습니다. 결과를 정리할 때 등급을 세분화하세요.</p>
+<table>
+<thead><tr><th>등급</th><th>의미</th></tr></thead>
+<tbody>
+<tr><td>성공</td><td>의도한 조건이 결과에 명확히 반영됨, 비교 대상도 공정했음</td></tr>
+<tr><td>부분적/불확실</td><td>결과는 그럴듯하지만 비교 조건 자체에 문제가 있었거나, 재현의 신뢰도를 확신할 수 없음</td></tr>
+<tr><td>실패</td><td>의도한 조건이 결과에 반영되지 않음</td></tr>
+</tbody>
+</table>
+<div class="callout summary"><span class="label">📌 요약</span><p>"성공/실패"로만 나누면 애매한 사례를 억지로 어느 한쪽에 끼워 넣게 됩니다. 중간 등급을 두면, 그 사례가 왜 애매했는지를 그대로 기록에 남길 수 있고, 이게 다음 PoC의 개선점이 됩니다.</p></div>
+<h3>원칙 3 — 실패·불확실도 결과다</h3>
+<p>2장에서 다뤘듯, PoC의 목적은 "판단이 서는 것"입니다. 3개 세트 중 1개만 확실히 성공했다면, 그 결과를 부풀리지 말고 그대로 "1/3 확실한 성공, 2/3는 실험 설계의 한계로 불확실"이라고 적으세요. 이게 오히려 다음 실험에서 무엇을 고쳐야 할지 알려주는 더 유용한 결과입니다.</p>
+
+<h2 id="s8">8. 노트북/코드로 구현하기</h2>
+<p>PoC를 Colab 노트북(.ipynb)으로 구현하는 구체적인 방법 — 노트북이 무엇인지, 셀을 어떻게 구성하는지, 좋은 노트북 설계 패턴 등 — 은 이 매뉴얼의 범위가 아닙니다.</p>
+<div class="callout summary"><span class="label">📌 요약</span><p>자세한 내용은 <code>pose-image-tool/Colab을_활용한_프로젝트_수행방법.md</code>를 참고하세요. 이 매뉴얼은 "무엇을 만들지 판단하는 법"을, 그 매뉴얼은 "어떻게 구현하는지"를 다룹니다 — 둘을 합치면 문제 정의부터 실행까지 전 과정이 이어집니다.</p></div>
+<p>이 매뉴얼에서 한 가지만 덧붙이면: 코딩 에이전트에게 PoC 스크립트를 시킬 때 아래 다섯 가지를 지시문에 반드시 넣으세요 (N021 강의 부록 A에서 검증된 패턴).</p>
+<ol>
+<li>모델 이름과 실행 위치를 명시하고, 자료를 외부로 보내지 말라고 못 박기</li>
+<li>판정에 쓰는 값(임계값 등)을 전부 인자로 받게 하고 코드에 숫자를 박지 않기</li>
+<li>결과에 점수·신뢰도를 반올림 없이 남기기</li>
+<li>중간 산출물을 파일로 남기고, 다시 돌려도 덮어쓰지 않기</li>
+<li>결과를 눈으로 확인할 수 있는 형태(시각화 등)로 저장하기</li>
+</ol>
+
+<h2 id="s9">9. 실전 예시로 뜯어보기 — 웹소설→웹툰 포즈 전달 PoC</h2>
+<p>지금까지의 원칙이 실제로 어떻게 하나의 프로젝트에 적용됐는지, 처음부터 끝까지 뜯어봅니다. 전체 산출물은 <code>MainQuest2/</code> 폴더에 있습니다.</p>
+<h3>1) 도메인·병목 발견</h3>
+<p>이미 만들어 두었던 도메인 로드맵(웹소설·웹툰 콘텐츠 기획)과 지원 카드(ControlNet Pose 이미지 생성 실습)를 다시 살펴보다가, "웹소설을 웹툰으로 옮길 때 포즈·구도를 전달하기 어렵다"는 지점이 검사·판독과 입력·전사의 중간쯤 되는 병목이라는 걸 발견했습니다.</p>
+<h3>2) 문제 정의서</h3>
+<p>(<code>문제정의서.md</code>) — 4장의 5요소 그대로: 도메인(웹소설→웹툰 전환), 현재 문제(포즈를 말로 설명하거나 레퍼런스를 따로 전달), 개선 가설(ControlNet Pose로 포즈 고정 생성), 대상 사용자(원작자·웹툰 작가), 성공 기준(정성 비교, 3세트).</p>
+<h3>3) 모델 선정</h3>
+<p>(<code>AI모델_선정근거.md</code>) — 이전 과제(N017, <code>pose-image-tool/</code>)에서 이미 검증된 Stable Diffusion 1.5 + ControlNet Pose 조합을 그대로 재사용. FLUX.2-klein·SDXL 등 다른 후보는 무료 T4 GPU에서 메모리 문제로 제외(5장 "조건 필터" 원칙 적용).</p>
+<h3>4) 공정한 PoC 설계</h3>
+<p>(<code>webtoon_poc.ipynb</code>) — 조건 A(텍스트만)와 조건 B(ControlNet)가 같은 unet·vae·text_encoder·scheduler를 공유하도록 설계(6장 원칙 1). 다만 프롬프트에 구도를 명시하지 않아, 세트 2에서 조건 A가 우연히 클로즈업으로 나오는 문제를 사후에 발견(6장 원칙 2의 실패 사례).</p>
+<h3>5) 정직한 검증</h3>
+<p>(<code>개선효과_검증.md</code>) — 결과 이미지 9장을 하나하나 원본과 대조. 세트 1(수련 장면)은 조건 B가 정확히 포즈를 재현해 뚜렷한 성공. 세트 3(절규 장면)은 결과만 보면 성공적이었지만, 참조 사진(pose_03.jpg) 자체가 90도 회전되고 의도와 다른 자세로 촬영된 걸 발견해 "재현 신뢰도 불확실"로 등급을 낮춤(7장 원칙 1·2). 최종 결론: 정량화하면 "1/3 세트만 확실한 성공"이라고 정직하게 기록.</p>
+<h3>6) 제출과 그 다음</h3>
+<p>GitHub 저장소로 제출(과제 요건 충족). 데모 배포(Hugging Face Spaces 등)는 선택 사항으로, 필요할 때 별도로 진행하기로 보류.</p>
+
+<h2 id="s10">10. 체크리스트</h2>
+<ul>
+<li>"어떤 AI가 좋을까"가 아니라 "내 업무 어디가 막혀 있을까"로 시작했는가?</li>
+<li>4가지 업무 유형(검색/검사판독/분류배분/입력전사) 중 어디에 해당하는지 짚었는가?</li>
+<li>"적용하지 않을 3신호"(기준 불일치/비가역/기록 없음)에 걸리지 않는지 확인했는가?</li>
+<li>문제 정의서 5요소(도메인/현재문제/개선가설/대상사용자/성공기준)를 만들기 전에 적었는가?</li>
+<li>성공 기준을 정량으로 잴 수 있는 업무인지, 정성 비교가 맞는 업무인지 판단했는가?</li>
+<li>후보를 크기가 아니라 종류(실행위치·목적·결과형태)로 벌렸는가?</li>
+<li>조건(라이선스·실행위치)과 점수(정확도 등)를 섞지 않고 조건부터 걸러냈는가?</li>
+<li>지금 쓰는 방식(기준선)을 후보에 넣었는가?</li>
+<li>조건 A/B를 비교한다면, 변수를 하나로 좁혔는가? 구도·형식까지 조건에 명시했는가?</li>
+<li>결과물만 보지 않고 원본 입력 데이터를 직접 대조했는가?</li>
+<li>애매한 결과를 성공으로 포장하지 않고, 등급을 나눠 정직하게 기록했는가?</li>
+</ul>
+
+<p class="footer-note">내 도메인에서 AI로 개선 지점 찾아서 PoC 만들기 · 버전 1.0 · 2026-08-12</p>
+
+</main>
+</body>
+</html>
