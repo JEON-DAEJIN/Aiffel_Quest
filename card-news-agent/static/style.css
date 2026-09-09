@@ -1,0 +1,65 @@
+:root {
+  --accent: #1f6feb;
+  --bg: #ffffff;
+  --bg-alt: #f6f8fb;
+  --text: #1c2128;
+  --muted: #57606a;
+  --border: #d8dee6;
+  --warn-bg: #fff6e8;
+  --warn-border: #e8a33d;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+  background: var(--bg-alt);
+  color: var(--text);
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+  line-height: 1.6;
+}
+h1 { font-size: 22px; }
+h2 { font-size: 17px; margin-top: 28px; }
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 12px 0;
+}
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.status-running { background: #eaf2ff; color: var(--accent); }
+.status-waiting_for_user { background: var(--warn-bg); color: #7a4a05; border: 1px solid var(--warn-border); }
+.status-completed { background: #eafaf0; color: #0d5a30; }
+.status-failed { background: #fdecec; color: #a3231d; }
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+button.secondary { background: var(--bg-alt); color: var(--text); border: 1px solid var(--border); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+textarea, select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+.candidate label { display: flex; gap: 8px; align-items: flex-start; margin: 10px 0; }
+.candidate .meta { color: var(--muted); font-size: 13px; }
+.hint { color: var(--muted); font-size: 13px; }
+.error-box { background: #fdecec; border: 1px solid #f2b8b5; border-radius: 8px; padding: 12px; color: #a3231d; }
+[hidden] { display: none !important; }
+.checklist { list-style: none; padding: 0; margin: 8px 0 16px; font-size: 14px; }
+.checklist li { margin: 6px 0; }
+.review-card { display: flex; gap: 12px; align-items: flex-start; }
+.review-card img { width: 140px; border-radius: 8px; border: 1px solid var(--border); }
+.review-card .review-meta { flex: 1; }
+.review-card .status-ok { color: #0d5a30; font-weight: 600; }
+.review-card .status-failed { color: #a3231d; font-weight: 600; }
+a button { width: 100%; }

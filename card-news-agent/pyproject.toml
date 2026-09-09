@@ -1,0 +1,18 @@
+[project]
+name = "card-news-agent"
+version = "0.1.0"
+description = "Human-in-the-loop agentic card-news generator (topic-agnostic engine, Claude Agent SDK)"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "claude-agent-sdk>=0.2.144",
+    "pydantic>=2.9",
+    "python-dotenv>=1.0",
+    "openai>=1.0",
+    "pillow>=10.0",
+    "qrcode[pil]>=7.4",
+]
+
+[tool.uv]
+package = false

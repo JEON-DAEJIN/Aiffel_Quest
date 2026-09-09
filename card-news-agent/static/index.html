@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>카드뉴스 에이전트</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<h1>카드뉴스 에이전트</h1>
+<p class="hint">조사 → 후보 선택 → 심층 검증 → 스토리보드 승인 → 이미지 생성 → 검수 → 다운로드.</p>
+
+<div id="start-section" class="card">
+  <h2>새 카드뉴스 시작</h2>
+  <select id="topic-select"></select>
+  <div id="source-text-box" hidden style="margin-top:10px">
+    <textarea id="source-text-input" rows="10" placeholder="원고 전체를 여기 붙여넣으세요."></textarea>
+  </div>
+  <div id="source-url-box" hidden style="margin-top:10px">
+    <input type="text" id="source-url-input" placeholder="발행된 원문 URL (예: https://brunch.co.kr/@storywiz/3)" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:14px;">
+  </div>
+  <button id="start-btn" style="margin-top:10px">시작</button>
+</div>
+
+<div id="run-section" class="card" hidden>
+  <h2>진행 상황 <span id="status-badge" class="status-badge"></span></h2>
+  <p id="run-id-line" class="hint"></p>
+
+  <div id="researching-view" hidden>
+    <p>AI가 웹을 검색해 후보를 조사하는 중입니다…</p>
+  </div>
+
+  <div id="selection-view" hidden>
+    <p><strong>후보 중 <span id="selection-range-text"></span>개를 선택하세요.</strong></p>
+    <div id="candidates-list"></div>
+    <button id="submit-selection-btn">선택 제출</button>
+  </div>
+
+  <div id="verifying-view" hidden>
+    <p>선택한 후보를 심층 검증하고 스토리보드를 만드는 중입니다…</p>
+  </div>
+
+  <div id="storyboard-view" hidden>
+    <div id="storyboard-list"></div>
+    <div style="margin-top:16px">
+      <button id="approve-btn">승인</button>
+      <button id="revise-btn" class="secondary">수정 요청</button>
+    </div>
+    <div id="revise-box" hidden style="margin-top:10px">
+      <textarea id="revise-notes" rows="3" placeholder="예: 3번 카드 본문이 너무 길어. 두 문장으로 줄여 줘."></textarea>
+      <button id="submit-revision-btn" style="margin-top:8px">수정 요청 제출</button>
+    </div>
+  </div>
+
+  <div id="generating-images-view" hidden>
+    <p>카드별로 이미지를 생성하는 중입니다… (카드마다 순서대로 처리됩니다)</p>
+  </div>
+
+  <div id="review-view" hidden>
+    <p class="hint">아래 검수 기준을 참고해 확인하세요 (체크는 참고용이며 완료 버튼을 막지 않습니다).</p>
+    <ul class="checklist">
+      <li><label><input type="checkbox"> 최신성과 사실 — 발표일·근거 링크가 정확한가</label></li>
+      <li><label><input type="checkbox"> 독자와 흐름 — 대상 독자에게 자연스러운 순서인가</label></li>
+      <li><label><input type="checkbox"> 생성 결과 — 이미지·텍스트가 의도대로 생성됐는가</label></li>
+      <li><label><input type="checkbox"> 편집과 가독성 — 글자가 잘리거나 배경과 겹치지 않는가</label></li>
+      <li><label><input type="checkbox"> 실패와 재시도 — 실패한 카드만 재시도되고 나머지는 유지되는가</label></li>
+      <li><label><input type="checkbox"> 내보내기 — 다운로드한 파일이 실제로 열리고 내용이 맞는가</label></li>
+    </ul>
+    <div id="review-cards"></div>
+    <button id="finish-btn" style="margin-top:16px">완료</button>
+  </div>
+
+  <div id="completed-view" hidden>
+    <p>✅ 완료되었습니다.</p>
+    <a id="download-link" href="#"><button>ZIP 다운로드</button></a>
+  </div>
+
+  <div id="failed-view" hidden>
+    <div class="error-box" id="error-text"></div>
+    <button id="retry-btn" style="margin-top:10px">재시도</button>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
