@@ -70,6 +70,7 @@ async def create_run(req: CreateRunRequest, bg: BackgroundTasks):
         source_text=req.source_text,
         source_url=req.source_url,
     )
+    db.append_event(run_id, "human_action", f"런 생성 (topic={topic.topic_id})")
     bg.add_task(engine.run_research_stage, run_id, topic)
     return {"run_id": run_id}
 
@@ -102,6 +103,7 @@ async def select_candidates(run_id: str, req: SelectRequest, bg: BackgroundTasks
         stage="verify_storyboard",
         selected_candidates_json=json.dumps(req.candidate_ids),
     )
+    db.append_event(run_id, "human_action", f"후보 {len(req.candidate_ids)}개 선택")
     bg.add_task(engine.run_verification_stage, run_id, topic)
     return {"ok": True}
 
@@ -118,6 +120,7 @@ async def review_storyboard(run_id: str, req: ReviewRequest, bg: BackgroundTasks
     if req.action == "approve":
         topic = get_topic(row["topic_id"])
         db.update_run(run_id, status="running", stage="generate_images")
+        db.append_event(run_id, "human_action", "스토리보드 승인 — 이미지 생성 시작")
         bg.add_task(engine.run_image_generation_stage, run_id, topic)
         return {"ok": True}
     if req.action != "revise":
@@ -125,6 +128,7 @@ async def review_storyboard(run_id: str, req: ReviewRequest, bg: BackgroundTasks
 
     topic = get_topic(row["topic_id"])
     db.update_run(run_id, status="running", stage="verify_storyboard")
+    db.append_event(run_id, "human_action", f"수정 요청 제출: {req.notes or '(내용 없음)'}")
     bg.add_task(engine.run_revision_stage, run_id, topic, req.notes)
     return {"ok": True}
 
@@ -139,6 +143,7 @@ async def retry_run(run_id: str, bg: BackgroundTasks):
 
     topic = get_topic(row["topic_id"])
     db.update_run(run_id, status="running", error_message=None, retry_count=row["retry_count"] + 1)
+    db.append_event(run_id, "human_action", f"재시도 요청 (실패했던 단계: {row['stage']})")
     stage_fn = {
         "research": engine.run_research_stage,
         "verify_storyboard": engine.run_verification_stage,
@@ -159,6 +164,7 @@ async def regenerate_card(run_id: str, req: RegenerateCardRequest, bg: Backgroun
 
     topic = get_topic(row["topic_id"])
     db.update_run(run_id, status="running")
+    db.append_event(run_id, "human_action", f"카드 {req.card_number} 재생성 요청")
     bg.add_task(engine.run_single_card_image, run_id, topic, req.card_number)
     return {"ok": True}
 
@@ -173,6 +179,7 @@ async def finish_run(run_id: str):
         raise HTTPException(409, str(e))
 
     db.update_run(run_id, status="completed", stage="done")
+    db.append_event(run_id, "human_action", "검수 완료 처리 — 런 종료")
     return {"ok": True}
 
 

@@ -52,9 +52,12 @@
   } | null,
   "images": [{card_number, headline, body, bg_path, final_path, status: "ok"|"failed", error}] | null,
   "error_message": str | null,
-  "retry_count": int
+  "retry_count": int,
+  "event_log": [{ts: str, type: str, message: str}]   // 관찰 가능성: 시간순 진행 기록, append-only
 }
 ```
+
+`event_log`의 `type` 값: `human_action`(사람이 내린 결정) · `stage_start`/`stage_done`/`stage_failed`(AI 단계 경계) · `tool_call`/`tool_call_failed`(카드별 이미지 생성 등 개별 도구 호출 결과). 화면은 이 배열을 그대로 시간순 목록으로 렌더링한다(`static/app.js`의 `renderEventLog`) — 새 이벤트 타입을 추가해도 화면 코드를 바꿀 필요 없이 라벨 매핑(`EVENT_TYPE_LABELS`)만 추가하면 된다.
 
 ## 사람이 결정하는 지점 (Project 2 설계 반영)
 

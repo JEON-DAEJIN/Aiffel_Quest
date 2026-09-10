@@ -161,11 +161,35 @@ function renderReview(run) {
   });
 }
 
+const EVENT_TYPE_LABELS = {
+  stage_start: "진행 시작",
+  stage_done: "단계 완료",
+  stage_failed: "단계 실패",
+  tool_call: "도구 호출",
+  tool_call_failed: "도구 실패",
+  human_action: "사람 결정",
+};
+
+function renderEventLog(run) {
+  const container = $("event-log");
+  container.innerHTML = "";
+  const log = run.event_log || [];
+  for (const e of log) {
+    const li = document.createElement("li");
+    const time = new Date(e.ts).toLocaleTimeString("ko-KR");
+    const label = EVENT_TYPE_LABELS[e.type] || e.type;
+    li.innerHTML = `<span class="log-time">${time}</span><span class="log-type log-${e.type}">${escapeHtml(label)}</span>${escapeHtml(e.message)}`;
+    container.appendChild(li);
+  }
+  container.scrollTop = container.scrollHeight;
+}
+
 async function renderRun(run, topics) {
   $("run-section").hidden = false;
   $("start-section").hidden = true;
   $("run-id-line").textContent = `run: ${run.id}`;
   setBadge(run.status);
+  renderEventLog(run);
 
   if (run.status === "running" && run.stage === "research") {
     showSection("researching-view");

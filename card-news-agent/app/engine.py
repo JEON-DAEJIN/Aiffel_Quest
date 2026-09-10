@@ -18,6 +18,7 @@ RUNS_DIR = Path(__file__).resolve().parent.parent / "data" / "runs"
 async def run_research_stage(run_id: str, topic: TopicConfig) -> None:
     row = db.get_run(run_id)
     source_text = row.get("source_text") if row else None
+    db.append_event(run_id, "stage_start", f"AI 조사 시작 (topic={topic.topic_id}, tools={topic.tools})")
     result = await run_structured_query(
         topic.research_prompt(source_text),
         RESEARCH_SCHEMA,
@@ -31,6 +32,7 @@ async def run_research_stage(run_id: str, topic: TopicConfig) -> None:
             error_message=result.error,
             research_session_id=result.session_id,
         )
+        db.append_event(run_id, "stage_failed", f"조사 실패: {result.error}")
         return
 
     candidates = result.data.get("candidates", [])
@@ -41,7 +43,7 @@ async def run_research_stage(run_id: str, topic: TopicConfig) -> None:
         research_session_id=result.session_id,
         candidates_json=json.dumps(result.data),
     )
-    _ = candidates  # 개수 검증은 UI/문서 수준에서 안내 — 모델 원문 그대로 보존 (강제로 잘라내지 않음)
+    db.append_event(run_id, "stage_done", f"후보 {len(candidates)}개 조사 완료 — 사용자 선택 대기")
 
 
 def _verification_prompt(
@@ -114,6 +116,7 @@ async def run_verification_stage(run_id: str, topic: TopicConfig) -> None:
     selected_ids = set(row.get("selected_candidates") or [])
     selected = [c for c in candidates if c["candidate_id"] in selected_ids]
 
+    db.append_event(run_id, "stage_start", f"심층 검증 + 스토리보드 작성 시작 ({len(selected)}개 후보)")
     result = await run_structured_query(
         _verification_prompt(topic, selected, source_text=row.get("source_text")),
         STORYBOARD_SCHEMA,
@@ -123,6 +126,7 @@ async def run_verification_stage(run_id: str, topic: TopicConfig) -> None:
     )
     if not result.ok:
         db.update_run(run_id, status="failed", error_message=result.error)
+        db.append_event(run_id, "stage_failed", f"검증/스토리보드 실패: {result.error}")
         return
 
     db.update_run(
@@ -132,6 +136,8 @@ async def run_verification_stage(run_id: str, topic: TopicConfig) -> None:
         storyboard_session_id=result.session_id,
         verification_json=json.dumps(result.data),
     )
+    card_count = len(result.data.get("storyboard", []))
+    db.append_event(run_id, "stage_done", f"스토리보드 {card_count}장 작성 완료 — 사용자 승인 대기")
 
 
 async def run_revision_stage(run_id: str, topic: TopicConfig, notes: str | None) -> None:
@@ -145,6 +151,7 @@ async def run_revision_stage(run_id: str, topic: TopicConfig, notes: str | None)
     history = row.get("revision_notes") or []
     history.append(notes or "")
 
+    db.append_event(run_id, "stage_start", f"수정 요청 반영 중: {notes or '(내용 없음)'}")
     result = await run_structured_query(
         _verification_prompt(topic, selected, source_text=row.get("source_text"), notes=notes),
         STORYBOARD_SCHEMA,
@@ -154,6 +161,7 @@ async def run_revision_stage(run_id: str, topic: TopicConfig, notes: str | None)
     )
     if not result.ok:
         db.update_run(run_id, status="failed", error_message=result.error, revision_notes_json=json.dumps(history))
+        db.append_event(run_id, "stage_failed", f"수정 반영 실패: {result.error}")
         return
 
     db.update_run(
@@ -164,6 +172,7 @@ async def run_revision_stage(run_id: str, topic: TopicConfig, notes: str | None)
         verification_json=json.dumps(result.data),
         revision_notes_json=json.dumps(history),
     )
+    db.append_event(run_id, "stage_done", "수정된 스토리보드 작성 완료 — 사용자 승인 대기")
 
 
 def _image_prompt(topic: TopicConfig, card: dict) -> str:
@@ -216,6 +225,7 @@ async def run_image_generation_stage(run_id: str, topic: TopicConfig) -> None:
     run_dir = RUNS_DIR / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
+    db.append_event(run_id, "stage_start", f"카드 {len(storyboard)}장 이미지 생성 시작")
     records: list[dict] = []
     for card in storyboard:
         record = await _generate_one_card(run_dir, topic, card, source_url=row.get("source_url"))
@@ -223,8 +233,14 @@ async def run_image_generation_stage(run_id: str, topic: TopicConfig) -> None:
         # DJ 체크리스트 7번: 카드 하나가 실패해도 전체를 버리지 않는다. 매 카드마다
         # 즉시 저장해두면, 도중에 서버가 죽어도 이미 만든 카드는 남는다.
         db.update_run(run_id, images_json=json.dumps(records))
+        if record["status"] == "ok":
+            db.append_event(run_id, "tool_call", f"카드 {record['card_number']} 이미지 생성 성공")
+        else:
+            db.append_event(run_id, "tool_call_failed", f"카드 {record['card_number']} 이미지 생성 실패: {record['error']}")
 
     db.update_run(run_id, status="waiting_for_user", stage="await_review")
+    ok_count = sum(1 for r in records if r["status"] == "ok")
+    db.append_event(run_id, "stage_done", f"이미지 생성 완료 ({ok_count}/{len(records)}장 성공) — 사용자 검수 대기")
 
 
 async def run_single_card_image(run_id: str, topic: TopicConfig, card_number: int) -> None:
@@ -245,3 +261,7 @@ async def run_single_card_image(run_id: str, topic: TopicConfig, card_number: in
     images.append(record)
     images.sort(key=lambda r: r["card_number"])
     db.update_run(run_id, status="waiting_for_user", stage="await_review", images_json=json.dumps(images))
+    if record["status"] == "ok":
+        db.append_event(run_id, "tool_call", f"카드 {card_number} 재생성 성공")
+    else:
+        db.append_event(run_id, "tool_call_failed", f"카드 {card_number} 재생성 실패: {record['error']}")

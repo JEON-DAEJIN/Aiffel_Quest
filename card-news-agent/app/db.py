@@ -32,6 +32,7 @@ MIGRATIONS = [
     "ALTER TABLE runs ADD COLUMN images_json TEXT",
     "ALTER TABLE runs ADD COLUMN source_text TEXT",
     "ALTER TABLE runs ADD COLUMN source_url TEXT",
+    "ALTER TABLE runs ADD COLUMN event_log_json TEXT NOT NULL DEFAULT '[]'",
 ]
 
 
@@ -100,6 +101,7 @@ def get_run(run_id: str) -> dict | None:
             d[key.removesuffix("_json")] = json.loads(d[key])
         else:
             d[key.removesuffix("_json")] = None
+    d["event_log"] = json.loads(d["event_log_json"]) if d.get("event_log_json") else []
     return d
 
 
@@ -110,6 +112,20 @@ def update_run(run_id: str, **fields) -> None:
     cols = ", ".join(f"{k}=?" for k in fields)
     with _connect() as conn:
         conn.execute(f"UPDATE runs SET {cols} WHERE id=?", (*fields.values(), run_id))
+
+
+def append_event(run_id: str, event_type: str, message: str) -> None:
+    """관찰 가능성(observability): 사람이 나중에 '왜 여기까지 왔는지'를 화면에서 볼 수 있도록,
+    AI 판단/도구 호출/사람 결정을 시간순으로 append-only 기록한다. status/stage는 '지금 상태'만
+    보여주지만 event_log는 '여기까지 온 과정'을 보여준다."""
+    now = _now()
+    with _connect() as conn:
+        row = conn.execute("SELECT event_log_json FROM runs WHERE id=?", (run_id,)).fetchone()
+        if row is None:
+            return
+        log = json.loads(row["event_log_json"] or "[]")
+        log.append({"ts": now, "type": event_type, "message": message})
+        conn.execute("UPDATE runs SET event_log_json=? WHERE id=?", (json.dumps(log), run_id))
 
 
 def require_stage(run_id: str, status: str, stage: str) -> dict:

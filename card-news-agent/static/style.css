@@ -63,3 +63,21 @@ textarea, select { width: 100%; padding: 8px; border: 1px solid var(--border); b
 .review-card .status-ok { color: #0d5a30; font-weight: 600; }
 .review-card .status-failed { color: #a3231d; font-weight: 600; }
 a button { width: 100%; }
+#log-details { margin: 10px 0; font-size: 13px; }
+#log-details summary { cursor: pointer; color: var(--muted); }
+.event-log { list-style: none; padding: 0; margin: 10px 0 0; max-height: 220px; overflow-y: auto; }
+.event-log li { padding: 5px 0; border-bottom: 1px solid var(--border); color: var(--text); }
+.event-log .log-time { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 8px; }
+.event-log .log-type {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-right: 6px;
+  background: var(--bg-alt);
+  color: var(--muted);
+}
+.event-log .log-human_action { background: var(--warn-bg); color: #7a4a05; }
+.event-log .log-stage_failed, .event-log .log-tool_call_failed { background: #fdecec; color: #a3231d; }
+.event-log .log-stage_done { background: #eafaf0; color: #0d5a30; }

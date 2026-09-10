@@ -6,6 +6,55 @@
 
 "AI 최신소식"처럼 사람이 매번 반복하는 조사·선택·검토 업무를, AI가 후보를 조사해 제시하고 사람이 결정하면 AI가 다음 단계를 이어가는 사람-AI 협업 흐름(에이전틱 워크플로)으로 만든다. (근거: N034 강의노트 — `강의정리/N034/N034_카드뉴스에이전트(card-news-agent).md`)
 
+## 문제 정의
+
+- **반복 업무**: 뉴스·완성 원고를 인스타그램용 카드뉴스(이미지 여러 장)로 옮기는 작업. 조사(또는 분할)→검증→디자인 문구 작성→이미지 제작→검수를 매번 사람이 손으로 반복한다.
+- **입력**: (a) 주제 키워드(웹조사형, `ai_news`) 또는 (b) 이미 쓴 원고 텍스트 + 발행 URL(원고입력형, `voice_column_cards`/`brunch_column_cards`).
+- **결과물**: 카드뉴스용 최종 이미지 N장(헤드라인·본문 합성 완료, 1080×1350)을 담은 ZIP 파일. 원고입력형은 인스타 캡션·해시태그도 함께 생성한다.
+
+## 타겟 유저
+
+- **1차 사용자(현재 실사용자)**: DJ 본인 — (1) 프로젝트 VOICE(Making_Contents) 콘텐츠 담당자로서 완성된 콘텐츠를 채널별로 파생시켜야 하는 사람, (2) 브런치(@storywiz) 연재 작가로서 발행 글마다 홍보용 카드가 필요한 사람.
+- **공통 특성**: 원고/소재는 이미 있지만, "그걸 카드뉴스 여러 장으로 나누고 이미지까지 만드는" 반복 작업을 매번 하고 싶지 않은 1인 운영자. 승인·수정 결정은 직접 하고 싶어 하며, AI가 결정을 대신 확정 짓는 것은 원치 않는다.
+
+## 화면 구성
+
+단일 페이지 앱(`static/index.html`)이 런의 `status`×`stage`에 따라 아래 뷰를 전환하며 보여준다. 모든 뷰 상단에는 상시 노출되는 "진행 로그" 패널(관찰 가능성, 아래 참고)이 붙는다.
+
+| 화면(뷰) | 트리거 상태 | 사람이 하는 일 |
+|---|---|---|
+| 시작 화면 | (런 생성 전) | 주제 선택, (원고형이면) 원고 텍스트·URL 입력 |
+| 조사 중 | running/research | 대기(관찰만) |
+| 후보 선택 | waiting_for_user/await_selection | 후보(뉴스 또는 분할안) 중 선택 |
+| 검증·스토리보드 작성 중 | running/verify_storyboard | 대기(관찰만) |
+| 스토리보드 승인 | waiting_for_user/await_approval | 승인 또는 자연어 수정 요청 |
+| 이미지 생성 중 | running/generate_images | 대기(관찰만) |
+| 검수 | waiting_for_user/await_review | 카드별 검수, 실패 카드 재생성, 완료 확정 |
+| 완료 | completed/done | ZIP 다운로드 |
+| 실패 | failed | 오류 확인, 재시도 |
+
+## 도구 계약 — 입력/출력/사용 시점
+
+각 도구가 "언제 쓰고 언제 안 쓰는지"(DJ 체크리스트 1번)를 명시한다.
+
+| 도구 | 입력 | 출력 | 언제 쓰는가 | 언제 안 쓰는가 | 권한/제한 |
+|---|---|---|---|---|---|
+| **WebSearch** (Claude Agent SDK 내장) | 검색어(자연어) | 검색 결과 스니펫 목록 | `research_prompt()` 단계에서 `input_mode="web_research"` 토픽(`ai_news`)이 최신 후보를 찾을 때만 | `input_mode="source_text"` 토픽에는 `topic.tools=[]`로 아예 전달하지 않음 — 원고입력형은 외부 조사가 필요 없기 때문 | `ClaudeAgentOptions(tools=topic.tools)`로 토픽별 화이트리스트만 허용. Bash/Write/Edit 등은 애초에 옵션에 없어 호출 불가 |
+| **WebFetch** (Claude Agent SDK 내장) | URL | 페이지 본문 | 검증 단계(`run_verification_stage`)에서 후보의 근거 링크를 실제로 열어 `confirmed_facts`를 확인할 때 | 원고입력형 토픽(자가 대조로 검증 의미가 바뀜)에는 미부여 | 위와 동일하게 토픽별 화이트리스트 |
+| **`generate_card_background`** (OpenAI `gpt-image-1`, `app/image_gen.py`) | 이미지 프롬프트(문자열, 스타일+`image_role`), `quality` | PNG 바이트(1024×1536) | 카드가 CTA 카드가 아닐 때, `run_image_generation_stage`/`run_single_card_image`에서 카드당 1회 | `topic.cta_card`이고 마지막 카드일 때는 호출하지 않음(QR 카드로 대체) | 프롬프트 접미사에 "실제 브랜드·로고 금지", "텍스트 넣지 마"를 전역 고정 삽입(코드에서 사용자 입력과 분리). `image_quality="medium"` 기본값으로 비용 상한 |
+| **`compose_card`/`compose_cta_card`** (Pillow, 로컬) | 배경 PNG(또는 없음) + 헤드라인/본문/URL | 최종 합성 PNG(1080×1350) | 이미지 생성 직후 텍스트를 얹거나(`compose_card`), CTA 카드일 때 QR+URL만으로(`compose_cta_card`) | — (항상 씀, 외부 API 아님이라 실패 조건이 다름: 폰트 파일 누락 등만) | 외부 호출 없음(오프라인) — 권한 이슈 없음 |
+| **`qrcode` 라이브러리** (로컬) | `source_url` | QR 이미지 | `compose_cta_card` 내부, `cta_card=true` 토픽의 마지막 카드에서만 | `source_url`이 없으면 런 생성 자체를 400으로 막음(도구 호출 전에 차단) | 외부 호출 없음, 비용 0 |
+
+**실패·재시도 규칙** (도구 공통): 구조화 출력 파싱 실패 → 같은 세션에 1회만 엄격 재요청. 예산초과(`max_budget_usd=2.0`)·시간초과(`timeout_s=600`)·최대턴초과(`max_turns=20`) 등 "재시도해도 반드시 다시 실패하는" 오류는 재시도하지 않고 즉시 `failed`로 멈춘다(`_is_recoverable_by_reformat()`). 이미지 생성은 카드 단위로 독립 실패 처리 — 한 카드 실패가 나머지 카드나 런 전체를 막지 않는다.
+
+## 관찰 가능성 — 진행 로그
+
+`status`/`stage`는 "지금 어디 있는가"만 보여주므로, "AI가 무슨 판단을 거쳐 여기까지 왔는가"를 사람이 확인할 수 있도록 append-only 이벤트 로그(`event_log`)를 모든 런에 남긴다(`db.append_event`).
+
+- 기록 시점: 사람의 결정(런 생성/후보 선택/승인/수정 요청/재시도/카드 재생성/완료), AI 단계 시작·완료·실패, 카드별 이미지 생성 성공/실패
+- 화면에는 모든 단계에서 상시 노출되는 "진행 로그" 패널(펼침/접힘)로 시간순 표시됨(`static/index.html`의 `#log-details`)
+- `GET /runs/{id}` 응답의 `event_log` 배열로도 그대로 노출되어, 화면 밖에서도(API 직접 조회) 과정을 검증할 수 있다
+
 ## 핵심 설계 원칙 — 주제(topic)는 하드코딩하지 않는다
 
 이 앱은 "AI 최신소식 전용 앱"이 아니라 **어떤 주제로도 같은 흐름을 재사용할 수 있는 엔진**이다. `app/topics/base.py`의 `TopicConfig`가 주제별 차이(조사 프롬프트, 후보 수 범위, 선택 범위, 스토리보드 장수 범위, 조사 기간)를 전부 담고, `app/engine.py`·`app/main.py`는 `topic_id`만 받아 레지스트리에서 설정을 조회한다.
