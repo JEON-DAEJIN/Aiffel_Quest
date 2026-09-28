@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N034 카드뉴스 에이전트 실습 설명자료</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1 id="n034-실습-설명자료-카드뉴스-에이전트-만들기">N034 실습 설명자료 — 카드뉴스 에이전트 만들기</h1>
+<blockquote>
+<p>N034 강의와 <code>card-news-agent</code> 프로젝트를 논리적으로 상세히 풀어 정리한 문서. 강의의 취지, 실습이 검증하려는 것, 프로젝트에서 실제로 있었던 일, 향후 적용법, 동료에게 설명하는 법 순으로 구성했다.</p>
+<p>💡 <strong>읽는 법</strong>: 코드를 몰라도 끝까지 읽을 수 있게 썼다. 어려운 용어는 그 자리에서 비유로 풀어준다. “개발자용”이라고 표시된 부분은 건너뛰어도 줄거리를 이해하는 데 지장 없다.</p>
+</blockquote>
+<h2 id="미리-보는-용어-4개">미리 보는 용어 4개</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>용어</th>
+<th>무엇을 하는가</th>
+<th>비유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>상태(state)</strong></td>
+<td>지금 작업이 몇 번째 단계까지 왔는지 기억해두는 값</td>
+<td>게임의 저장 기록 — 어디까지 진행했는지</td>
+</tr>
+<tr>
+<td><strong>waiting_for_user (사람 기다림)</strong></td>
+<td>AI가 질문을 던지고 사람 답을 기다리며 멈춰 있는 상태</td>
+<td>종업원이 주문을 확인하며 “이걸로 하시겠어요?”라고 묻고 잠깐 멈추는 것 — 고장이 아니라 정상</td>
+</tr>
+<tr>
+<td><strong>세션 ID</strong></td>
+<td>“지금 이 대화”를 가리키는 표 — 프로그램을 다시 켜면 사라질 수 있음</td>
+<td>극장표 한 장 (그날 상영만 유효)</td>
+</tr>
+<tr>
+<td><strong>예산(budget)</strong></td>
+<td>AI를 호출하는 데 쓸 수 있는 돈의 한도</td>
+<td>하루 용돈 — 다 쓰면 더 못 씀</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="목차">목차</h2>
+<ol type="1">
+<li><a href="#1">이 수업(N034)의 취지 — 왜 카드뉴스 자동화에 사람이 필요한가</a></li>
+<li><a href="#2">실습이 알아보고자 한 것</a></li>
+<li><a href="#3">프로젝트에서 실제로 있었던 일</a></li>
+<li><a href="#4">앞으로 내 프로젝트에 어떻게 적용하면 되는가</a></li>
+<li><a href="#5">동료에게 어떻게 설명하면 되는가</a></li>
+<li><a href="#6">용어 사전</a></li>
+</ol>
+<hr />
+<h2 id="1">1. 이 수업(N034)의 취지 — 왜 카드뉴스 자동화에 사람이 필요한가</h2>
+<p>N034는 “AI가 카드뉴스를 다 만들어주는 것”이 아니라, 조사·선택·제작·검수처럼 사람이 매번 반복하는 업무에서 <strong>AI가 후보를 조사해 제시하고, 사람이 결정하면 AI가 다음 단계를 이어가는</strong> 사람-AI 협업 흐름(에이전틱 워크플로)을 설계하는 문제의식에서 출발했습니다. 기획서(PRD) 한 장을 개발 도우미에게 건네고, 실제로 동작하는 웹앱까지 완성하는 것이 목표였습니다.</p>
+<h2 id="2">2. 실습이 알아보고자 한 것</h2>
+<p>이 실습이 확인하려던 건 “AI가 질문하고 사람이 답할 때까지 웹앱이 정확히 멈춰 있을 수 있는가”였습니다. 원문의 표현을 빌리면:</p>
+<blockquote>
+<p>“<strong>waiting_for_user는 오류가 아니라 정상적인 작업 상태</strong>입니다. AI가 질문하면 웹앱은 반드시 멈춰야 하며, 사용자가 답하기 전에 다음 단계로 자동 진행해서는 안 됩니다.”</p>
+</blockquote>
+<p>그리고 더 미묘한 함정도 있었습니다: “<strong>세션 ID 저장 ≠ 작업 상태 자동 복구</strong>” — 즉 “지금 이 대화”를 가리키는 표(세션 ID) 하나만 저장해서는 안 되고, 어디까지 진행했는지·무엇을 물었는지·사람이 뭐라고 답했는지까지 <strong>따로</strong> 저장해야 새로고침이나 서버 재시작 후에도 이어갈 수 있습니다.</p>
+<h2 id="3">3. 프로젝트에서 실제로 있었던 일</h2>
+<ol type="1">
+<li><strong>예산(budget) 버그</strong>: AI 호출 예산을 하루 0.5달러로 낮게 잡고 시작했더니, 실제 웹검색 조사 도중 예산을 다 써버려 첫 실행이 그대로 실패했습니다. 게다가 실패하면 무조건 한 번 다시 시도하도록 되어 있어서, 재시도가 예산을 두 배로 태우고도 또 실패하는 것까지 실제로 확인됐습니다. → 예산을 2.0달러로 올리고, “재시도해도 반드시 다시 실패할 오류(예산초과·시간초과)는 재시도하지 않는다”는 규칙을 추가했습니다.</li>
+<li><strong>AI가 실제 상표 로고를 그린 사건</strong>: “경쟁사 로고를 흐릿하게 표시”라는 지시만으로 이미지를 만들었더니, AI가 원문과 아무 상관 없는 <strong>실제 유명 브랜드 로고</strong>를 그려냈습니다. “경쟁사 로고”라는 추상적인 지시만 주면, AI가 자기가 학습한 데이터에서 가장 흔한 실제 브랜드로 빈칸을 채워버린 것입니다. → 모든 이미지 생성 지시에 “실제 브랜드명·로고·상표를 그리지 말 것”이라는 전역 안전장치를 넣었습니다.</li>
+<li><strong>검증을 합쳐서 하면 착시가 생긴다</strong>: 다른 강의(N036) 실습에서 배운 교훈을 이 프로젝트에도 그대로 적용했습니다 — 두 항목(제목+본문)을 합쳐서 “한국어인지” 검사하면, 한쪽만 한국어여도 “문제없음”으로 착시가 생깁니다. 실제로 이 프로젝트도 처음엔 AI에게 “한국어로 쓰라”고 프롬프트로만 지시했을 뿐, 코드로 확인하는 절차가 없었다는 걸 발견하고, 항목별로 따로 검사하고 실패한 항목만 다시 요청하는 절차를 추가했습니다.</li>
+</ol>
+<h2 id="4">4. 앞으로 내 프로젝트에 어떻게 적용하면 되는가</h2>
+<h3 id="누구나-알아야-할-원칙">누구나 알아야 할 원칙</h3>
+<ul>
+<li><strong>“그럴듯해 보인다”와 “실제로 된다”는 다릅니다.</strong> 코드를 눈으로 읽고 “이러면 되겠지”라고 넘기지 말고, 실제로 실행해서 결과를 확인해야 예산 버그나 상표 로고 사건 같은 문제가 눈에 보입니다.</li>
+<li><strong>AI에게 추상적인 지시(“경쟁사 로고”, “적당히 예쁘게”)만 주면, AI는 가장 흔한 답으로 빈칸을 채웁니다.</strong> 구체적인 금지 사항(“실제 브랜드는 안 됨”)을 명시해야 안전합니다.</li>
+<li><strong>검증은 합쳐서 하지 말고 쪼개서 하세요.</strong> 여러 항목을 한 번에 검사하면 일부만 통과해도 “전체 통과”로 착각하기 쉽습니다.</li>
+</ul>
+<h3 id="개발자용-체크리스트-코드를-직접-짤-때만-해당">개발자용 체크리스트 (코드를 직접 짤 때만 해당)</h3>
+<ul>
+<li>실패를 무조건 재시도하지 말고, “재시도해도 다시 실패할 오류(예산초과·타임아웃)”와 “재시도하면 나아질 오류”를 구분한다.</li>
+<li>세션 ID와 작업 상태(현재 단계·질문·답변)는 서로 다른 곳에 각각 저장한다.</li>
+<li>필드별 개별 검증 후, 실패한 항목만 지목해 재요청하는 방식을 쓴다(전체 재생성 아님).</li>
+</ul>
+<h2 id="5">5. 동료에게 어떻게 설명하면 되는가</h2>
+<p><strong>한 줄 엘리베이터 피치</strong>: &gt; “AI가 조사하고 사람이 결정하면 AI가 이어받는 카드뉴스 제작 워크플로를 만들어봤어요. 만드는 중에 예산 폭주, AI가 실제 상표를 그려내는 문제, 검증 착시 같은 진짜 문제를 실행해보고서야 발견해서 고쳤어요.”</p>
+<p><strong>좀 더 풀어서 설명할 때 순서</strong>: 1. “카드뉴스 만들기처럼 사람이 매번 반복하는 일을, AI가 조사해서 후보를 보여주고 사람이 고르면 이어가는 방식으로 만들었어요.” (문제의식) 2. “핵심은 ’AI가 질문하고 멈춰 있는 상태’가 고장이 아니라 정상이라는 걸 웹앱이 정확히 알아야 한다는 거예요.” (구조) 3. “실제로 만들어보니 예산을 너무 적게 잡아서 첫 실행이 실패했고, 심지어 재시도까지 예산을 또 태웠어요.” (경험담 1) 4. “더 놀라운 건, ‘경쟁사 로고’ 그려달라고 했더니 AI가 진짜 유명 브랜드 로고를 그려버린 거예요 — 추상적으로 지시하면 AI가 흔한 답으로 채운다는 걸 몸으로 확인했어요.” (경험담 2) 5. “이런 문제들은 코드만 봐서는 안 보이고, 실제로 돌려봐야 보였어요.” (핵심 원칙)</p>
+<h2 id="6">6. 용어 사전</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>용어</th>
+<th>쉬운 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>에이전틱 워크플로</td>
+<td>AI가 조사·제안하고, 사람이 결정하면 AI가 다음 단계로 이어가는 협업 흐름</td>
+</tr>
+<tr>
+<td>상태 (state)</td>
+<td>지금 작업이 어디까지 진행됐는지 기억해두는 값</td>
+</tr>
+<tr>
+<td>waiting_for_user</td>
+<td>AI가 사람 답을 기다리며 정상적으로 멈춰 있는 상태</td>
+</tr>
+<tr>
+<td>세션 ID</td>
+<td>“지금 이 대화”를 가리키는 표. 서버가 재시작되면 사라질 수 있다</td>
+</tr>
+<tr>
+<td>예산 (budget)</td>
+<td>AI 호출에 쓸 수 있는 비용 한도</td>
+</tr>
+</tbody>
+</table>
+
+</main>
+</body>
+</html>

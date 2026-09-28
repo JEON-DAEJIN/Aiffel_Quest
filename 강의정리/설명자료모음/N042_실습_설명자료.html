@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N042 딥리서치 에이전트 실습 설명자료</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1 id="n042-실습-설명자료-딥리서치-에이전트-만들기">N042 실습 설명자료 — 딥리서치 에이전트 만들기</h1>
+<blockquote>
+<p>N042 강의와 실습(2026-09-23 실습결과보고서)을 논리적으로 상세히 풀어 정리한 문서. 강의의 취지, 실습이 검증하려는 것, 실제로 있었던 일, 향후 적용법, 동료에게 설명하는 법 순으로 구성했다.</p>
+<p>💡 <strong>읽는 법</strong>: 코드를 몰라도 끝까지 읽을 수 있게 썼다. 어려운 용어는 그 자리에서 비유로 풀어준다. “개발자용”이라고 표시된 부분은 건너뛰어도 줄거리를 이해하는 데 지장 없다.</p>
+</blockquote>
+<h2 id="미리-보는-용어-4개">미리 보는 용어 4개</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>용어</th>
+<th>무엇을 하는가</th>
+<th>비유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>컨텍스트 격리</strong></td>
+<td>팀원들이 모든 자료를 다 보지 않고, 압축된 결과만 보게 하는 것</td>
+<td>편집장은 기자들이 취재한 “기사”만 보지, 기자가 읽은 자료 전체를 다 보지 않음</td>
+</tr>
+<tr>
+<td><strong>배정</strong></td>
+<td>코디네이터가 조사관에게 “이 주제를 맡아주세요”라고 나눠주는 것</td>
+<td>편집장이 기자에게 담당 지면을 나눠주는 것</td>
+</tr>
+<tr>
+<td><strong>재위임</strong></td>
+<td>조사가 부실하면 다시 맡기는 것</td>
+<td>초고가 부실하면 재취재를 요청하는 것</td>
+</tr>
+<tr>
+<td><strong>오귀속</strong></td>
+<td>진짜 있었던 인용인데 엉뚱한 문장에 잘못 붙는 것</td>
+<td>실제로 있었던 명언인데, 엉뚱한 사람이 한 말이라고 잘못 적는 것</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="목차">목차</h2>
+<ol type="1">
+<li><a href="#1">이 수업(N042)의 취지</a></li>
+<li><a href="#2">실습이 알아보고자 한 것</a></li>
+<li><a href="#3">실습에서 실제로 있었던 일</a></li>
+<li><a href="#4">앞으로 내 프로젝트에 어떻게 적용하면 되는가</a></li>
+<li><a href="#5">동료에게 어떻게 설명하면 되는가</a></li>
+<li><a href="#6">용어 사전</a></li>
+</ol>
+<hr />
+<h2 id="1">1. 이 수업(N042)의 취지 — 왜 AI 한 명으로는 안 되는가</h2>
+<p>N042는 “질문 하나 → 보고서 하나”를 AI 한 명이 감당하기엔 물리적 한계가 있다는 문제에서 출발합니다. 관련 문서가 수십 건, 수십만 단어에 달하면 AI 한 명에게 한꺼번에 다 읽힐 수 없고, 보고서의 각 절마다 필요한 근거 문서도 서로 다릅니다. 그래서 <strong>코디네이터(기획+배치+점검)·조사관(병렬 조사)·편집자(종합)</strong>로 이루어진 팀을 구성하고, 정답표 없이도 스스로 성패를 잴 수 있는 지표까지 설계하는 실습입니다.</p>
+<p>이 구조는 출판사 편집팀에 비유됩니다: “편집장 → 전체 방향과 목차 결정 / 취재기자 A → 1장 조사 / … / 최종 편집자 → 전체 책 완성.”</p>
+<h2 id="2">2. 실습이 알아보고자 한 것</h2>
+<p>핵심 아이디어는 <strong>컨텍스트 격리</strong>입니다 — “코디네이터/편집자가 팀 전체가 읽은 원문을 다 보지 않고, 압축된 결과물만 보는 구조”입니다(실제로 측정해보니 원문 대비 5.0%만 위로 올라감).</p>
+<p>그리고 이 실습이 가장 강조하는 발견은 이것입니다:</p>
+<blockquote>
+<p>“역할을 나눈 것 자체는 측정에서 아무 차이를 만들지 못했다 — 진짜 차이를 만든 것은 <strong>배정·구역·재위임 같은 조율 장치</strong>였다.”</p>
+</blockquote>
+<p>즉 “팀을 나눴다”는 사실 자체가 아니라, 그 팀이 서로 겹치지 않게 일을 나누고(배정), 남의 구역을 침범 안 하고(구역), 부실하면 다시 시키는(재위임) <strong>구체적인 조율 규칙</strong>이 실제 품질을 좌우한다는 걸 확인하는 게 이 실습의 목적입니다.</p>
+<h2 id="3">3. 실습에서 실제로 있었던 일</h2>
+<ol type="1">
+<li><strong>코드 구조 오류</strong>: “배정 담당” 함수 하나를 “작업대(노드)”에도 등록하고 “신호등(라우터)”에도 동시에 등록했더니 오류가 났습니다 — “사무실에 배치 담당자 명패를 책상에도, 복도 안내판에도 똑같이 붙인 셈”이라는 비유로 설명됩니다. 배정 담당은 신호등(조건부 갈림길) 역할로만 쓰도록 고쳐서 해결했습니다.</li>
+<li><strong>데이터 오염</strong>: 위키백과에서 관련 문서를 60건(126만 자) 모았는데, 그중에 카카오·다음·국제표준도서번호 같은 “국민 허브” 문서, 특정 날짜 문서, 시대가 다른 사건(계유정난·병자호란), 미국·일본·조선 같은 너무 큰 범위의 문서가 섞여 들어왔습니다. 그 결과 보고서의 4개 절 중 2개가 “관련 자료 없음”으로 비어버렸습니다 → 16건을 제외해 44건(97만 자)으로 정리했습니다.</li>
+<li><strong>실측 결과</strong>: 근거율(답변이 실제 자료에 기반했는지) 42.1%(강의 원문은 48.3%), 편중(특정 문서에 쏠렸는지) 35%(원문 31.7%), 허위인용 0건. 그런데 “강화도 조약”이라는 인용이 실제로는 다른 문장(을미개혁)에 잘못 붙은 사례(오귀속)도 직접 발견됐는데, 이건 자동 지표로는 잡히지 않고 사람이 직접 읽어야만 보이는 문제였습니다.</li>
+</ol>
+<h2 id="4">4. 앞으로 내 프로젝트에 어떻게 적용하면 되는가</h2>
+<h3 id="누구나-알아야-할-원칙">누구나 알아야 할 원칙</h3>
+<ul>
+<li><strong>자동으로 수집한 자료가 오류 없이 모아졌다고, 그 자료가 깨끗하다는 뜻은 아닙니다.</strong> 수집 직후 사람이 제목 목록을 한 번 훑어보는 습관이 필요합니다.</li>
+<li><strong>지표가 전부 정상이어도 “오귀속”(진짜 인용인데 엉뚱한 곳에 붙음) 같은 문제는 사람이 직접 읽어야만 잡을 수 있습니다.</strong></li>
+<li><strong>“역할을 나누는 것” 자체보다 “어떻게 나누고 어떻게 재조율하는가”가 실제 품질을 좌우합니다.</strong> 팀 구성만 흉내 내지 말고 구체적인 조율 규칙을 신경 써야 합니다.</li>
+</ul>
+<h3 id="개발자용-체크리스트-코드를-직접-짤-때만-해당">개발자용 체크리스트 (코드를 직접 짤 때만 해당)</h3>
+<ul>
+<li>“노드”(작업대)와 “조건부 라우터”(신호등)는 이름이 같은 함수라도 절대 동시에 등록하지 않는다.</li>
+<li>자동 수집 스크립트가 끝난 직후, 수집된 문서 제목 목록을 사람이 눈으로 한 번 훑는 단계를 넣는다.</li>
+<li>근거율·편중 같은 자동 지표만 믿지 말고, 표본 몇 건은 실제로 열어 “인용이 맞는 문장에 붙었는지” 확인한다.</li>
+</ul>
+<h2 id="5">5. 동료에게 어떻게 설명하면 되는가</h2>
+<p><strong>한 줄 엘리베이터 피치</strong>: &gt; “AI 한 명에게 방대한 자료를 다 읽히는 대신, 팀장·조사원 여러 명·편집자로 나눠 맡기고, 그 팀이 실제로 더 나은지는 정답 없이도 스스로 잴 수 있는 숫자(근거율·편중 등)로 확인하는 시스템을 만들고 직접 돌려봤어요.”</p>
+<p><strong>좀 더 풀어서 설명할 때 순서</strong>: 1. “자료가 너무 많으면 AI 한 명이 다 못 읽으니까, 편집팀처럼 역할을 나눠서 조사시켰어요.” (문제의식) 2. “그런데 실험해보니 ’역할을 나눴다’는 사실 자체는 별 차이가 없었고, 진짜 차이는 서로 안 겹치게 나누고 부실하면 다시 시키는 세부 규칙에서 나왔어요.” (핵심 발견) 3. “실제로 자료를 모으는 중에 상관없는 문서가 섞여 들어와서 보고서 일부가 비어버리는 문제도 겪었고요.” (경험담) 4. “코드가 에러 없이 끝나는 것과 결과가 진짜 정확한 것은 다르다는 걸, 진짜 인용인데 엉뚱한 문장에 붙은 사례를 직접 찾아보고 확인했어요.” (규모감·범위 명시)</p>
+<h2 id="6">6. 용어 사전</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>용어</th>
+<th>쉬운 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>코디네이터</td>
+<td>전체 방향을 정하고 조사관에게 일을 나눠주는 역할</td>
+</tr>
+<tr>
+<td>컨텍스트 격리</td>
+<td>팀원이 모든 원문을 다 안 보고, 압축된 결과만 보게 하는 구조</td>
+</tr>
+<tr>
+<td>배정</td>
+<td>조사관에게 어떤 주제를 맡길지 나누는 것</td>
+</tr>
+<tr>
+<td>재위임</td>
+<td>조사가 부실하면 다시 맡기는 것</td>
+</tr>
+<tr>
+<td>근거율</td>
+<td>답변이 실제 자료에 기반했는지를 재는 지표</td>
+</tr>
+<tr>
+<td>오귀속</td>
+<td>진짜 인용인데 엉뚱한 문장에 잘못 붙는 문제</td>
+</tr>
+</tbody>
+</table>
+
+</main>
+</body>
+</html>

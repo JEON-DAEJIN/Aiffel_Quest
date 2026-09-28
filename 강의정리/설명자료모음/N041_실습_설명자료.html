@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N041 지식그래프 에이전트 프로젝트 실습 설명자료</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1 id="n041-실습-설명자료-지식그래프-에이전트-프로젝트-k-pop-graphrag">N041 실습 설명자료 — 지식그래프 에이전트 프로젝트 (K-pop GraphRAG)</h1>
+<blockquote>
+<p>N041(N040을 나만의 주제로 다시 설계하는 프로젝트)을 논리적으로 상세히 풀어 정리한 문서. 강의의 취지, 실습이 검증하려는 것, 프로젝트에서 실제로 있었던 일, 향후 적용법, 동료에게 설명하는 법 순으로 구성했다.</p>
+<p>💡 <strong>읽는 법</strong>: 코드를 몰라도 끝까지 읽을 수 있게 썼다. 어려운 용어는 그 자리에서 비유로 풀어준다. “개발자용”이라고 표시된 부분은 건너뛰어도 줄거리를 이해하는 데 지장 없다.</p>
+</blockquote>
+<h2 id="미리-보는-용어-4개">미리 보는 용어 4개</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>용어</th>
+<th>무엇을 하는가</th>
+<th>비유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>지식 그래프 (Knowledge Graph)</strong></td>
+<td>AI가 찾아볼 지도 — 정보를 미리 점과 선으로 이어둔 것</td>
+<td>여행 가기 전 미리 그려둔 지도</td>
+</tr>
+<tr>
+<td><strong>LangGraph</strong></td>
+<td>그 지도를 이용해 AI가 실제로 움직이는 절차</td>
+<td>지도를 보고 실제로 짠 여행 일정</td>
+</tr>
+<tr>
+<td><strong>멀티홉</strong></td>
+<td>여러 관계를 연속해서 따라가야 답이 나오는 질문</td>
+<td>지하철 환승 횟수</td>
+</tr>
+<tr>
+<td><strong>근거 기반 답변</strong></td>
+<td>근거가 없으면 답하지 않고 “모른다”고 말하는 것</td>
+<td>시험에서 확신 없으면 답을 비워두는 것 (틀린 답 쓰는 것보다 나음)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="목차">목차</h2>
+<ol type="1">
+<li><a href="#1">이 수업(N041)의 취지</a></li>
+<li><a href="#2">실습이 알아보고자 한 것</a></li>
+<li><a href="#3">프로젝트에서 실제로 있었던 일</a></li>
+<li><a href="#4">앞으로 내 프로젝트에 어떻게 적용하면 되는가</a></li>
+<li><a href="#5">동료에게 어떻게 설명하면 되는가</a></li>
+<li><a href="#6">용어 사전</a></li>
+</ol>
+<hr />
+<h2 id="1">1. 이 수업(N041)의 취지 — 지식을 “저장”하는 법에서 “찾아 답하는” 법으로</h2>
+<p>N041은 완성 코드를 따라 치는 수업이 아니라, N040에서 배운 GraphRAG(그래프 기반 검색·답변) 파이프라인을 학습자가 스스로 고른 주제로 처음부터 다시 설계·제출하는 프로젝트입니다. 목표는 “지식을 저장하는 법”에서 한발 더 나아가, <strong>그 지식을 찾아서 근거 있게 답하는 법</strong>을 익히는 것입니다.</p>
+<p>가장 중요한 조언은 이것입니다: “<strong>멋있는 주제를 선택하는 것보다 관계가 잘 만들어지는 주제를 선택하는 것입니다.</strong>” 화려한 주제를 고르는 게 아니라, 점(개체)과 선(관계)이 실제로 촘촘하게 만들어질 수 있는 주제를 고르는 게 성공의 열쇠라는 뜻입니다.</p>
+<h2 id="2">2. 실습이 알아보고자 한 것</h2>
+<p>이 프로젝트가 확인하려는 핵심은 원문의 이 문장에 담겨 있습니다:</p>
+<blockquote>
+<p>“AI가 항상 답을 만들어내는 것이 목표가 아닙니다. 오히려 <strong>근거가 없으면 답하지 않는 AI</strong>를 만드는 것이 목표입니다.”</p>
+</blockquote>
+<p>멀티홉(여러 단계를 거쳐야 나오는 질문)은 “지하철 환승 횟수”에 비유됩니다 — 한 번에 안 가고 여러 번 갈아타야 목적지에 도착하는 질문이라는 뜻입니다. 지식 그래프(Knowledge Graph)와 LangGraph는 이름이 비슷해서 헷갈리기 쉬운데, “Knowledge Graph = AI가 찾아볼 지도, LangGraph = AI가 그 지도를 사용해서 움직이는 여행 일정”이라는 비유로 구분합니다.</p>
+<h2 id="3">3. 프로젝트에서 실제로 있었던 일</h2>
+<p><strong>주제</strong>: K-pop 4개 레이블(SM/YG/JYP/HYBE)을 중심으로 아티스트·앨범·시상식 지식 그래프를 만들었습니다.</p>
+<ol type="1">
+<li><strong>엉뚱한 문서가 섞여 들어온 사건</strong>: 위키백과에서 60건을 수집할 때, 처음엔 “숨은 분류”까지 같으면 관련 문서로 인정하는 방식을 썼더니, 대한민국·미국·경기도처럼 K-pop과 무관한 문서가 섞여 들어왔습니다 → 필터를 고쳐서 해결했습니다.</li>
+<li><strong>주인공을 잘라버린 사건</strong>: 연결이 너무 많은 노드(허브)를 피하려고 “연결 개수 제한” 규칙을 넣었더니, 정작 질문의 주인공인 ENHYPEN(직접 연결 56개)까지 20개로 잘려버려 “ENHYPEN이 발매한 앨범은?”이라는 질문에 “확인할 수 없습니다”라고 잘못 거부하는 일이 생겼습니다 → 질문의 시작점이 되는 개체는 자르지 않도록 수정했습니다.</li>
+<li><strong>최종 결과</strong>: 골든셋 12문항에서 GraphRAG는 100%(12/12) 정답, 기본 검색(키워드 기반)은 33%(4/12)에 그쳤습니다. 특히 3~4단계를 거쳐야 하는 어려운 질문에서는 기본 검색이 0%까지 떨어진 반면, GraphRAG는 100%를 유지했습니다.</li>
+<li><strong>거부가 오히려 좋은 신호였던 사건</strong>: “데뷔 앨범”이나 “발라드 솔로 아티스트”처럼 그래프에 없는 표현이 들어간 질문을, AI가 답을 지어내지 않고 거부했습니다. 처음엔 버그로 의심했지만, 확인해보니 <strong>AI가 자기 사전지식으로 빈칸을 채우지 않고 정직하게 거부한 것</strong>으로 확인됐습니다.</li>
+</ol>
+<h2 id="4">4. 앞으로 내 프로젝트에 어떻게 적용하면 되는가</h2>
+<h3 id="누구나-알아야-할-원칙">누구나 알아야 할 원칙</h3>
+<ul>
+<li><strong>“돌아간다”와 “믿을 수 있다”는 다른 질문입니다.</strong> 코드가 에러 없이 끝까지 실행됐다고 결과가 맞다는 뜻은 아닙니다. 매 단계 산출물을 직접 열어봐야 진짜 문제가 보입니다.</li>
+<li><strong>AI의 “거부”나 “모른다”는 답이 항상 실패는 아닙니다.</strong> 정해둔 근거 범위 밖의 질문에 정직하게 답을 안 하는 것은, 오히려 신뢰할 수 있는 설계라는 증거일 수 있습니다.</li>
+<li><strong>주제를 고를 때는 “멋”보다 “관계가 잘 만들어지는가”를 먼저 보세요.</strong> 화려한 주제라도 개체와 개체 사이 연결이 빈약하면 이 방식의 장점을 살릴 수 없습니다.</li>
+</ul>
+<h3 id="개발자용-체크리스트-코드를-직접-짤-때만-해당">개발자용 체크리스트 (코드를 직접 짤 때만 해당)</h3>
+<ul>
+<li>허브 노드 회피 규칙을 넣을 때는 “질문의 시작점이 되는 개체”는 예외로 둔다.</li>
+<li>평가(채점) 프롬프트의 문구 하나가 실제 성능과 무관하게 점수를 왜곡할 수 있으니, 채점 기준 문구가 내부 기술 용어인지 사람이 읽을 말인지 구분한다.</li>
+<li>노드 병합 시 “이름+타입” 복합키를 쓴다.</li>
+</ul>
+<h2 id="5">5. 동료에게 어떻게 설명하면 되는가</h2>
+<p><strong>한 줄 엘리베이터 피치</strong>: &gt; “K-pop 아티스트·앨범·레이블 데이터로 지식 그래프를 만들어, 여러 단계를 거쳐야 하는 질문에 근거를 대며 답하거나, 근거가 없으면 솔직하게 모른다고 말하는 AI를 직접 만들고 검증했어요. 어려운 질문에서 기본 검색은 33%, 이 방식은 100% 정답이었습니다.”</p>
+<p><strong>좀 더 풀어서 설명할 때 순서</strong>: 1. “K-pop 아티스트·앨범 관계를 지도처럼 미리 그려두고, 그 지도를 따라가며 답하는 AI를 만들었어요.” (문제의식) 2. “만들다 보니 연결 너무 많은 걸 자르는 규칙이 오히려 질문의 주인공까지 잘라버리는 문제가 있었어요.” (경험담) 3. “재밌었던 건, AI가 답을 못 찾겠다고 거부한 게 버그가 아니라 오히려 정직한 답이었다는 걸 확인한 순간이었어요.” (핵심 원칙) 4. “결과는 어려운 질문에서 기본 검색 33% vs 이 방식 100%로 확실히 갈렸어요.” (규모감·범위 명시)</p>
+<h2 id="6">6. 용어 사전</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>용어</th>
+<th>쉬운 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>지식 그래프 (Knowledge Graph)</td>
+<td>AI가 찾아볼 지도 — 정보를 점과 선으로 미리 이어둔 것</td>
+</tr>
+<tr>
+<td>LangGraph</td>
+<td>그 지도를 이용해 AI가 실제로 움직이는 절차를 짜는 도구</td>
+</tr>
+<tr>
+<td>멀티홉</td>
+<td>여러 관계를 연속으로 따라가야 답이 나오는 질문</td>
+</tr>
+<tr>
+<td>허브 노드</td>
+<td>연결이 지나치게 많은 노드</td>
+</tr>
+<tr>
+<td>근거 기반 답변</td>
+<td>근거가 없으면 지어내지 않고 “모른다”고 답하는 방식</td>
+</tr>
+</tbody>
+</table>
+
+</main>
+</body>
+</html>

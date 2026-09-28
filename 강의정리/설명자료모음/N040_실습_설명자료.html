@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N040 영화추천 GraphRAG 실습 설명자료</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1 id="n040-실습-설명자료-영화추천-에이전트graphrag">N040 실습 설명자료 — 영화추천 에이전트(GraphRAG)</h1>
+<blockquote>
+<p>N040 강의와 실습(2026-09-18 실습결과보고서)을 논리적으로 상세히 풀어 정리한 문서. 강의의 취지, 실습이 검증하려는 것, 실제로 있었던 일, 향후 적용법, 동료에게 설명하는 법 순으로 구성했다.</p>
+<p>💡 <strong>읽는 법</strong>: 코드를 몰라도 끝까지 읽을 수 있게 썼다. 어려운 용어는 그 자리에서 비유로 풀어준다. “개발자용”이라고 표시된 부분은 건너뛰어도 줄거리를 이해하는 데 지장 없다.</p>
+</blockquote>
+<h2 id="미리-보는-용어-4개">미리 보는 용어 4개</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>용어</th>
+<th>무엇을 하는가</th>
+<th>비유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>지식 그래프</strong></td>
+<td>정보들을 점(사람·영화)과 선(관계)으로 미리 이어둔 지도</td>
+<td>지하철 노선도 — 역(사람·사물)과 노선(관계)이 미리 그려져 있음</td>
+</tr>
+<tr>
+<td><strong>삼중항 (Triple)</strong></td>
+<td>“누가-무엇을-했다”를 세 조각으로 저장하는 방식</td>
+<td>(봉준호, 감독함, 기생충)처럼 메모 카드 한 장</td>
+</tr>
+<tr>
+<td><strong>멀티홉 질문</strong></td>
+<td>여러 관계를 연속으로 따라가야 답이 나오는 질문</td>
+<td>지하철 환승 횟수 — 한 번에 안 가고 갈아타야 도착</td>
+</tr>
+<tr>
+<td><strong>가짜 다리</strong></td>
+<td>너무 흔한 단어가 실제로는 상관없는 둘을 이어버리는 것</td>
+<td>“둘 다 학생이다”라는 이유만으로 생판 남남을 “동창”이라 착각하는 것</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="목차">목차</h2>
+<ol type="1">
+<li><a href="#1">이 수업(N040)의 취지</a></li>
+<li><a href="#2">실습이 알아보고자 한 것</a></li>
+<li><a href="#3">실습에서 실제로 있었던 일</a></li>
+<li><a href="#4">앞으로 내 프로젝트에 어떻게 적용하면 되는가</a></li>
+<li><a href="#5">동료에게 어떻게 설명하면 되는가</a></li>
+<li><a href="#6">용어 사전</a></li>
+</ol>
+<hr />
+<h2 id="1">1. 이 수업(N040)의 취지 — 왜 “영화추천”에 지도가 필요한가</h2>
+<p>N040은 이름은 “영화추천 에이전트”지만, 실제로는 <strong>GraphRAG</strong>(지식 그래프 기반 검색·답변)를 스키마 설계→추출→정규화→검증→에이전트 조립→평가까지 손으로 완주하는 실습입니다. 기존의 벡터 검색(RAG) 방식은 “봉준호 영화에 나온 배우가 출연한 다른 영화는?”처럼 여러 단계를 거쳐야 답이 나오는 질문(멀티홉)과, 특정 출발점이 없는 “전역 질문”에 약하다는 걸 먼저 숫자로 보여준 뒤, 그 벽을 넘기 위해 그래프를 만듭니다.</p>
+<p>기존 방식과의 차이는 이렇게 비유합니다: “기존 RAG — 영화관 직원에게 질문합니다… 하지만 사람→영화→영화라는 관계를 직접 연결해서 찾아야 합니다. GraphRAG — 영화관에 미리 이런 지도를 만들어 놓습니다.”</p>
+<h2 id="2">2. 실습이 알아보고자 한 것</h2>
+<p>이 실습이 가장 강조하는 결론은 이것입니다:</p>
+<blockquote>
+<p>“GraphRAG의 어려움은 그래프를 만드는 데 있지 않고, <strong>만들어진 그래프를 믿을 수 있게 만드는 데</strong> 있다.”</p>
+</blockquote>
+<p>즉 “그래프를 만들 수 있는가”보다 “그 그래프가 정말 맞는가, 이상한 연결(가짜 다리)이 섞이지는 않았는가”를 검증하는 게 진짜 어려운 부분이라는 걸 실제로 확인하는 실습입니다.</p>
+<h2 id="3">3. 실습에서 실제로 있었던 일</h2>
+<ol type="1">
+<li><strong>기존 방식이 오히려 더 잘 맞은 경우도 있었다</strong>: 최종 점수는 기본 검색(BM25 키워드 검색) 0.49 vs GraphRAG 0.42로, 그래프 방식이 오히려 낮게 나왔습니다(강의 원문 예시는 반대로 그래프 쪽이 훨씬 높았습니다 — 즉 결과는 만든 그래프의 품질에 따라 완전히 달라질 수 있습니다). 특히 단순한 질문에서는 키워드 검색 0.97 vs GraphRAG 0.67로 차이가 컸습니다.</li>
+<li><strong>관계를 엉뚱한 자리에 채운 사건</strong>: “기생충 배급사는?”이라는 질문에서 GraphRAG가 0점을 받았습니다. 원인을 열어보니, “칸 국제 영화제”가 “배급사”라는 관계 칸에 잘못 들어가 있었습니다 — AI가 정보 자체는 정확히 읽었지만, 엉뚱한 관계 칸에 채워 넣은 것입니다.</li>
+<li><strong>안전장치가 오히려 유명한 정보를 밀어낸 사건</strong>: 관계 하나당 최대 8개까지만 담고 “연결이 적은 것부터 담는다”는 규칙을 같이 썼더니, 송강호가 출연한 19개 작품 중 정작 유명한 ‘살인의 추억’·’괴물’이 밀려나고 덜 알려진 작품만 추천되는 부작용이 생겼습니다. 게다가 “배”라는 한 글자짜리 유령 노드가 “배우”라는 단어에 걸려 탐색의 출발점으로 잘못 잡히는 일도 있었습니다.</li>
+</ol>
+<blockquote>
+<p>📌 <strong>참고</strong>: 같은 방식을 K-pop 도메인(N041 프로젝트)에 적용했을 때는 정반대로, GraphRAG가 12문항 전부(100%) 정답을 맞히고 기본 검색은 33%에 그쳤습니다. 즉 방식 자체의 우열이 아니라, <strong>도메인과 스키마 설계·버그 수정 여부에 따라 결과가 크게 갈린다</strong>는 걸 두 실습을 비교하면 알 수 있습니다.</p>
+</blockquote>
+<h2 id="4">4. 앞으로 내 프로젝트에 어떻게 적용하면 되는가</h2>
+<h3 id="누구나-알아야-할-원칙">누구나 알아야 할 원칙</h3>
+<ul>
+<li><strong>새 방식(그래프)이 옛 방식(키워드 검색)을 항상 이긴다고 가정하지 마세요.</strong> 먼저 옛 방식의 점수를 재둬야(“벽”을 세워야) 새 방식이 정말 나은지 판단할 수 있습니다.</li>
+<li><strong>코드가 에러 없이 돌아가는 것과 결과가 옳은 것은 다른 문제입니다.</strong> AI가 자동으로 만든 데이터(그래프·관계)는 사람이 직접 몇 개를 열어봐야 숨은 오류(엉뚱한 칸에 채워짐, 유령 데이터)를 찾을 수 있습니다.</li>
+<li><strong>안전장치 하나가 다른 부작용을 낳을 수 있습니다.</strong> “너무 흔한 정보는 거른다”는 규칙이 오히려 유명하고 진짜 중요한 정보까지 밀어낼 수 있으니, 규칙끼리 어떻게 상호작용하는지도 확인해야 합니다.</li>
+</ul>
+<h3 id="개발자용-체크리스트-코드를-직접-짤-때만-해당">개발자용 체크리스트 (코드를 직접 짤 때만 해당)</h3>
+<ul>
+<li>관계 추출 결과를 표본으로 몇 건 직접 열어 “관계가 맞는 칸에 채워졌는지” 확인한다.</li>
+<li>노드 병합 시 “이름+타입” 복합키를 쓴다 — 이름만 같으면 다른 개체가 합쳐질 수 있다.</li>
+<li>탐색 예산·정렬 규칙을 걸 때는 시작 개체(질문의 주인공)에는 예외를 두는 걸 검토한다.</li>
+</ul>
+<h2 id="5">5. 동료에게 어떻게 설명하면 되는가</h2>
+<p><strong>한 줄 엘리베이터 피치</strong>: &gt; “AI에게 영화 자료를 지도처럼 만들게 한 뒤, 실제로 그 지도를 믿을 수 있는지 직접 파봤어요 — 결론은, 지도를 만드는 것보다 지도가 맞는지 검증하는 일이 훨씬 어렵다는 거였습니다.”</p>
+<p><strong>좀 더 풀어서 설명할 때 순서</strong>: 1. “일반 검색은 여러 단계를 거쳐야 나오는 질문에 약해서, 아예 미리 관계 지도를 만들어두는 방식을 써봤어요.” (문제의식) 2. “그런데 이 지도, AI가 자동으로 만들다 보니 관계를 엉뚱한 칸에 채우는 실수가 실제로 있었어요.” (경험담 1) 3. “이상한 정보를 거르려고 규칙을 넣었더니, 오히려 유명하고 진짜 중요한 정보까지 밀려나는 부작용도 생겼고요.” (경험담 2) 4. “그래서 배운 게, 새 방식이 항상 좋다고 가정하지 말고 옛날 방식 점수부터 재두고 비교해야 한다는 거예요.” (핵심 원칙)</p>
+<h2 id="6">6. 용어 사전</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>용어</th>
+<th>쉬운 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GraphRAG</td>
+<td>지식 그래프(지도)를 미리 만들어두고 그 위에서 답을 찾는 검색·답변 방식</td>
+</tr>
+<tr>
+<td>지식 그래프</td>
+<td>정보를 점과 선으로 미리 연결해둔 지도</td>
+</tr>
+<tr>
+<td>삼중항 (Triple)</td>
+<td>“누가-무엇을-했다” 형태로 저장하는 관계 한 조각</td>
+</tr>
+<tr>
+<td>멀티홉</td>
+<td>여러 관계를 연속으로 따라가야 답이 나오는 질문</td>
+</tr>
+<tr>
+<td>가짜 다리</td>
+<td>너무 흔한 단어·분류가 상관없는 것끼리 잘못 이어버리는 문제</td>
+</tr>
+<tr>
+<td>허브 노드</td>
+<td>연결이 지나치게 많은 노드(예: “미국”, “드라마” 같은 흔한 개념)</td>
+</tr>
+</tbody>
+</table>
+
+</main>
+</body>
+</html>
