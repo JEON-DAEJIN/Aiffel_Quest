@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N045 실습과제 제출 보고서 — 전대진</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>[제출 보고서] N045 「AI 기능을 서비스로 설계하기」 실습 과제 수행 결과</h1>
+<p class="lede"><strong>수신</strong>: N045 강의 강사님 · <strong>발신</strong>: 수강생 전대진(DJ) · <strong>과제 대상</strong>: ASP(AI Story Partner) · <strong>제출일</strong>: 2026-10-19</p>
+<p>이 보고서는 N045 학습서에서 제시한 절차를 챕터 순서 그대로 따라, 실제 프로젝트(ASP)에 처음부터 끝까지 적용한 결과를 보고드립니다. 각 챕터마다 학습서가 요구한 실습 내용을 먼저 밝히고, 이어서 제가 실제로 수행한 결과를 제시했습니다.</p>
+
+<h2>목차</h2>
+<ol>
+<li><a href="#s0">한 장 요약</a></li>
+<li><a href="#ch1">Ch01 — 오리엔테이션: 과제 선정</a></li>
+<li><a href="#ch2">Ch02 — 사용 맥락 분석</a></li>
+<li><a href="#ch3">Ch03 — 처리 방식과 오류 대응</a></li>
+<li><a href="#ch4">Ch04 — 코드 없이 검증하기</a></li>
+<li><a href="#ch5">Ch05~07 — 아키텍처 설계</a></li>
+<li><a href="#ch8">Ch08 — PRD 정리와 회고</a></li>
+<li><a href="#app">제출 산출물 목록</a></li>
+</ol>
+
+<h2 id="s0">1. 한 장 요약</h2>
+<div class="table-scroll"><table>
+<thead><tr><th>학습서 챕터</th><th>요구된 실습</th><th>제가 수행한 결과</th></tr></thead>
+<tbody>
+<tr><td>Ch02 사용 맥락 분석</td><td>사용 맥락 표 5항목 작성, 실제 인터뷰 1건, 제공 채널 후보 2개 비교</td><td>PD 인터뷰 4문항+데스크 리서치 2건 → "작가가 아니라 PD가 1차 사용자" 발견. 채널 후보 2개(기성 AI 도구/독립형 웹앱) 비교</td></tr>
+<tr><td>Ch03 처리 방식과 오류 대응</td><td>오류 유형 3가지와 영향도·대응 장치를 표로 정리</td><td>오류 대응 5장치 전체를 실제 테스트 결과에 대조해 점검</td></tr>
+<tr><td>Ch04 코드 없이 검증하기</td><td>오즈의 마법사 또는 기성 AI 도구 프로토타입으로 실제 검증</td><td>7개 평가기준 시스템 프롬프트 작성 → 실제 로그라인으로 기성 AI 도구 프로토타입 테스트</td></tr>
+<tr><td>Ch06·07 설계 순서</td><td>시퀀스→아키텍처→데이터모델 네 단계로 직접 설계</td><td>세 다이어그램 전부 완성(5장), 5항목 점검 완료</td></tr>
+<tr><td>Ch08 PRD·회고</td><td>PRD 한 장 작성, 처음 생각과 가장 많이 바뀐 점 회고</td><td>PRD 7항목 완성, 회고 질문 답변(7장)</td></tr>
+</tbody>
+</table></div>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 760 120" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="30" width="140" height="56" rx="10" class="svg-box" fill="var(--svg-fill1)"/>
+  <text x="80" y="54" text-anchor="middle" class="svg-text" font-size="11">Ch02</text>
+  <text x="80" y="70" text-anchor="middle" class="svg-muted" font-size="9">사용맥락분석</text>
+  <path d="M150 58 H180" class="svg-arrow" marker-end="url(#arrowR1)"/>
+
+  <rect x="180" y="30" width="150" height="56" rx="10" class="svg-box" fill="var(--svg-fill1)"/>
+  <text x="255" y="54" text-anchor="middle" class="svg-text" font-size="11">Ch03</text>
+  <text x="255" y="70" text-anchor="middle" class="svg-muted" font-size="9">처리방식·오류대응</text>
+  <path d="M330 58 H360" class="svg-arrow" marker-end="url(#arrowR1)"/>
+
+  <rect x="360" y="30" width="140" height="56" rx="10" class="svg-box" fill="var(--svg-fill2)"/>
+  <text x="430" y="54" text-anchor="middle" class="svg-text" font-size="11">Ch04</text>
+  <text x="430" y="70" text-anchor="middle" class="svg-muted" font-size="9">코드없는검증</text>
+  <path d="M500 58 H530" class="svg-arrow" marker-end="url(#arrowR1)"/>
+
+  <rect x="530" y="30" width="110" height="56" rx="10" class="svg-box" fill="var(--svg-fill3)"/>
+  <text x="585" y="54" text-anchor="middle" class="svg-text" font-size="11">Ch06·07</text>
+  <text x="585" y="70" text-anchor="middle" class="svg-muted" font-size="9">아키텍처설계</text>
+  <path d="M640 58 H670" class="svg-arrow" marker-end="url(#arrowR1)"/>
+
+  <rect x="670" y="30" width="80" height="56" rx="10" class="svg-box" fill="var(--svg-fill4)"/>
+  <text x="710" y="54" text-anchor="middle" class="svg-text" font-size="11">Ch08</text>
+  <text x="710" y="70" text-anchor="middle" class="svg-muted" font-size="9">PRD·회고</text>
+
+  <defs>
+    <marker id="arrowR1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" class="svg-accent"/>
+    </marker>
+  </defs>
+</svg>
+<p class="diagram-caption">그림 0. 학습서 챕터 순서를 그대로 따른 실습 수행 경로</p>
+</div>
+
+<h2 id="ch1">2. Ch01 — 오리엔테이션: 과제 선정</h2>
+<p>학습서 Ch01은 "자주 쓰는 AI 서비스나 직접 만들어 본 AI 기능 하나를 떠올려, 사용자는 그 기능을 어떤 경로로 쓰고 있는지, 버튼 하나를 누르면 내부에서 어떤 호출이 어떤 순서로 일어날지 아는 만큼 적어 보라"는 시작 질문으로 열립니다.</p>
+<p>저는 이 질문에 <strong>ASP(AI Story Partner)</strong>를 과제로 선택했습니다. 스토리위즈 대표 시절 "이거 뜨겠습니까?"라는 질문에 명확한 근거로 답하지 못했던 실제 경험에서 출발한 구상으로, 이미 브런치 칼럼 초고(미완)로 콘셉트는 정리해 두었지만 코드도 PRD도 전혀 없는 상태였습니다 — 학습서가 요구하는 다섯 가지 제공 채널 가운데 맞는 것을 고르는 과정(목표 ①)을 처음부터 제대로 밟아볼 수 있는 대상이라 판단했습니다.</p>
+
+<h2 id="ch2">3. Ch02 — 사용 맥락 분석</h2>
+<h3>학습서가 요구한 것</h3>
+<div class="callout example"><span class="label">🧪 학습서 원문</span><p>"오늘 하루 동안 설계할 AI 기능을 정합니다. ... 대상 사용자 무리 하나를 정하고 표의 다섯 항목을 채웁니다. 실제 사용자에게 확인하지 못한 칸은 '가정'이라고 표시해 두고, 아래 인터뷰와 데스크 리서치로 가정을 하나씩 줄입니다." / "실습: 제공 채널 — 앞에서 정한 사용자와 기능으로 제공 채널 후보를 두 개 고릅니다. 하나는 가장 빨리 사용자에게 써 보게 할 수 있는 채널, 다른 하나는 사용자가 늘었을 때 옮겨 갈 채널입니다."</p></div>
+
+<h3>제가 수행한 결과</h3>
+<ol>
+<li><strong>사용 맥락 표 5항목</strong>을 먼저 "가정"으로 채웠습니다(칼럼 초고 근거: 대상 사용자는 신인 작가일 것).</li>
+<li><strong>데스크 리서치</strong>: 웹 검색으로 ① "지인에게 원고를 보여주기도 어렵다"는 작가의 글 ② 크몽의 유료 편집자 첨삭 상품 실재를 확인해 "리서치"로 승격했습니다.</li>
+<li><strong>실제 인터뷰</strong>: "스토리위즈 대표 시절 마지막으로 '이거 뜨겠습니까' 질문을 받았던 장면"을 직접 질문드려, 다음 답변을 받았습니다 — "실제로 작가에게 가져온 파일을 PD가 보고 고민하는 순간, 항상 질문을 던졌습니다." 이로써 <strong>당초 가정(작가 본인이 자가진단)이 실제 경험(PD가 내부 판단)과 다르다는 것</strong>이 드러났습니다.</li>
+<li><strong>제공 채널 후보 2개 비교</strong>(학습서 실습 그대로): 후보1 "가장 빨리 쓸 수 있는 채널"=기성 AI 도구(Claude 프로젝트), 후보2 "사용자가 늘면 옮겨 갈 채널"=독립형 웹앱. 전환 조건 4가지를 점검한 결과 전부 미충족이어서, 후보1을 확정했습니다.</li>
+</ol>
+<div class="callout tip"><span class="label">💡 팁</span><p>이 단계에서 발견이 3개(대상 사용자, 판단 방식, 예측 포함 여부) 나왔고, 셋 다 제가 임의로 정하지 않고 전대진님께 직접 여쭤 결정을 받았습니다.</p></div>
+
+<h2 id="ch3">4. Ch03 — 처리 방식과 오류 대응</h2>
+<h3>학습서가 요구한 것</h3>
+<div class="callout example"><span class="label">🧪 학습서 원문</span><p>"실습: 내 기능의 처리 방식과 출력 형식을 정하고, 결과가 나오기까지 사용자가 보는 화면이나 메시지를 순서대로 적습니다. 그다음 발생할 수 있는 오류를 세 가지 적고, 영향도(낮음, 중간, 높음)와 대응 장치를 정합니다."</p></div>
+<h3>제가 수행한 결과</h3>
+<p><strong>처리 방식</strong>: 기성 AI 도구는 대화형이라 본질적으로 <strong>동기 처리</strong>로 확정. 10화 분량처럼 처리 시간이 길어지는 경우의 비동기 처리는 웹앱 전환 시로 미뤘습니다.</p>
+<p><strong>오류 대응</strong>: 학습서는 세 가지 오류를 적으라고 했지만, 저는 <strong>5가지 대응 장치 전체</strong>를 실제 테스트에서 드러난 문제(유사 사례 비교의 근거 약함)에 대조해 점검했습니다.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>장치</th><th>적용</th><th>비고</th></tr></thead>
+<tbody>
+<tr><td>출처 표시</td><td>✅</td><td>"확신 없으면 '근거 약함' 명시" 규칙</td></tr>
+<tr><td>폴백</td><td>✅</td><td>위 문구 자체가 폴백 응답</td></tr>
+<tr><td>HITL</td><td>✅</td><td>PD가 최종 판단자 — 이미 구조에 내장</td></tr>
+<tr><td>에스컬레이션</td><td>불필요</td><td>넘길 담당자가 없음</td></tr>
+<tr><td>피드백</td><td>PoC는 충분</td><td>대화로 바로 되물으면 됨</td></tr>
+</tbody>
+</table></div>
+
+<h2 id="ch4">5. Ch04 — 코드 없이 검증하기</h2>
+<h3>학습서가 요구한 것</h3>
+<div class="callout example"><span class="label">🧪 학습서 원문</span><p>"직접 확인할 곳: 오즈의 마법사 테스트 진행 — 1. 짝과 역할을 나눕니다... 2. 진행자는 상황 하나만 알려 줍니다... 3. 참여자는 정한 채널로 실제처럼 요청합니다... 4. 진행자는 정한 출력 형식대로 직접 응답을 작성해 돌려주고, 테스트 노트를 채웁니다."</p></div>
+<h3>제가 수행한 결과</h3>
+<p>짝을 지어 진행하는 오즈의 마법사 테스트 대신, 혼자 빠르게 확인할 수 있는 <strong>기성 AI 도구 프로토타입</strong> 방식을 선택했습니다(학습서가 제시한 두 방법 중 상황에 맞는 쪽).</p>
+<ol>
+<li>Ch02·03에서 정한 7개 평가 기준을 "약점 발견 → 근거 → 보정 제안" 3단 구조로 출력하는 <strong>시스템 프롬프트</strong>를 작성했습니다.</li>
+<li>실제 로그라인("AI를 배우는 50대 퇴직자가 제한된 AI 노트북을 들고 회귀하는 기업물")으로 <strong>실제 테스트를 실행</strong>했습니다. 정보가 부족한 기준은 정직하게 "정보 부족"으로 표시했습니다.</li>
+<li>결과를 세 갈래(지침으로 풀리는 문제/채널을 바꿔야 하는 문제/추가 개발이 필요한 문제)로 나눴습니다 — 6번 기준의 "근거 약함" 문제는 세 번째로 분류해 파일럿 과제로 넘겼습니다.</li>
+</ol>
+<div class="callout summary"><span class="label">📌 요약</span><p>테스트 결과에 대한 전대진님의 실제 평가: "결과가 마음에 들어."</p></div>
+
+<h2 id="ch5">6. Ch05~07 — 아키텍처 설계(시퀀스 → 아키텍처 → 데이터 모델)</h2>
+<h3>학습서가 요구한 것</h3>
+<div class="callout example"><span class="label">🧪 학습서 원문</span><p>"직접 확인할 곳: 설계 순서 — 1. 시퀀스 다이어그램: 내 서비스에서 가장 중요한 사용자 동작 하나를 고릅니다... 2. 아키텍처 다이어그램: 시퀀스 다이어그램에 나온 구성 요소를 모아 옮겨 그립니다... 3. 데이터 모델: 시퀀스 다이어그램에서 데이터베이스나 스토리지로 가는 화살표를 찾아... 4. 점검: 다섯 항목을 내 설계에서 모두 정했는지 확인합니다."</p></div>
+
+<h3>제가 수행한 결과</h3>
+<h4>1) 시퀀스 다이어그램 — "PD가 원고를 입력하면 7개 기준 평가를 받는다"</h4>
+<div class="diagram-wrap">
+<svg viewBox="0 0 820 440" xmlns="http://www.w3.org/2000/svg">
+  <text x="60" y="20" text-anchor="middle" class="svg-text" font-size="11" font-weight="700">PD</text>
+  <text x="210" y="20" text-anchor="middle" class="svg-text" font-size="11" font-weight="700">클라이언트</text>
+  <text x="360" y="20" text-anchor="middle" class="svg-text" font-size="11" font-weight="700">백엔드</text>
+  <text x="510" y="20" text-anchor="middle" class="svg-text" font-size="11" font-weight="700">LLM API</text>
+  <text x="660" y="20" text-anchor="middle" class="svg-text" font-size="10" font-weight="700">유사사례 데이터소스</text>
+  <text x="780" y="20" text-anchor="middle" class="svg-text" font-size="11" font-weight="700">DB</text>
+
+  <line x1="60" y1="30" x2="60" y2="420" class="svg-box" stroke-dasharray="2 3"/>
+  <line x1="210" y1="30" x2="210" y2="420" class="svg-box" stroke-dasharray="2 3"/>
+  <line x1="360" y1="30" x2="360" y2="420" class="svg-box" stroke-dasharray="2 3"/>
+  <line x1="510" y1="30" x2="510" y2="420" class="svg-box" stroke-dasharray="2 3"/>
+  <line x1="660" y1="30" x2="660" y2="420" class="svg-box" stroke-dasharray="2 3"/>
+  <line x1="780" y1="30" x2="780" y2="420" class="svg-box" stroke-dasharray="2 3"/>
+
+  <path d="M60 55 H210" class="svg-arrow" marker-end="url(#arrowRp1)"/>
+  <text x="135" y="48" text-anchor="middle" class="svg-muted" font-size="9">원고 입력(로그라인~10화)</text>
+
+  <path d="M210 85 H360" class="svg-arrow" marker-end="url(#arrowRp1)"/>
+  <text x="285" y="78" text-anchor="middle" class="svg-muted" font-size="9">POST /analyze 원고+유형</text>
+
+  <path d="M360 115 H510" class="svg-arrow" marker-end="url(#arrowRp1)"/>
+  <text x="435" y="108" text-anchor="middle" class="svg-muted" font-size="9">시스템프롬프트(7기준)+원고</text>
+
+  <path d="M360 145 H660" class="svg-arrow" marker-end="url(#arrowRp1)"/>
+  <text x="510" y="138" text-anchor="middle" class="svg-muted" font-size="9">유사 사례 조회(6번 기준)</text>
+
+  <rect x="365" y="160" width="430" height="24" rx="4" class="svg-box" fill="var(--svg-fill4)"/>
+  <text x="580" y="176" text-anchor="middle" class="svg-muted" font-size="9">alt: 데이터 없음/실패 → "근거 약함" 폴백으로 LLM에 전달</text>
+
+  <path d="M660 210 H360" class="svg-arrow" stroke-dasharray="3 2" marker-end="url(#arrowRp1)"/>
+  <text x="510" y="203" text-anchor="middle" class="svg-muted" font-size="9">유사 사례 목록(또는 없음)</text>
+
+  <path d="M510 240 H360" class="svg-arrow" stroke-dasharray="3 2" marker-end="url(#arrowRp1)"/>
+  <text x="435" y="233" text-anchor="middle" class="svg-muted" font-size="9">7개 기준 평가+종합추정</text>
+
+  <rect x="200" y="255" width="420" height="24" rx="4" class="svg-box" fill="var(--svg-fill4)"/>
+  <text x="410" y="271" text-anchor="middle" class="svg-muted" font-size="9">alt: 타임아웃/오류 → "다시 시도" 폴백</text>
+
+  <path d="M360 305 H780" class="svg-arrow" marker-end="url(#arrowRp1)"/>
+  <text x="570" y="298" text-anchor="middle" class="svg-muted" font-size="9">(선택) 분석 결과 저장</text>
+
+  <path d="M360 335 H210" class="svg-arrow" stroke-dasharray="3 2" marker-end="url(#arrowRp1)"/>
+  <text x="285" y="328" text-anchor="middle" class="svg-muted" font-size="9">평가 결과 반환</text>
+
+  <path d="M210 365 H60" class="svg-arrow" stroke-dasharray="3 2" marker-end="url(#arrowRp1)"/>
+  <text x="135" y="358" text-anchor="middle" class="svg-muted" font-size="9">결과 화면 표시</text>
+
+  <defs>
+    <marker id="arrowRp1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" class="svg-accent"/>
+    </marker>
+  </defs>
+</svg>
+<p class="diagram-caption">그림 1. "원고 입력 → 7개 기준 평가" 시퀀스 다이어그램 (실선=요청, 점선=응답)</p>
+</div>
+
+<h4>2) 아키텍처 다이어그램</h4>
+<div class="diagram-wrap">
+<svg viewBox="0 0 820 340" xmlns="http://www.w3.org/2000/svg">
+  <rect x="300" y="10" width="220" height="50" rx="10" class="svg-box" fill="var(--svg-fill1)"/>
+  <text x="410" y="30" text-anchor="middle" class="svg-text" font-size="12">클라이언트</text>
+  <text x="410" y="46" text-anchor="middle" class="svg-muted" font-size="10">원고 입력 화면(PD용→작가용 확장)</text>
+  <path d="M410 60 V 90" class="svg-arrow" marker-end="url(#arrowRp2)"/>
+  <text x="430" y="78" class="svg-muted" font-size="10">REST API 호출</text>
+
+  <rect x="40" y="90" width="740" height="90" rx="10" class="svg-box" fill="none" stroke="var(--accent)"/>
+  <text x="60" y="108" class="svg-text" font-size="12" font-weight="700">백엔드 API 서버</text>
+  <rect x="55" y="118" width="230" height="50" rx="8" class="svg-box" fill="var(--svg-fill3)"/>
+  <text x="170" y="138" text-anchor="middle" class="svg-text" font-size="11">분석 요청 처리</text>
+  <text x="170" y="154" text-anchor="middle" class="svg-muted" font-size="9">analyze</text>
+
+  <rect x="300" y="118" width="230" height="50" rx="8" class="svg-box" fill="var(--svg-fill3)"/>
+  <text x="415" y="138" text-anchor="middle" class="svg-text" font-size="11">유사사례 조회</text>
+  <text x="415" y="154" text-anchor="middle" class="svg-muted" font-size="9">comparables</text>
+
+  <rect x="545" y="118" width="215" height="50" rx="8" class="svg-box" fill="var(--svg-fill3)"/>
+  <text x="652" y="138" text-anchor="middle" class="svg-text" font-size="11">이력 저장(선택)</text>
+  <text x="652" y="154" text-anchor="middle" class="svg-muted" font-size="9">history</text>
+
+  <path d="M410 180 V 210" class="svg-arrow" marker-end="url(#arrowRp2)"/>
+  <text x="430" y="198" class="svg-muted" font-size="10">외부 의존성</text>
+
+  <rect x="30" y="210" width="230" height="60" rx="10" class="svg-box" fill="var(--svg-fill2)"/>
+  <text x="145" y="230" text-anchor="middle" class="svg-text" font-size="11">LLM API</text>
+  <text x="145" y="248" text-anchor="middle" class="svg-muted" font-size="9">7개 기준 평가 생성</text>
+
+  <rect x="280" y="210" width="260" height="60" rx="10" class="svg-box" fill="var(--svg-fill2)"/>
+  <text x="410" y="230" text-anchor="middle" class="svg-text" font-size="11">유사사례 데이터소스</text>
+  <text x="410" y="248" text-anchor="middle" class="svg-muted" font-size="9">검색 API 또는 수동 구축 DB</text>
+
+  <rect x="560" y="210" width="200" height="60" rx="10" class="svg-box" fill="var(--svg-fill2)"/>
+  <text x="660" y="230" text-anchor="middle" class="svg-text" font-size="11">데이터베이스</text>
+  <text x="660" y="248" text-anchor="middle" class="svg-muted" font-size="9">분석 이력(선택)</text>
+
+  <text x="410" y="300" text-anchor="middle" class="svg-muted" font-size="11">시크릿(API 키)은 백엔드에만 — 클라이언트 코드에는 넣지 않는다</text>
+
+  <defs>
+    <marker id="arrowRp2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" class="svg-accent"/>
+    </marker>
+  </defs>
+</svg>
+<p class="diagram-caption">그림 2. ASP 아키텍처 다이어그램</p>
+</div>
+
+<h4>3) 데이터 모델</h4>
+<div class="table-scroll"><table>
+<thead><tr><th>엔티티</th><th>생성 시점</th><th>소유자</th><th>저장소</th><th>보존 기간</th></tr></thead>
+<tbody>
+<tr><td>원고 입력</td><td>분석 요청 시</td><td>입력한 사람(PD/작가)</td><td>기본은 저장 안 함(세션 메모리)</td><td>분석 완료 즉시 폐기</td></tr>
+<tr><td>분석 결과</td><td>평가 완료 시</td><td>원고를 입력한 사람</td><td>데이터베이스(선택 시에만)</td><td>본인이 삭제할 때까지</td></tr>
+<tr><td>유사사례 참고 데이터</td><td>사전 구축/조회 시</td><td>서비스(공용)</td><td>데이터베이스 또는 API 캐시</td><td>주기적 갱신</td></tr>
+</tbody>
+</table></div>
+
+<div class="callout tip"><span class="label">💡 팁</span><p>시퀀스를 실제로 그려보니, 학습서의 가르침대로 <strong>그려야만 보이는 것</strong>이 있었습니다 — "원고 자체가 작가의 미공개 저작물일 수 있다"는 점입니다. 이는 Ch02 사용 맥락 분석 단계에서는 전혀 드러나지 않았던 것으로, 데이터 모델에서 "원고는 기본 저장 안 함"을 명시적으로 정하는 근거가 됐습니다.</p></div>
+
+<h4>4) 점검(5항목)</h4>
+<div class="table-scroll"><table>
+<thead><tr><th>항목</th><th>결정</th></tr></thead>
+<tbody>
+<tr><td>API 키 위치</td><td>백엔드에만(클라이언트 노출 금지)</td></tr>
+<tr><td>데이터 저장소</td><td>원고는 기본 미저장, 분석 결과는 PD 선택 시에만 DB 저장</td></tr>
+<tr><td>데이터 소유자</td><td>원고를 입력한 사람 — 타인 접근 차단 필요</td></tr>
+<tr><td>외부 API 실패 처리</td><td>LLM 실패 → 재시도 안내 폴백 / 유사사례 실패 → "근거 약함" 명시</td></tr>
+<tr><td>모듈 분리</td><td>analyze / comparables / history 3개 모듈로 책임 분리</td></tr>
+</tbody>
+</table></div>
+
+<h2 id="ch8">7. Ch08 — PRD 정리와 회고</h2>
+<h3>학습서가 요구한 것</h3>
+<div class="callout example"><span class="label">🧪 학습서 원문</span><p>"오늘 쓴 PRD와 시퀀스 다이어그램을 떠올리며, 처음 답에서 가장 많이 바뀐 생각 하나와 그 근거를 적어 보세요."</p></div>
+<h3>제가 수행한 결과</h3>
+<p><strong>PRD 7항목</strong>을 완성했습니다(별도 제출물 <code>PRD.md/.html/.docx</code> 참고) — 서비스 목적(PD의 상업적 성공 판단 보조), 대상 사용자와 사용 맥락, 제공 채널과 처리 방식(기성 AI 도구·동기), 접근 제어와 데이터 처리(원고 미저장), 오류 대응과 비용(5장치 점검), 아키텍처(본 보고서 6장), 파일럿 계획까지 네 단계의 결정을 그대로 옮겨 담았습니다.</p>
+<div class="callout summary"><span class="label">📌 회고</span><p>Ch01에서 저는 ASP를 "창작자가 자기 원고를 구조 분석으로 자가진단하는 도구"라고 막연히 그렸습니다. 그런데 Ch02의 인터뷰 한 번으로 <strong>실제 사용자는 작가가 아니라 PD였다</strong>는 것이 드러났고, 제 실제 판단 방식이 "구조 분석"보다는 "흥행실적과 유사 사례 비교"에 가까웠다는 것도 함께 드러났습니다. 이 두 발견 덕분에 최종 설계는 "구조 분석(칼럼 원안)"과 "유사 사례 포지셔닝(실제 경험)"을 결합한 7개 기준으로 완성됐습니다. 처음 생각과 가장 많이 바뀐 지점은 바로 이것입니다 — <strong>AI 기능의 구현보다, 누가 왜 이 도구를 쓰는지를 실제로 확인하는 과정이 설계 전체를 바꿔놓았다는 것</strong>입니다.</p></div>
+<div class="callout warning"><span class="label">⚠️ 주의 — 스스로 바로잡은 지점</span><p>진행 중 한 번, 챕터 순서를 스스로 점검하지 않고 Ch03(처리방식·오류대응)을 명시적으로 정리하지 않은 채 Ch04(코드 없는 검증)로 건너뛴 적이 있었습니다. 다행히 자연스럽게 내린 선택이 올바른 답과 같았지만, 이는 운이 좋았던 것이지 보장된 결과는 아니라는 것을 스스로 확인하고 되짚어 바로잡았습니다.</p></div>
+
+<h2 id="app">8. 제출 산출물 목록</h2>
+<div class="table-scroll"><table>
+<thead><tr><th>산출물</th><th>경로</th></tr></thead>
+<tbody>
+<tr><td>사용 맥락 분석(Ch02)</td><td><code>docs/사용맥락분석.md</code></td></tr>
+<tr><td>처리 방식·오류 대응(Ch03)</td><td><code>docs/처리방식_오류대응.md</code></td></tr>
+<tr><td>코드 없는 검증 시스템 프롬프트 및 테스트(Ch04)</td><td><code>docs/프로토타입_시스템프롬프트.md</code></td></tr>
+<tr><td>아키텍처 3문서(Ch05~07)</td><td><code>docs/아키텍처_설계.md</code></td></tr>
+<tr><td>PRD 7항목(Ch08) — md/html/docx, 다이어그램 포함</td><td><code>docs/PRD.md</code> · <code>docs/PRD.html</code> · <code>docs/PRD.docx</code></td></tr>
+<tr><td>본 제출 보고서</td><td><code>docs/N045_실습과제_제출보고서.md/.html/.docx</code></td></tr>
+</tbody>
+</table></div>
+<p>이상으로 N045 수업이 요구한 전 과정을 챕터 순서대로 충실히 수행했음을 보고드립니다.</p>
+
+<p class="footer-note">수강생 전대진(DJ) · N045 실습 과제 제출 보고서 · 2026-10-19</p>
+
+</main>
+</body>
+</html>

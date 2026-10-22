@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N047 실습과제 제출 보고서 — 전대진</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1 id="n047-실습과제-제출보고서">[제출 보고서] N047 「Cloud Run에서
+AI서비스 운영하기」 실습 과제 수행 결과</h1>
+<p><strong>수신</strong>: N047 강의 강사님 · <strong>발신</strong>:
+수강생 전대진(DJ) <strong>실습일</strong>: 2026-10-20 ~ 2026-10-21
+<strong>과제 대상</strong>: N046에서 배포한 AI 친구 에이전트
+서비스(<code>friend-agent</code>)에 운영 설정을 하나씩 걸어 보고, 그
+결과를 로그에서 읽는 실습 <strong>평가 방법</strong>: 맨 아래 “평가
+체크리스트”를 보고 항목별로 점수와 한 줄 의견을 남겨 주세요.</p>
+<blockquote>
+<p>이 문서는 제가 직접 해 본 실습의 <strong>수행 기록과
+증거</strong>입니다. 서비스 주소는 요청마다 제 LLM 키로 비용이 나가는
+공개 서비스라서 일부러 싣지 않았습니다. 대신 화면에서 읽은 값과 로그를
+적었습니다.</p>
+</blockquote>
+<hr />
+<h2 id="한-장-요약">1. 한 장 요약</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>단계</th>
+<th>한 일</th>
+<th>확인한 핵심</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>시작 상태 확인</td>
+<td>프로젝트·리전 설정, 서비스 주소, 시크릿이 모두 정상</td>
+</tr>
+<tr>
+<td>2</td>
+<td>요청 타임아웃</td>
+<td>평소 요청 전체 4.1초 → 3초로 줄이면 <strong>답이 문장 중간에서
+잘리는데 상태 코드는 200</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>인스턴스 수, 콜드 스타트, 데이터 소멸</td>
+<td>쉬었다 오면 첫 요청이 느리고(콜드 스타트), <strong>서버 메모리의
+대화·약속이 사라짐</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>비용</td>
+<td>최대 인스턴스 2 × 동시성 80 = 동시 160건. <strong>최대 인스턴스는
+비용 상한이 아님</strong></td>
+</tr>
+<tr>
+<td>5</td>
+<td>로그 3종 읽기</td>
+<td>일부러 설정을 고장 내 원인을 로그로 찾음. 실패 중에도 서비스는 이전
+리비전으로 응답</td>
+</tr>
+<tr>
+<td>6</td>
+<td>서로 써 보기, 추가 과제</td>
+<td>휴대폰(모바일 데이터)으로 실제 사용 → 로그의 remote IP로 “다른 기기”
+요청 구분. 부하 테스트 3종 비교로 <strong>최대 인스턴스 숫자보다 순간
+스케일업 속도가 먼저 한계에 부딪힌다</strong>는 것을 발견</td>
+</tr>
+<tr>
+<td>7</td>
+<td>회고</td>
+<td>걱정 3가지(비용·지연·데이터 소멸)를 “설정이 막는 것/못 막는 것”으로
+정리 완료(아래 6장)</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>flowchart LR
+    A[&quot;1 시작 상태 확인&quot;] --&gt; B[&quot;2 요청 타임아웃&quot;]
+    B --&gt; C[&quot;3 인스턴스·콜드 스타트&quot;]
+    C --&gt; D[&quot;4 비용 계산&quot;]
+    D --&gt; E[&quot;5 로그 3종·일부러 고장&quot;]
+    E --&gt; F[&quot;6~7 서로 써 보기·부하 테스트·회고(완료)&quot;]</code></pre>
+<p><strong>진행 방식</strong>: AI 코딩 도우미(Claude)가 단계별로 명령과
+확인 방법을 안내했고, 명령은 제가 PowerShell에서 직접 실행했습니다. 결과
+화면과 로그는 제가 읽고 해석했습니다.</p>
+<hr />
+<h2 id="실습-환경-시작-상태">2. 실습 환경 (시작 상태)</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>항목</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>클라우드</td>
+<td>Google Cloud Run, 리전 <code>us-central1</code></td>
+</tr>
+<tr>
+<td>서비스</td>
+<td><code>friend-agent</code> (FastAPI 기반 AI 친구 캐릭터 서비스)</td>
+</tr>
+<tr>
+<td>공개 여부</td>
+<td>로그인 없이 누구나 접속 가능
+(<code>--allow-unauthenticated</code>)</td>
+</tr>
+<tr>
+<td>최대 인스턴스 / 최소 인스턴스</td>
+<td>2 / 0</td>
+</tr>
+<tr>
+<td>동시성</td>
+<td>80 (인스턴스 하나가 동시에 처리하는 요청 수)</td>
+</tr>
+<tr>
+<td>요청 타임아웃</td>
+<td>300초(기본값)</td>
+</tr>
+<tr>
+<td>LLM</td>
+<td><code>LLM_PROVIDER=openai</code>. 키는 Secret Manager 시크릿으로
+연결(값은 서비스 설정에 적히지 않음)</td>
+</tr>
+<tr>
+<td>저장소</td>
+<td>서버 메모리(재배포하면 사라짐). 화면 왼쪽 아래에도 그렇게
+표시됨</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="단계별-수행-내용">3. 단계별 수행 내용</h2>
+<h3 id="시작-상태-확인-읽기-전용-명령-3개">3-1. 시작 상태 확인 (읽기
+전용 명령 3개)</h3>
+<pre><code>gcloud config list
+gcloud run services describe friend-agent --region us-central1 --format &quot;value(status.url)&quot;
+gcloud secrets describe llm-api-key --format &quot;value(name)&quot;</code></pre>
+<p>프로젝트와 리전이 설정돼 있고, 서비스 주소가 나오고, 시크릿 이름이
+확인됐습니다. 시크릿은 <strong>이름만</strong> 출력됩니다(값은 나오지
+않음).</p>
+<h3 id="요청-타임아웃">3-2. 요청 타임아웃</h3>
+<p><strong>먼저 정상 상태의 시간을 쟀습니다.</strong> 화면 오른쪽 “이번
+턴” 패널의 걸린 시간입니다.</p>
+<table>
+<thead>
+<tr>
+<th>질문</th>
+<th>도구 선택</th>
+<th>첫 글자</th>
+<th>답 전체</th>
+<th><strong>요청 전체</strong>(기억 정리 포함)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>날씨(처음)</td>
+<td>1.4초</td>
+<td>2.5초</td>
+<td>3.0초</td>
+<td><strong>4.1초</strong></td>
+</tr>
+<tr>
+<td>날씨(복원 직후)</td>
+<td>1.1초</td>
+<td>2.5초</td>
+<td>2.9초</td>
+<td>3.6초</td>
+</tr>
+<tr>
+<td>약속 보기</td>
+<td>1.0초</td>
+<td>1.5초</td>
+<td>1.7초</td>
+<td>2.8초</td>
+</tr>
+</tbody>
+</table>
+<p>타임아웃이 봐야 하는 값은 “답 전체”가 아니라 답을 보낸 뒤 기억
+정리까지 포함한 <strong>요청 전체</strong>입니다.</p>
+<p><strong>타임아웃을 3초로 줄이고 관찰했습니다.</strong></p>
+<pre><code>gcloud run services update friend-agent --region us-central1 --timeout 3</code></pre>
+<p>관찰한 것:</p>
+<ul>
+<li>답이 문장 중간에서 멈췄습니다(예: “…내일은 구름 조금 있고,”에서
+끝남).</li>
+<li>답 아래에 “⚠ 응답이 끝까지 오지 않았어요. 답이 잘렸거나 기억이
+저장되지 않았을 수 있어요.” 안내가 <strong>3번</strong> 붙었습니다.</li>
+<li>서버 로그에서 <code>severity&gt;=WARNING</code>으로 찾으니
+<code>Truncated response body. Usually implies that the request timed out or the application exited before the response was finished.</code>
+경고가 <strong>3개</strong>(16:32:46, 16:34:10, 16:34:37)였습니다.
+화면의 안내 3번과 1:1로 대응했습니다.</li>
+<li>요청 로그의 <strong>상태 코드는 모두 200</strong>이었습니다.
+스트리밍은 첫 글자를 보내는 순간 이미 200을 보내기 때문에, 그 뒤에
+끊겨도 5xx가 되지 않습니다. 그래서 <strong>상태 코드만 보는
+모니터링으로는 이 잘림을 잡을 수 없습니다.</strong></li>
+<li>요청 로그의 지연 시간은 2.95초, 2.953초 근처와 3.998초, 3.999초가
+섞여 있었습니다. 저는 3초만 설정했는데 약 4초 값이 있었던 이유는
+<strong>확정하지 못했습니다.</strong></li>
+</ul>
+<p>확인 뒤 300초로 복원했습니다.</p>
+<pre><code>gcloud run services update friend-agent --region us-central1 --timeout 300</code></pre>
+<p><strong>배운 점</strong>: 타임아웃은 평소 시간이 아니라 <strong>콜드
+스타트를 포함한 가장 느린 요청</strong>을 기준으로 정합니다. 늘린다고
+LLM이 빨라지지는 않습니다.</p>
+<h3 id="인스턴스-수-콜드-스타트-데이터-소멸">3-3. 인스턴스 수, 콜드
+스타트, 데이터 소멸</h3>
+<p>현재 설정을 읽었습니다.</p>
+<pre><code>gcloud run services describe friend-agent --region us-central1 --format=&quot;yaml(spec.template.spec.containerConcurrency,spec.template.metadata.annotations)&quot;</code></pre>
+<p>결과: <code>autoscaling.knative.dev/maxScale: '2'</code>,
+<code>containerConcurrency: 80</code>.</p>
+<p><strong>콜드 스타트 관찰</strong>: 약 10분 이상 쉬었다가 다시 말을
+걸었습니다.</p>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>도구 선택</th>
+<th>요청 전체</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>평소 같은 단계</td>
+<td>1.0~1.4초</td>
+<td>2.8~4.1초</td>
+</tr>
+<tr>
+<td>쉰 뒤 첫 요청</td>
+<td><strong>4.8초</strong></td>
+<td><strong>6.9초</strong></td>
+</tr>
+</tbody>
+</table>
+<p>서버 쪽 증거를 로그 탐색기에서
+찾았습니다(<code>textPayload:"Starting new instance"</code>).</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>시각</th>
+<th>Reason</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>16:31:35</td>
+<td>DEPLOYMENT_ROLLOUT</td>
+<td>설정 변경(새 리비전) 때문에 켬</td>
+</tr>
+<tr>
+<td>16:31:45</td>
+<td>AUTOSCALING</td>
+<td>새 리비전의 첫 요청용</td>
+</tr>
+<tr>
+<td>17:06:46</td>
+<td><strong>AUTOSCALING</strong> (바로 앞에 배포 없음)</td>
+<td><strong>쉬다가 0개로 줄었다 요청 때문에 켜짐 = 콜드
+스타트</strong></td>
+</tr>
+</tbody>
+</table>
+<p>요청이 아주 간단해도 콜드 스타트는 늦습니다. 없는
+주소(<code>/nope</code>)를 열어 404를 만들어 로그에서
+<code>httpRequest.status=404</code>로 찾았더니, <strong>첫 요청 7.836초,
+8초 뒤 요청 2ms</strong>였습니다.</p>
+<p><strong>데이터 소멸</strong>: 같은 쉬고 난 뒤 장면에서 패널에 “최근
+대화 0개 메시지”가 보였고(직전에는 7개), “기억과 약속” 화면에는 제가
+저장한 8시 달리기와 10시 아이펠 수업 약속이 <strong>사라지고</strong>
+AI가 잘못 만든 가짜 약속(09:00 “약속”) 1개만 남아 있었습니다. 화면의
+대화는 브라우저가 그려 둔 것이고, 서버의 기억은 인스턴스가 바뀌면서
+지워졌습니다.</p>
+<p><strong>배운 점</strong>: 인스턴스 수와 데이터 저장 위치는 별개의
+문제입니다. 설정을 바꾸지 않아도 <strong>요청이 없어 0개로 줄기만
+해도</strong> 서버 메모리의 데이터가 사라집니다. 남겨야 하는 데이터는
+외부 데이터베이스에 둬야 합니다.</p>
+<h3 id="비용">3-4. 비용</h3>
+<p><strong>동시에 처리할 수 있는 요청 수</strong></p>
+<pre><code>최대 인스턴스 × 동시성 = 2 × 80 = 160건</code></pre>
+<p><strong>한 시간에 처리 가능한 요청 수</strong> = 160 × (3,600 ÷ 요청
+하나 걸리는 시간)</p>
+<table>
+<thead>
+<tr>
+<th>요청 하나 걸리는 시간</th>
+<th>시간당 처리 가능 건수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8초(강의 예시)</td>
+<td>72,000건</td>
+</tr>
+<tr>
+<td>3.5초(제가 잰 평소 값)</td>
+<td>약 164,000건</td>
+</tr>
+</tbody>
+</table>
+<p>건당 LLM 비용을 0.0015달러로 <strong>가정</strong>하면 72,000건은 약
+108달러/시간입니다(실제 비용이 아니라 계산용 가정입니다).</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>설정</th>
+<th>막는 것</th>
+<th>막지 못하는 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cloud Run 최대 인스턴스</td>
+<td>한 번에 처리하는 요청 수</td>
+<td>시간이 흐르며 쌓이는 호출 수, LLM 누적 비용</td>
+</tr>
+<tr>
+<td>LLM 제공사 월 사용 한도</td>
+<td>한 달 LLM 비용 총액</td>
+<td>Cloud Run 쪽 요금</td>
+</tr>
+<tr>
+<td>Google Cloud 예산 알림</td>
+<td>없음(알려 주기만 함)</td>
+<td>지출 자체</td>
+</tr>
+</tbody>
+</table>
+<p>확인 문제의 정답은 “켜지는 인스턴스가 2개를 넘지 않지만, 인스턴스마다
+여러 요청을 동시에 처리하므로 LLM 호출 총량을 제한하지는
+않는다”였습니다.</p>
+<h3 id="로그-3종-읽기와-일부러-고장-내기">3-5. 로그 3종 읽기와 일부러
+고장 내기</h3>
+<p>로그에는 세 종류가 섞여 있습니다.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>로그</th>
+<th>병원 응급실 비유</th>
+<th>예</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>요청 로그</td>
+<td>접수 기록</td>
+<td><code>POST /api/chat</code> 200, 2.9초</td>
+</tr>
+<tr>
+<td>컨테이너 로그</td>
+<td>진료 기록</td>
+<td><code>LLM_PROVIDER 값 'unknown'을 알 수 없어…</code></td>
+</tr>
+<tr>
+<td>시스템 로그</td>
+<td>시설 기록</td>
+<td><code>Container called exit(1).</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>일부러 고장 냈습니다.</strong> 이미 정상 동작 중인 서비스의
+<code>LLM_PROVIDER</code>를 없는 값으로 바꿨습니다.</p>
+<pre><code>gcloud run services update friend-agent --region us-central1 --update-env-vars LLM_PROVIDER=unknown</code></pre>
+<p>예상대로 새 리비전(<code>friend-agent-00007-t5g</code>)이 실패했고
+터미널에는 “PORT=8080 포트를 열지 못했다”고만 나왔습니다. 로그
+탐색기에서 이 리비전의 로그 5줄을 시간순으로 읽었습니다.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>시각</th>
+<th>로그 종류</th>
+<th>심각도</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>19:23:58</td>
+<td>시스템</td>
+<td>정보</td>
+<td>새 인스턴스 시작(배포)</td>
+</tr>
+<tr>
+<td>19:24:02</td>
+<td><strong>컨테이너</strong></td>
+<td><strong>ERROR</strong></td>
+<td><code>LLM_PROVIDER 값 'unknown'을 알 수 없어 앱을…</code>
+(<strong>진짜 원인</strong>)</td>
+</tr>
+<tr>
+<td>19:24:02</td>
+<td>시스템</td>
+<td>경고</td>
+<td><code>Container called exit(1).</code></td>
+</tr>
+<tr>
+<td>19:24:02</td>
+<td>시스템</td>
+<td>오류</td>
+<td><code>Default STARTUP TCP probe failed</code></td>
+</tr>
+<tr>
+<td>19:24:02</td>
+<td>시스템</td>
+<td>오류</td>
+<td><code>Cloud Run ReplaceService</code> 실패</td>
+</tr>
+</tbody>
+</table>
+<p><strong>실패하는 동안에도 서비스는 살아 있었습니다.</strong> 실패한
+리비전은 트래픽을 받지 않아서 이전 리비전이 응답했습니다(주소 확인: HTTP
+200, 응답 0.35초).</p>
+<p>복구는 제거가 아니라 <strong>원래 값으로 다시
+설정</strong>했습니다(처음에 명시적으로 <code>openai</code>를 넣어
+두었기 때문입니다).</p>
+<pre><code>gcloud run services update friend-agent --region us-central1 --update-env-vars LLM_PROVIDER=openai</code></pre>
+<p>새 리비전 <code>friend-agent-00008-5jk</code>가 트래픽 100%를 받는
+것을 확인했습니다.</p>
+<p><strong>배운 점</strong>: 터미널 메시지는 결과이고 원인은 컨테이너
+로그에 있습니다. 같은 “포트를 열지 못했다”는 메시지가 N046에서는 키
+누락일 때, 이번에는 잘못된 설정값일 때 똑같이 나왔습니다.
+<strong>메시지만으로는 원인을 구분할 수 없습니다.</strong></p>
+<h3 id="서로-써-보기와-부하-테스트-6단계-추가-과제-2">3-6. 서로 써
+보기와 부하 테스트 (6단계, 추가 과제 2)</h3>
+<p><strong>서로 써 보기</strong>: 휴대폰의 와이파이를 끄고
+데이터(LTE/5G)로 바꿔 서비스 주소에 접속해 메시지를 몇 번
+주고받았습니다. 집 와이파이를 그대로 쓰면 PC와 같은 인터넷 주소로 찍혀
+구분이 안 되기 때문입니다. 이어서 로그를 조회했습니다.</p>
+<pre><code>gcloud logging read &#39;resource.type=cloud_run_revision AND resource.labels.service_name=friend-agent AND httpRequest.requestMethod:*&#39; --freshness=30m --limit=30 --format=&#39;table(timestamp, httpRequest.remoteIp, httpRequest.requestMethod, httpRequest.requestUrl, httpRequest.status)&#39;</code></pre>
+<p>결과: 최근 30건 중 28건이 같은 IPv6 주소(휴대폰 모바일 데이터)에서
+왔고, 1건만 다른 IPv4 주소(PC·집 와이파이)였습니다. 휴대폰 쪽 요청은
+페이지 로드 → 캐릭터 미리보기 여러 번 → 설정 변경 →
+<code>/api/chat</code> 2회 → 기억 조회까지, 실제 사용 흐름 그대로 로그에
+남아 있었습니다.</p>
+<p><strong>배운 점</strong>: “내 요청”과 “다른 기기의 요청”은 remote
+IP로 구분할 수 있지만, 같은 와이파이를 쓰는 사용자끼리는 이 방법으로
+구분되지 않습니다. 진짜 사용자 구분은 로그인·세션 식별이 따로 있어야
+합니다.</p>
+<p><strong>부하 테스트(추가 과제 2)</strong>: 에이전트 서비스에 직접
+부하를 주면 요청마다 LLM이 호출되어 비용이 나가므로, LLM을 부르지 않는
+별도 서비스 <code>load-test</code>를 만들었습니다. 템플릿
+<code>hello/main.py</code>에 2초 기다렸다 응답하는 <code>/slow</code>를
+추가하고(<code>async</code>+<code>asyncio.sleep</code>),
+<code>us-central1</code>에 로그인 없이 배포했습니다. 표준 라이브러리만
+쓰는 <code>load_test.py</code>로 동시 요청 50개를 보내며 설정을 3가지로
+바꿨습니다.</p>
+<table>
+<thead>
+<tr>
+<th>설정</th>
+<th>200 개수</th>
+<th>200이 아닌 응답</th>
+<th>p50</th>
+<th>최대</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A. 동시성 80(기본값), 최대 인스턴스 3</td>
+<td>50</td>
+<td>0</td>
+<td>4.6초</td>
+<td>6.0초</td>
+</tr>
+<tr>
+<td>B. 동시성 1, 최대 인스턴스 20</td>
+<td>15</td>
+<td>35(500)</td>
+<td>10.4초</td>
+<td>12.3초</td>
+</tr>
+<tr>
+<td>C. 동시성 1, 최대 인스턴스 3</td>
+<td>15</td>
+<td>35(500)</td>
+<td>10.6초</td>
+<td>12.3초</td>
+</tr>
+</tbody>
+</table>
+<p>B와 C의 결과가 <strong>거의 똑같았습니다</strong>(최대 인스턴스가
+20이든 3이든 차이 없음). 실패한 요청의 로그를 보니 원인이
+명확했습니다.</p>
+<pre><code>gcloud logging read &#39;resource.type=cloud_run_revision AND resource.labels.service_name=load-test AND httpRequest.status&gt;=500&#39; --freshness=15m --limit=10 --format=&#39;table(timestamp, severity, httpRequest.status, httpRequest.latency, textPayload)&#39;</code></pre>
+<pre><code>ERROR  500  지연 0초  The request was aborted because there was no available instance.</code></pre>
+<p><strong>발견(강의 자료에 없던 내용)</strong>: 지연 시간이 0초라는 건
+기다리지도 않고 <strong>즉시 거절</strong>됐다는 뜻입니다. 즉 50개가
+한꺼번에 몰리는 순간적인 트래픽 폭주에서는, <strong>최대 인스턴스
+숫자(3이든 20이든)보다 “새 인스턴스를 얼마나 빨리 띄울 수
+있는가(스케일업 속도)”가 먼저 한계</strong>에 부딪힙니다. 설정 A가 전부
+성공한 건 최대 인스턴스가 더 적은(3) 대신, 동시성 80으로 기존 인스턴스가
+요청을 쌓아서 처리했기 때문입니다. 테스트가 끝난 뒤
+<code>load-test</code> 서비스는 삭제했습니다.</p>
+<pre><code>gcloud run services delete load-test --region us-central1 --quiet</code></pre>
+<h3 id="회고-7단계">3-7. 회고 (7단계)</h3>
+<p>처음 가졌던 걱정 3가지를 오늘 실습으로 확인한 “설정이 막아주는 것”과
+“설정으로는 못 막는 것”으로 정리했습니다.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>걱정</th>
+<th>설정이 막아주는 것</th>
+<th>설정으로는 못 막는 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① 다른 사람이 많이 써서 비용이 폭증</td>
+<td>최대 인스턴스 2 → 동시 처리 규모 제한</td>
+<td>총 호출 횟수. 3-6에서 최대 인스턴스를 3→20으로 늘려도 “거절되는
+요청”만 달라졌을 뿐, 비용을 좌우하는 총 호출량은 못 막음. 사용자별 이용
+한도는 별도 설계 필요</td>
+</tr>
+<tr>
+<td>② 요청이 몰리거나 늦어져 서비스가 느림</td>
+<td>타임아웃 300초(무한 대기 방지), 동시성·최대 인스턴스로 확장 방식
+조절</td>
+<td>순간적인 트래픽 폭주에서는 최대 인스턴스와 상관없이 스케일업 속도가
+먼저 한계(3-6의 <code>no available instance</code>, 지연 0초). 콜드
+스타트 지연(평소 1.0~1.4초 → 4.8초)도 설정으로는 못 없앰</td>
+</tr>
+<tr>
+<td>③ 대화가 사라지거나 다른 사용자와 섞임</td>
+<td>로그로 “언제 무슨 일이 있었는지” 사후 추적 가능(3-6의 remote IP
+구분)</td>
+<td>사라진 대화는 로그로 복구 안 됨(3-3에서 실측). remote IP 구분은 같은
+와이파이에서는 한계가 있음. 대화는 DB, 사용자 구분은 로그인으로 따로
+구현 필요</td>
+</tr>
+</tbody>
+</table>
+<p><strong>한 줄 결론</strong>: Cloud Run 설정들은 “규모·속도를 조절하는
+손잡이”이지 “문제를 완전히 막는 안전장치”가 아니었습니다. 비용
+한도·데이터 보존·사용자 분리는 설정이 아니라 별도 설계(결제 한도, 외부
+DB, 인증)로 풀어야 한다는 것을 직접 겪었습니다.</p>
+<hr />
+<h2 id="이-실습에서-얻은-핵심-다섯-가지">4. 이 실습에서 얻은 핵심 다섯
+가지</h2>
+<ol type="1">
+<li><strong>타임아웃은 가장 느린 요청(콜드 스타트 포함)을 기준으로
+정한다.</strong> 너무 짧으면 틀린 결과가 정상(200)처럼 보인다.</li>
+<li><strong>최대 인스턴스는 규모만 막고 비용 총액은 못 막는다.</strong>
+총액은 LLM 제공사의 월 한도로 막는다.</li>
+<li><strong>서버 메모리의 데이터는 배포·교체·쉬는 동안에도
+사라진다.</strong> 남길 데이터는 외부 데이터베이스에 둔다.</li>
+<li><strong>로그 세 종류를 구분해 읽는다.</strong> 사용자에게 보인
+현상에서 시작해 그 현상을 설명하는 내부 로그를 찾아간다.</li>
+<li><strong>에이전트에게 맡길 때는 “로그를 근거로 설명하고 아직 고치지
+마”라고 요청한다.</strong> 변경 범위·결과·검증 방법을 확인한 뒤
+승인한다.</li>
+</ol>
+<hr />
+<h2 id="발견한-한계와-풀지-못한-것">5. 발견한 한계와 풀지 못한 것</h2>
+<ul>
+<li><strong>타임아웃 3초 설정인데 약 4초 지연이 로그에 있었던
+이유</strong>는 확정하지 못했습니다.</li>
+<li><strong>AI 도구 선택 오류</strong>: 쉬고 난 뒤 “내일 약속을
+알려줘”에 AI가 약속 조회가 아니라 약속
+저장(<code>create_reminder</code>, 확신도 100%)을 골라 <strong>가짜
+약속을 저장하고 자연스럽게 답했습니다.</strong> 서버 메모리가 비어 있던
+것이 원인일 가능성이 있지만 단정하지는 못합니다. 운영 설정으로는 막을 수
+없는 앱 설계의 문제입니다.</li>
+<li><strong>공개 서비스의 비용 위험</strong>: 주소를 아는 누구나 쓸 수
+있고 요청마다 제 키로 비용이 납니다. 이 실습 서비스는 정리 방법을 정해야
+합니다.</li>
+<li>같은 서비스를 여러 사람이 쓰면 <strong>로그인이 없어 사용자의
+캐릭터가 섞일 수 있습니다</strong>(외부 DB와 로그인이 필요한 영역).</li>
+</ul>
+<hr />
+<h2 id="단계-실습-결과">6. 6~7단계 실습 결과</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>단계</th>
+<th>상태</th>
+<th>핵심 결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6 서로 써 보기, 추가 과제</td>
+<td><strong>완료</strong>(2026-10-21)</td>
+<td>휴대폰(모바일 데이터)으로 실사용 → 로그의 remote IP로 “다른 기기”
+구분(3-6). 부하 테스트 3종 비교 결과, <strong>최대 인스턴스 숫자보다
+순간 스케일업 속도가 먼저 한계</strong>에 부딪힘을 발견</td>
+</tr>
+<tr>
+<td>7 회고</td>
+<td><strong>완료</strong>(2026-10-21)</td>
+<td>걱정 3가지를 “설정이 막는 것/못 막는 것”으로 정리(3-7)</td>
+</tr>
+</tbody>
+</table>
+<p>자세한 과정과 로그 증거는 3-6, 3-7절을 참고해 주세요.</p>
+<hr />
+<h2 id="직접-따라-해-보려면">7. 직접 따라 해 보려면</h2>
+<p>본인 프로젝트와 서비스에서만 하세요. 키 값은 대화나 문서에 붙여 넣지
+마세요.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>단계</th>
+<th>확인 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>타임아웃</td>
+<td><code>--timeout 3</code>로 줄여 말을 걸고, 로그 탐색기에서
+<code>severity&gt;=WARNING</code>으로
+<code>Truncated response body</code> 경고 찾기. 끝나면
+<code>--timeout 300</code>으로 복원</td>
+</tr>
+<tr>
+<td>콜드 스타트</td>
+<td>10분 이상 쉬었다 다시 말을 걸고, 로그에서
+<code>textPayload:"Starting new instance"</code>의 <code>Reason</code>
+확인</td>
+</tr>
+<tr>
+<td>로그 3종</td>
+<td><code>httpRequest.status=404</code>(요청), 컨테이너 ERROR 줄,
+<code>Container called exit(1)</code>(시스템)</td>
+</tr>
+<tr>
+<td>일부러 고장</td>
+<td><code>LLM_PROVIDER=unknown</code> → 로그에서 원인 확인 →
+<strong>원래 값으로 복원</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="평가-체크리스트-15점-한-줄-의견">8. 평가 체크리스트 (1~5점, 한
+줄 의견)</h2>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>번호</th>
+<th>확인할 것</th>
+<th>근거가 있는 곳</th>
+<th>점수</th>
+<th>의견</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>시작 상태를 읽기 전용 명령으로 확인했는가</td>
+<td>3-1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>타임아웃을 정상 시간(요청 전체)을 먼저 잰 뒤 줄이고 복원했는가</td>
+<td>3-2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>잘림이 상태 코드 200으로 남는다는 것을 로그로 확인했는가</td>
+<td>3-2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>콜드 스타트를 시간 차이와 로그(<code>Reason</code>)로
+입증했는가</td>
+<td>3-3</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>서버 메모리 데이터가 사라지는 것을 화면 증거로 보였는가</td>
+<td>3-3</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>최대 인스턴스가 비용 상한이 아님을 계산으로 설명했는가</td>
+<td>3-4</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>로그 3종을 구분하고 타임라인으로 원인을 재구성했는가</td>
+<td>3-5</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td>고장 낸 서비스를 안전하게 복구하고 상태를 확인했는가</td>
+<td>3-5</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>키·공개 서비스 같은 위험을 인지하고 다루었는가</td>
+<td>2장, 5장</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>10</td>
+<td>풀지 못한 것을 숨기지 않고 적었는가</td>
+<td>5장</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>전체 의견</strong>:</p>
+<hr />
+<h2 id="첨부할-증거-화면-notion에-직접-붙여-넣기">9. 첨부할 증거 화면
+(Notion에 직접 붙여 넣기)</h2>
+<ul>
+<li>정상 상태의 “이번 턴” 패널(요청 전체 4.1초)</li>
+<li>타임아웃 3초에서 잘린 답과 “응답이 끝까지 오지 않았어요” 안내</li>
+<li>로그 탐색기의 <code>Truncated response body</code> 경고 3개</li>
+<li>쉬고 난 뒤 6.9초 패널과 “기억과 약속” 화면(가짜 약속 1개)</li>
+<li><code>Starting new instance</code> 로그 8줄(AUTOSCALING 단독 줄
+표시)</li>
+<li><code>/nope</code> 404 로그(7.836초와 2ms)</li>
+<li>일부러 고장 낸 리비전의 로그 5줄(컨테이너 ERROR 줄 표시)</li>
+<li>휴대폰 요청 로그 30건(28건 같은 IPv6, 1건만 다른 IPv4)</li>
+<li>부하 테스트 설정 A·B·C 결과(200/500 개수, p50·최대)</li>
+<li>부하 테스트 500 오류 로그(<code>no available instance</code>, 지연
+0초)</li>
+</ul>
+<p><em>이 문서에는 API 키 값과 서비스 주소가 없습니다.</em></p>
+
+</main>
+</body>
+</html>

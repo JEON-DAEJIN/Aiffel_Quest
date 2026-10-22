@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>강의정리 워크플로우</title>
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --paper-raised:#FFFFFF;
+    --ink:#2A2723;
+    --ink-soft:#5B564C;
+    --ink-faint:#8C8577;
+    --line:rgba(42,39,35,0.14);
+    --line-strong:rgba(42,39,35,0.28);
+    --prep:#3E5C76;
+    --prep-bg:#E8EDF1;
+    --learn:#A6613B;
+    --learn-bg:#F3E7DD;
+    --org:#4F6B4C;
+    --org-bg:#E8EDE6;
+    --pending:#9C6A1E;
+    --pending-bg:#F5E7CE;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    --sans: -apple-system, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#1D1B17;
+      --paper-raised:#26231F;
+      --ink:#EDE7DB;
+      --ink-soft:#B9B2A3;
+      --ink-faint:#847D6F;
+      --line:rgba(237,231,219,0.14);
+      --line-strong:rgba(237,231,219,0.26);
+      --prep:#8FB0CE;
+      --prep-bg:#28333D;
+      --learn:#E0A277;
+      --learn-bg:#3A2E24;
+      --org:#96B58F;
+      --org-bg:#293428;
+      --pending:#E0B15C;
+      --pending-bg:#3B2F19;
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);}
+  .page{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:var(--paper);
+    max-width:760px;
+    margin:0 auto;
+    padding:2.5rem 1.25rem 4rem;
+    line-height:1.6;
+  }
+  .eyebrow{
+    font-size:0.75rem;
+    letter-spacing:0.12em;
+    color:var(--ink-faint);
+    text-transform:uppercase;
+    margin:0 0 0.5rem;
+  }
+  h1{
+    font-size:1.7rem;
+    font-weight:600;
+    margin:0 0 0.4rem;
+    letter-spacing:-0.01em;
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:0.95rem;
+    margin:0 0 2.5rem;
+    max-width:56ch;
+  }
+  .stage{
+    position:relative;
+    display:flex;
+    gap:1rem;
+    margin-bottom:0.25rem;
+  }
+  .spine{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:2.25rem;
+    flex-shrink:0;
+  }
+  .spine-num{
+    width:2.25rem;
+    height:2.25rem;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:600;
+    font-size:0.95rem;
+    color:var(--paper-raised);
+    flex-shrink:0;
+  }
+  .spine-line{
+    flex:1;
+    width:1px;
+    background:var(--line-strong);
+    margin:0.35rem 0;
+    min-height:1rem;
+  }
+  .stage-body{ flex:1; padding-bottom:2.25rem; min-width:0; }
+  .stage-head{ margin-bottom:0.9rem; }
+  .stage-title{ font-size:1.15rem; font-weight:600; margin:0 0 0.2rem; }
+  .stage-desc{ font-size:0.88rem; color:var(--ink-soft); margin:0; }
+  .card{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:1rem 1.1rem;
+  }
+  .card + .card{ margin-top:0.7rem; }
+  .card-label{
+    display:inline-block;
+    font-size:0.72rem;
+    font-weight:600;
+    letter-spacing:0.02em;
+    padding:0.15rem 0.5rem;
+    border-radius:5px;
+    margin-bottom:0.5rem;
+  }
+  .card-title{ font-size:0.98rem; font-weight:600; margin:0 0 0.3rem; }
+  .card-desc{ font-size:0.88rem; color:var(--ink-soft); margin:0; }
+  .card-desc code{
+    font-family:var(--mono);
+    font-size:0.82rem;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:0.05rem 0.35rem;
+  }
+  .pair{ display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; }
+  .pair-join{
+    display:flex;
+    align-items:center;
+    gap:0.5rem;
+    margin:0.6rem 0 0;
+    font-size:0.78rem;
+    color:var(--ink-faint);
+  }
+  .pair-join::before, .pair-join::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+  .checklist{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0.5rem 0.9rem;
+  }
+  .checklist li{
+    font-size:0.88rem;
+    padding-left:1.1rem;
+    position:relative;
+    color:var(--ink);
+  }
+  .checklist li::before{
+    content:"·";
+    position:absolute;
+    left:0.15rem;
+    color:var(--learn);
+    font-weight:700;
+  }
+  .loop-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:0.35rem;
+    font-size:0.74rem;
+    color:var(--learn);
+    background:var(--learn-bg);
+    border-radius:20px;
+    padding:0.2rem 0.6rem;
+    margin-bottom:0.8rem;
+    font-weight:600;
+  }
+  .tree{
+    font-family:var(--mono);
+    font-size:0.82rem;
+    line-height:1.75;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:0.8rem 1rem;
+    margin-top:0.6rem;
+    color:var(--ink-soft);
+    overflow-x:auto;
+    white-space:pre;
+  }
+  .tree .dir{ color:var(--org); font-weight:600; }
+  .tree .comment{ color:var(--ink-faint); font-style:normal; }
+  .tag-pending{
+    display:inline-block;
+    font-size:0.7rem;
+    font-weight:600;
+    color:var(--pending);
+    background:var(--pending-bg);
+    border-radius:5px;
+    padding:0.1rem 0.45rem;
+    margin-left:0.4rem;
+    vertical-align:middle;
+  }
+  .legend{
+    display:flex;
+    gap:1.2rem;
+    flex-wrap:wrap;
+    font-size:0.78rem;
+    color:var(--ink-faint);
+    border-top:1px solid var(--line);
+    padding-top:1rem;
+    margin-top:0.5rem;
+  }
+  .legend span{ display:inline-flex; align-items:center; gap:0.4rem; }
+  .dot{ width:0.55rem; height:0.55rem; border-radius:50%; display:inline-block; }
+  @media (max-width:520px){
+    .pair{ grid-template-columns:1fr; }
+    .checklist{ grid-template-columns:1fr; }
+  }
+  table{ width:100%; border-collapse:collapse; font-size:0.84rem; margin-top:0.4rem; }
+  th,td{ border:1px solid var(--line); padding:0.4rem 0.55rem; text-align:left; }
+  th{ background:var(--paper); color:var(--ink-soft); font-weight:600; }
+  .warn{ background:var(--pending-bg); border:1px solid var(--pending); border-radius:8px; padding:0.7rem 0.9rem; font-size:0.85rem; color:var(--ink); margin:0.6rem 0; }
+  .warn b{ color:var(--pending); }
+  .quote{ background:var(--paper); border-left:3px solid var(--org); border-radius:0 8px 8px 0; padding:0.6rem 0.9rem; font-size:0.86rem; color:var(--ink-soft); margin-bottom:1rem; }
+  .req{ color:var(--org); font-weight:700; font-size:0.72rem; }
+  .opt{ color:var(--ink-faint); font-weight:700; font-size:0.72rem; }
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="eyebrow">Lecture Organization Workflow</p>
+  <h1>강의정리 워크플로우</h1>
+  <p class="sub">예습에서 만든 두 문서가 학습 중 쌓인 기록과 합쳐져 강의별 폴더로 자리 잡고, 실습·배포가 있는 강의는 보고서·방법론 문서·영상까지 이어지는 흐름입니다. (2026-07-17 확정, 2026-10-21 3-5~3-8 추가)</p>
+
+  <div class="stage">
+    <div class="spine">
+      <div class="spine-num" style="background:var(--prep)">1</div>
+      <div class="spine-line"></div>
+    </div>
+    <div class="stage-body">
+      <div class="stage-head">
+        <p class="stage-title">예습 단계</p>
+        <p class="stage-desc">LMS 챕터를 두 갈래로 동시에 읽고 기록한다</p>
+      </div>
+      <div class="pair">
+        <div class="card">
+          <span class="card-label" style="color:var(--prep); background:var(--prep-bg)">1-1</span>
+          <p class="card-title">학습서</p>
+          <p class="card-desc">LMS의 여러 챕터를 읽고 하나의 노션 페이지에 기록</p>
+        </div>
+        <div class="card">
+          <span class="card-label" style="color:var(--prep); background:var(--prep-bg)">1-2</span>
+          <p class="card-title">해설서</p>
+          <p class="card-desc">각 챕터를 AI에게 상세 설명 요청 → 별도 노션 페이지에 기록</p>
+        </div>
+      </div>
+      <div class="pair-join">동시 진행</div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="spine">
+      <div class="spine-num" style="background:var(--learn)">2</div>
+      <div class="spine-line"></div>
+    </div>
+    <div class="stage-body">
+      <div class="stage-head">
+        <p class="stage-title">학습 단계</p>
+        <p class="stage-desc">수업이 진행되는 동안 수시로 기록한다</p>
+      </div>
+      <div class="card">
+        <span class="loop-badge">↻ 수업 중 수시 기록</span>
+        <p class="card-title" style="margin-bottom:0.6rem;">수업노트</p>
+        <ul class="checklist">
+          <li>오늘 배운 내용</li>
+          <li>수업 분위기 / 인상적인 장면</li>
+          <li>어려웠던 점 / 극복 방법</li>
+          <li>새롭게 알게 된 점</li>
+          <li>오늘의 성장도 (1~5점)</li>
+          <li>한줄 느낌 또는 내일의 각오</li>
+          <li>기타 에피소드</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="spine">
+      <div class="spine-num" style="background:var(--org)">3</div>
+      <div class="spine-line"></div>
+    </div>
+    <div class="stage-body">
+      <div class="stage-head">
+        <p class="stage-title">정리 단계 — 모든 강의 공통</p>
+        <p class="stage-desc">두 문서와 기록들을 강의노트로 합치고, 폴더 체계에 맞춰 보관한다</p>
+      </div>
+
+      <div class="card">
+        <span class="card-label" style="color:var(--org); background:var(--org-bg)">3-1</span>
+        <p class="card-title">강의노트 생성<span class="tag-pending">양식 계속 업데이트</span></p>
+        <p class="card-desc">클로드 코드로 학습서 + 해설서를 합쳐 <code>강의노트</code> 생성 (md / html / word)</p>
+      </div>
+
+      <div class="card">
+        <span class="card-label" style="color:var(--org); background:var(--org-bg)">3-2</span>
+        <p class="card-title">수업노트 정리<span class="tag-pending">양식 논의 필요</span></p>
+        <p class="card-desc">학습 단계에서 쌓인 수업노트를 체계적으로 정리</p>
+      </div>
+
+      <div class="card">
+        <span class="card-label" style="color:var(--org); background:var(--org-bg)">3-3</span>
+        <p class="card-title">폴더 배치</p>
+        <p class="card-desc">강의 순서 폴더와, 4종 문서만 모으는 아카이브 폴더를 분리 관리</p>
+        <div class="tree"><span class="dir">강의정리/</span>
+├─ <span class="dir">N008/</span>              <span class="comment"># 강의 순서별 폴더</span>
+│   ├─ 학습서.md
+│   ├─ 해설서.md
+│   ├─ 강의노트.md / .html / .docx
+│   └─ 수업노트.md
+├─ <span class="dir">N009/</span>
+│   └─ ...
+└─ <span class="dir">모음/</span>               <span class="comment"># 문서 종류별 아카이브</span>
+    ├─ <span class="dir">학습서/</span>
+    ├─ <span class="dir">해설서/</span>
+    ├─ <span class="dir">강의노트/</span>
+    └─ <span class="dir">수업노트/</span></div>
+      </div>
+
+      <div class="card">
+        <span class="card-label" style="color:var(--org); background:var(--org-bg)">3-4</span>
+        <p class="card-title">클라우드 보관<span class="tag-pending">자동화 논의 필요</span></p>
+        <p class="card-desc">정리된 노트를 구글 드라이브와 깃허브에 백업. N044부터는 Aiffel_Quest 저장소에 매번 커밋(push는 매번 확인)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="spine">
+      <div class="spine-num" style="background:var(--pending)">4</div>
+    </div>
+    <div class="stage-body">
+      <div class="stage-head">
+        <p class="stage-title">실습·배포가 있는 강의만 — 추가 4단계</p>
+        <p class="stage-desc">순수 개념 강의는 만들지 않는다 — 억지로 만들면 알맹이 없는 문서가 된다</p>
+      </div>
+
+      <div class="quote">최종 확정 로직: 1. 학습서·해설서(입력) → 2. 강의노트 3종 → 3. <b>(실습 있는 강의만)</b> 보고서 3종 + 방법론 문서 3종(재사용 원리 있을 때만) → 4. Motion 영상(선택) → 5. 노션 업로드</div>
+
+      <div class="card">
+        <span class="card-label" style="color:var(--pending); background:var(--pending-bg)">3-5</span>
+        <p class="card-title">실습과제 제출보고서 <span class="req">항상 만든다</span></p>
+        <p class="card-desc">이름은 반드시 <code>N0XX_실습과제_제출보고서</code>로 통일, md/html/docx 3종. 노션엔 md를 그대로 복붙하면 되므로 "설명서" 같은 별도 이름은 쓰지 않는다.</p>
+        <div class="warn"><b>실제로 한 번 어겼던 실수</b> — N047에서 처음엔 <code>N047_실습과제_설명서</code>로 md만 만들었다가, N046과 이름·포맷이 안 맞아 나중에 html·docx를 보강하고 이름도 다시 맞춘 적이 있다(2026-10-22). 새 N0XX 폴더가 생기면 이름부터 먼저 확인한다.</div>
+      </div>
+
+      <div class="card">
+        <span class="card-label" style="color:var(--pending); background:var(--pending-bg)">3-6</span>
+        <p class="card-title">방법론 실전적용 문서("매뉴얼") <span class="opt">재사용 원리가 있을 때만</span></p>
+        <p class="card-desc">보고서(3-5)와는 독자·목적·수명이 다른 별개 문서 — 보고서=기록·증거, 방법론 문서=다음에 또 쓸 레시피. 형식: 일반 원리 → 실제 적용 예시 → 체크리스트 → 용어 사전. <b>원본은 그 방법론을 실제 적용한 프로젝트 폴더에, 강의 폴더엔 사본만</b> 둔다. 여러 강의가 같은 서비스를 이어 다루면(N046→N047) 한 편으로 묶어 양쪽에 같은 사본을 둔다.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-label" style="color:var(--pending); background:var(--pending-bg)">3-7</span>
+        <p class="card-title">Motion 영상 <span class="opt">선택 — 원할 때만</span></p>
+        <p class="card-desc">그날 실습을 10~30초 안팎으로 요약하는 mp4. 원본은 방법론 문서와 같은 프로젝트 폴더에, 사본은 강의 폴더에 둔다.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-label" style="color:var(--pending); background:var(--pending-bg)">3-8</span>
+        <p class="card-title">노션 업로드</p>
+        <p class="card-desc">보고서·방법론 문서·영상을 노션 페이지에 붙여넣기 좋은 형태로 정리해 전달</p>
+      </div>
+
+      <div class="card" style="margin-top:1rem">
+        <p class="card-title" style="margin-bottom:0.6rem">지금까지 적용 현황</p>
+        <table>
+          <tr><th>강의</th><th>강의노트</th><th>보고서</th><th>방법론 문서</th><th>Motion</th></tr>
+          <tr><td>N045</td><td>✅</td><td>✅</td><td>✅ (단독)</td><td>—</td></tr>
+          <tr><td>N046</td><td>✅</td><td>✅</td><td>✅ (N047과 공유)</td><td>✅</td></tr>
+          <tr><td>N047</td><td>✅</td><td>✅ (이름 정정됨)</td><td>✅ (N046과 공유)</td><td>✅</td></tr>
+          <tr><td>N048</td><td>✅</td><td>예정</td><td>판단 필요</td><td>✅</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot" style="background:var(--prep)"></i>예습</span>
+    <span><i class="dot" style="background:var(--learn)"></i>학습</span>
+    <span><i class="dot" style="background:var(--org)"></i>정리(공통)</span>
+    <span><i class="dot" style="background:var(--pending)"></i>정리(실습 있을 때만) / 추가 논의 필요</span>
+  </div>
+</div>
+</body>
+</html>
