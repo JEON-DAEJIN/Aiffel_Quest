@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N048 실습과제 제출 보고서 — 전대진</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1
+id="제출-보고서-n048-github-actions로-자동-배포하기-실습-과제-수행-결과">[제출
+보고서] N048 「GitHub Actions로 자동 배포하기」 실습 과제 수행 결과</h1>
+<p><strong>수신</strong>: N048 강의 강사님 · <strong>발신</strong>:
+수강생 전대진(DJ) <strong>실습일</strong>: 2026-10-22 <strong>과제
+대상</strong>: N046·N047에서 운영해 온 AI 친구 에이전트
+서비스(<code>friend-agent</code>)에, 키 파일 없이 GitHub Actions가
+자동으로 배포하는 파이프라인을 처음부터 끝까지 구축하고, 사고 패치 2건을
+실제로 머지해 “자동 배포가 막아주는 문제”와 “그대로 통과시키는 문제”를
+직접 재현하는 실습 <strong>평가 방법</strong>: 맨 아래 “평가
+체크리스트”를 보고 항목별로 점수와 한 줄 의견을 남겨 주세요.</p>
+<blockquote>
+<p>이 문서는 제가 직접 해 본 실습의 <strong>수행 기록과
+증거</strong>입니다. 서비스 주소는 요청마다 제 LLM 키로 비용이 나가는
+공개 서비스라서 일부러 싣지 않았습니다(N046·N047 보고서와 같은 이유).
+대신 리비전 이름·커밋 해시·PR 번호·로그 내용을 그대로 적었습니다.</p>
+</blockquote>
+<hr />
+<h2 id="한-장-요약">1. 한 장 요약</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>단계</th>
+<th>한 일</th>
+<th>확인한 핵심</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>시작 상태 확인</td>
+<td>gcloud 로그인·프로젝트·리전, 저장소, 서비스, 시크릿 모두 정상.
+<code>gh</code> 토큰에 <code>workflow</code> 스코프 있음을 먼저
+확인</td>
+</tr>
+<tr>
+<td>2</td>
+<td>브랜치·PR·연습(hello.yml)</td>
+<td>README PR(#1) 완료. 연습용 <code>hello.yml</code>(#2)로 PR 트리거
+성공 → <code>exit 1</code>로 일부러 실패 → 뒤 단계 건너뜀 확인 →
+<code>git revert</code> → 재성공 → <code>workflow_dispatch</code> 수동
+실행까지 전부 확인</td>
+</tr>
+<tr>
+<td>3</td>
+<td>WIF 권한 설정</td>
+<td>서비스 계정
+2개(<code>friend-agent-runtime</code>·<code>github-deployer</code>)·풀·공급자·권한
+연결·저장소 변수 4개를 전부 키 파일 없이 구성. 키 0개·Owner/Editor
+없음을 직접 조회로 확인</td>
+</tr>
+<tr>
+<td>4</td>
+<td>실제 자동 배포</td>
+<td>첫 시도는 “배포 계정이 빌드용 기본 서비스 계정을 대신 행동할 권한이
+없다”는 오류로 실패 — 문서(<code>docs/wif-setup.md</code>)에 없던 함정을
+발견하고 권한을 추가해 해결(#3). 새 리비전이 트래픽 100%·전용 런타임
+계정으로 뜸</td>
+</tr>
+<tr>
+<td>5</td>
+<td>사고 재현 2건</td>
+<td>환경변수 이름 오류(#4) — 배포 실패, 이전 리비전이 계속 서빙 →
+revert(#5)로 복구. 시간대 오류(#6) — 배포는 성공했지만 실제 호출 결과
+저장 시각이 9시간 어긋남을 확인 → revert(#7) 후 재확인까지 완료</td>
+</tr>
+<tr>
+<td>6</td>
+<td>과제 1·2·3</td>
+<td>과제 1(#8) 화면에 배포 커밋 배지 추가. 과제 2 다른 저장소에서 같은
+설정으로 시도 → 인증 단계에서 정확히 거절됨 확인. 과제 3 감사 로그로
+사람 배포와 자동 배포 기록을 대조</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>flowchart LR
+    A[&quot;1 시작 상태 확인&quot;] --&gt; B[&quot;2 브랜치·PR·hello.yml 연습&quot;]
+    B --&gt; C[&quot;3 WIF 권한 설정&quot;]
+    C --&gt; D[&quot;4 실제 자동 배포&quot;]
+    D --&gt; E[&quot;5 사고 재현 2건·복구&quot;]
+    E --&gt; F[&quot;6 과제 1·2·3(완료)&quot;]</code></pre>
+<p><strong>진행 방식</strong>: AI 코딩 도우미(Claude)가 N047처럼 강의
+순서 그대로 단계별 명령과 확인 방법을 안내했고, 실제
+<code>gcloud</code>·<code>git</code>·<code>gh</code> 명령 실행과 GitHub
+저장소 조작(PR 생성·머지)까지 도우미가 직접 수행했습니다. 각 단계의 결과
+화면과 로그는 제가 함께 확인했습니다.</p>
+<hr />
+<h2 id="실습-환경-시작-상태">2. 실습 환경 (시작 상태)</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>항목</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>클라우드</td>
+<td>Google Cloud Run, 리전 <code>us-central1</code>, 프로젝트
+<code>&lt;프로젝트 ID&gt;</code></td>
+</tr>
+<tr>
+<td>서비스</td>
+<td><code>friend-agent</code> (N046·N047에서 쓰던 그 서비스)</td>
+</tr>
+<tr>
+<td>저장소</td>
+<td><code>github.com/JEON-DAEJIN/friend-agent</code> (공개)</td>
+</tr>
+<tr>
+<td>시작 시점 상태</td>
+<td><code>.github/workflows/</code> 폴더 없음(초기 커밋뿐) — 자동 배포가
+전혀 설정 안 된 상태에서 출발</td>
+</tr>
+<tr>
+<td>이 저장소의 실제 WIF 문서</td>
+<td><code>docs/wif-setup.md</code>가 강의 PDF보다 단순한
+2계정(런타임·배포) 버전이라, PDF 대신 저장소 문서를 기준으로 진행</td>
+</tr>
+<tr>
+<td><code>gh</code> 토큰 스코프</td>
+<td><code>gist, read:org, repo, workflow</code> — 워크플로 파일을 푸시할
+수 있는 <code>workflow</code> 스코프 보유 확인</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="단계별-수행-내용">3. 단계별 수행 내용</h2>
+<h3 id="시작-상태-확인">3-1. 시작 상태 확인</h3>
+<pre><code>gcloud config list
+git remote -v
+gcloud run services describe friend-agent --region us-central1 --format &quot;value(status.url)&quot;
+gcloud secrets describe llm-api-key --format &quot;value(name)&quot;
+gh auth status</code></pre>
+<p>프로젝트·리전·저장소·서비스 URL·시크릿 이름·<code>gh</code> 권한이
+모두 정상 확인돼, 2단계(시작 상태 맞추기)는 이미 갖춰져 있었습니다.</p>
+<h3 id="브랜치pr연습hello.yml">3-2. 브랜치·PR·연습(hello.yml)</h3>
+<p>README 한 줄 추가 PR(#1)을 올려 브랜치 → 커밋 → 푸시 → PR → 머지
+흐름을 먼저 연습했습니다. 이어서 연습용 <code>hello.yml</code>(#2,
+트리거 <code>pull_request</code>+<code>workflow_dispatch</code>)을 PR로
+올리자 실행 로그에서 <strong>러너가 코드를 받기 전엔 파일이
+<code>.</code>/<code>..</code>뿐</strong>이고,
+<code>actions/checkout</code> 이후에야 파일이 생기며,
+<code>.env</code>는 <code>.gitignore</code>에 있어 러너에 없다는
+것(“.env 없음”)을 직접 확인했습니다.</p>
+<p>이어서 “러너 정보 보기” 단계 끝에 <code>exit 1</code>을 추가해 일부러
+실패시켰더니, <strong>뒤 두 단계(저장소 코드 내려받기·내려받은 파일
+보기)가 전부 <code>skipped</code>로 건너뛰어지는 것</strong>을 실행 로그
+JSON으로 확인했습니다. <code>git revert --no-edit HEAD</code>로 되돌리자
+다시 성공했고, 머지 후 <code>gh workflow run hello.yml</code>로 수동
+실행(<code>workflow_dispatch</code>)까지 성공을 확인했습니다.</p>
+<h3 id="wif-권한-설정과-실행-전-점검">3-3. WIF 권한 설정과 실행 전
+점검</h3>
+<p><code>docs/wif-setup.md</code>를 기준으로 아래를 전부 키 파일 없이
+만들었습니다.</p>
+<ol type="1">
+<li>실행용 계정 <code>friend-agent-runtime</code> +
+<code>llm-api-key</code> 읽기 권한</li>
+<li>배포용 계정 <code>github-deployer</code> + 프로젝트 역할
+2개(<code>run.sourceDeveloper</code>,
+<code>serviceusage.serviceUsageConsumer</code>) + 런타임 계정 하나에
+한정한 <code>iam.serviceAccountUser</code></li>
+<li>풀 <code>github</code> + 공급자 <code>friend-agent-repo</code>(속성
+조건을 <code>JEON-DAEJIN/friend-agent</code> 저장소 하나로 좁힘)</li>
+<li>내 저장소 워크플로가 배포 계정으로 행동할 수 있게 하는 권한
+연결</li>
+<li>저장소 변수 4개(<code>GCP_PROJECT_ID</code>,
+<code>WIF_PROVIDER</code>, <code>DEPLOY_SA</code>,
+<code>RUNTIME_SA</code>)</li>
+</ol>
+<p>실행 후 점검한 것: 두 서비스 계정 모두 <strong>키 0개</strong>,
+<code>github-deployer</code>의 프로젝트 역할이 <strong>딱
+2개뿐</strong>(Owner/Editor 없음) — 명령으로 직접 조회해
+확인했습니다.</p>
+<h3 id="워크플로-파일-넣기-실제-자동-배포-3">3-4. 워크플로 파일 넣기 —
+실제 자동 배포 (#3)</h3>
+<p><code>starter/workflows/deploy.yml</code>을 그대로
+<code>.github/workflows/deploy.yml</code>로 복사해 PR(#3)을 올리고
+머지했습니다. <strong>첫 배포 시도는 실패</strong>했습니다.</p>
+<pre><code>failed to deploy: ... PERMISSION_DENIED: ... caller does not have permission to
+act as service account projects/.../serviceAccounts/105458256592853571522.
+This command is authenticated as github-deployer@...</code></pre>
+<p>조사해보니 이 번호(<code>105458256592853571522</code>)는 빌드에
+쓰이는 <strong>기본 Compute Engine 서비스 계정</strong>이었습니다.
+<code>docs/wif-setup.md</code> 6단계는 “이 계정에
+<code>run.builder</code> 역할을 준다”까지만 안내했는데, 실제로는
+<strong>배포 계정(<code>github-deployer</code>) 자신이 그 계정을 “대신
+행동”할 권한</strong>이 따로 필요했습니다 — 문서에 없던 함정이었습니다.
+아래 권한을 추가로 주자 재시도에서 성공했습니다.</p>
+<pre><code>gcloud iam service-accounts add-iam-policy-binding \
+  $PROJECT_NUMBER-compute@developer.gserviceaccount.com --project $PROJECT_ID \
+  --member &quot;serviceAccount:github-deployer@$PROJECT_ID.iam.gserviceaccount.com&quot; \
+  --role roles/iam.serviceAccountUser</code></pre>
+<p>성공한 첫 자동 배포는 리비전 <code>friend-agent-00009-l9t</code>,
+커밋 <code>66184bf8...</code>로 트래픽 100%를 받았고, 서비스 계정도
+처음으로 전용 <code>friend-agent-runtime</code>으로 바뀐 것을
+확인했습니다. 이후 기본 서비스 계정에 남아 있던 <code>llm-api-key</code>
+읽기 권한도 회수했습니다.</p>
+<h3 id="사고-1-환경변수-이름-오류-4-5-복구">3-5. 사고 1 — 환경변수 이름
+오류 (#4 → #5 복구)</h3>
+<p><code>starter/incidents/rename-key.patch</code>(<code>LLM_API_KEY</code>
+→ <code>OPENAI_API_KEY</code>)를 PR(#4)로 머지했습니다. 결과:</p>
+<ul>
+<li>GitHub Actions의 <code>deploy</code> 작업이 <strong>실패</strong>로
+끝남(로그: “The user-provided container failed to start and listen on
+the port … PORT=8080”).</li>
+<li>새 리비전(<code>friend-agent-00010-rcb</code>)은 상태
+<code>False</code>, 트래픽 <strong>0%</strong>로 남음.</li>
+<li>이전 리비전(<code>friend-agent-00009-l9t</code>)이 계속
+<strong>100%</strong> 트래픽을 받아 서비스는 멀쩡히
+응답(<code>/version</code> 정상).</li>
+</ul>
+<p>→ <strong>사용자는 아무 이상도 못 느꼈습니다.</strong>
+<code>git revert -m 1</code>로 되돌림 PR(#5)을 머지하자 다음 배포가
+성공(초록)했고, <code>/version</code>의 commit이 되돌린 커밋으로 바뀐
+것을 확인했습니다.</p>
+<h3 id="사고-2-시간대-오류-6-7-복구">3-6. 사고 2 — 시간대 오류 (#6 → #7
+복구)</h3>
+<p><code>starter/incidents/reminder-timezone.patch</code>(약속 저장 전
+시간대 정보 제거)를 PR(#6)로 머지했습니다. 이번엔 <strong>배포가
+성공(초록)</strong>했습니다. 실제로 서비스에 요청을 보내
+확인했습니다.</p>
+<pre><code>POST /api/chat {&quot;message&quot;:&quot;내일 아침 8시에 물 마시라고 알려 줘&quot;}
+→ tool 응답: due_at: &quot;2026-10-23T08:00:00+09:00&quot; (의도한 값)
+→ 실제 저장: due_at: &quot;2026-10-23T17:00:00+09:00&quot;
+→ GET /api/reminders: due_label &quot;10월 23일(금) 17:00&quot;</code></pre>
+<p>캐릭터는 “내일 아침 8시”라고 답했지만 실제 저장은
+<strong>17:00</strong>이었습니다. <strong>배포는 성공했지만 결과는
+틀렸고, 이 틀림은 자동 배포 파이프라인이 전혀 걸러주지
+못했습니다.</strong> <code>git revert -m 1</code>로 되돌림 PR(#7)을
+머지하고 같은 요청을 다시 보내, <code>due_at</code>이
+<code>08:00</code>으로 정상 저장되는 것까지 재확인했습니다.</p>
+<h3 id="과제-1-기능-추가-8">3-7. 과제 1 — 기능 추가 (#8)</h3>
+<p>화면 좌측 하단에 <code>/version</code>의 커밋 SHA 앞 7자리를 보여주는
+작은 배지(<code>빌드 d920a2b</code>)를 추가했습니다. 브랜치 생성 → 커밋
+→ PR(#8) → 머지 → 자동 배포(리비전 <code>friend-agent-00014-2q6</code>)
+→ 브라우저에서 실제 화면에 배지가 뜨는 것까지 확인했습니다. 기존
+환경변수·시크릿·배포 설정은 건드리지 않았습니다.</p>
+<h3 id="과제-2-다른-저장소에서-배포-시도">3-8. 과제 2 — 다른 저장소에서
+배포 시도</h3>
+<p>연습용 비공개 저장소(<code>n048-other-repo-practice</code>)를 하나
+만들어 <strong>같은</strong> <code>deploy.yml</code>과
+<strong>같은</strong> 저장소 변수 4개를 그대로 넣고 <code>main</code>에
+push했습니다. 결과:</p>
+<pre><code>google-github-actions/auth failed with: failed to generate Google Cloud
+federated token ...: {&quot;error&quot;:&quot;unauthorized_client&quot;,&quot;error_description&quot;:
+&quot;The given credential is rejected by the attribute condition.&quot;}</code></pre>
+<p><code>auth</code> 단계에서 바로 거절됐고, 배포 단계는 아예 실행되지
+않았습니다(<code>skipped</code>). Cloud Run의 리비전·트래픽도 전혀
+변동이 없었습니다(<code>friend-agent-00013-4zj</code>, 100% 그대로).
+확인 후 연습용 저장소는 삭제했습니다.</p>
+<h3 id="과제-3-감사-로그로-배포자-추적">3-9. 과제 3 — 감사 로그로 배포자
+추적</h3>
+<p><code>gcloud logging read</code>로
+<code>protoPayload.serviceName="run.googleapis.com"</code> 감사 로그를
+조회해 두 기록을 대조했습니다.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>구분</th>
+<th><code>principalEmail</code></th>
+<th><code>serviceAccountDelegationInfo</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10-20 · 사람이 수동 배포(N046)</td>
+<td><code>&lt;내 이메일&gt;</code></td>
+<td>없음</td>
+</tr>
+<tr>
+<td>2026-10-22 · GitHub Actions 자동 배포(오늘)</td>
+<td><code>github-deployer@&lt;프로젝트 ID&gt;.iam.gserviceaccount.com</code></td>
+<td><code>repo:JEON-DAEJIN/friend-agent</code>,
+<code>ref:refs/heads/main</code></td>
+</tr>
+</tbody>
+</table>
+<p>사람이 배포하면 제 계정만 남고, 자동 배포는 배포 서비스 계정과
+<strong>어느 저장소·브랜치에서 왔는지</strong>까지 로그에 그대로
+남는다는 것을 직접 확인했습니다.</p>
+<hr />
+<h2 id="이-실습에서-얻은-핵심-다섯-가지">4. 이 실습에서 얻은 핵심 다섯
+가지</h2>
+<ol type="1">
+<li><strong>WIF는 검사가 두 번이다.</strong> 공급자 조건(어느 저장소에서
+왔는가)과 권한 연결(어느 서비스 계정을 쓸 수 있는가)이 각각 따로 걸린다.
+공급자 조건을 저장소 하나로 좁히지 않으면 그 계정의 모든 저장소가 배포
+권한을 가장할 수 있다(과제 2로 실측).</li>
+<li><strong>“역할을 주는 것”과 “그 역할을 쓸 권한을 주는 것”은
+다르다.</strong> 빌드 계정에 <code>run.builder</code>를 줘도, 배포 계정
+자신이 그 계정을 대신 행동할 <code>serviceAccountUser</code>가 없으면
+배포가 실패한다 — 문서에도 없던, 실행해서야 드러난 함정이었다.</li>
+<li><strong>자동 배포는 “시작되는지”는 걸러주지만 “결과가 맞는지”는
+걸러주지 못한다.</strong> 환경변수 이름 오류는 스타트업 단계에서 걸려
+사용자에게 전혀 노출되지 않았지만, 시간대 오류는 정상 시작했다는 이유로
+그대로 통과해 실제 저장 시각이 9시간 어긋난 채 나갔다.</li>
+<li><strong>“머지만 하면 나간다”는 것은 되돌리는 것도 머지 한 번으로
+된다는 뜻이다.</strong> <code>git revert</code>로 만든 되돌림 PR을
+머지하는 것만으로 두 사고 모두 몇 분 안에 복구됐다.</li>
+<li><strong>감사 로그는 “누가”뿐 아니라 “어디서”까지 남긴다.</strong>
+사람 배포는 계정만 남지만, WIF 기반 자동 배포는 저장소·브랜치 단위의
+신원 정보(delegation info)까지 로그에 남아 추적성이 오히려 더 높다.</li>
+</ol>
+<hr />
+<h2 id="발견한-한계와-풀지-못한-것">5. 발견한 한계와 풀지 못한 것</h2>
+<ul>
+<li><strong>과제 4(다른 CD 방법 조사)는 아직 하지 못했습니다.</strong>
+Cloud Build 연결, Cloud Deploy, GitLab CI/CD, Argo CD 비교표는 다음
+과제로 남겨 두었습니다.</li>
+<li><strong>방법론 문서(매뉴얼)를 만들지 여부는 아직 판단하지
+못했습니다.</strong> WIF·최소 권한 원칙은 다음에 다른 서비스를
+클라우드에 연결할 때도 재사용할 만한 원리로 보이지만, 아직 별도 문서로
+뽑아내지는 않았습니다.</li>
+<li><strong>연습용 저장소를 지우는 과정에서 작은 삽질이
+있었습니다.</strong> <code>gh</code> 토큰에 <code>delete_repo</code>
+스코프가 없어 <code>gh auth refresh</code>로 추가하려 했는데,
+백그라운드로 두 번 시도한 디바이스 코드 인증이 둘 다 완료되지
+않았습니다(코드 만료·타임아웃). 결국 GitHub 웹 화면에서 직접 삭제하고
+API 호출(404)로 삭제를 재확인했습니다.</li>
+<li><strong>빌드 계정에 추가로 준 <code>serviceAccountUser</code> 권한이
+이 프로젝트의 2024년 이후 기본 설정 변화 때문인지, 아니면 이 저장소
+문서(<code>docs/wif-setup.md</code>)가 원래 빠뜨린 것인지는 확정하지
+못했습니다.</strong> 둘 중 어느 쪽이든, 소스 배포를 쓰는 사람은 겪을
+가능성이 있는 문제로 보입니다.</li>
+</ul>
+<hr />
+<h2 id="직접-따라-해-보려면">6. 직접 따라 해 보려면</h2>
+<p>본인 프로젝트와 저장소에서만 하세요. 키 값·시크릿·서비스 계정 키
+파일은 대화나 문서에 붙여 넣지 마세요.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>단계</th>
+<th>확인 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WIF 설정 확인</td>
+<td>IAM 콘솔에서 두 서비스 계정 모두 <strong>Keys 탭에 키가
+없는지</strong>, <code>github-deployer</code>의 역할이 <strong>딱 지정한
+것만</strong> 있는지 확인</td>
+</tr>
+<tr>
+<td>첫 배포 실패 시</td>
+<td>로그에
+<code>does not have permission to act as service account</code>가
+보이면, 그 계정 번호를 찾아 배포 계정에
+<code>iam.serviceAccountUser</code>를 <strong>그 계정 하나에만</strong>
+추가</td>
+</tr>
+<tr>
+<td>사고 재현</td>
+<td>실제 서비스가 아니라 연습/테스트 환경에서, 작은 패치 하나를 PR로
+올려 배포 실패와 “성공했지만 틀린 응답”을 각각 만들어 비교</td>
+</tr>
+<tr>
+<td>감사 로그</td>
+<td><code>protoPayload.authenticationInfo.principalEmail</code>과
+<code>serviceAccountDelegationInfo</code>로 배포자를 구분</td>
+</tr>
+<tr>
+<td>다른 저장소 거절 확인</td>
+<td>연습용 저장소를 만들 때는 반드시 비공개로, 확인 후 이름을 재확인하고
+삭제</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="평가-체크리스트-15점-한-줄-의견">7. 평가 체크리스트 (1~5점, 한
+줄 의견)</h2>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>번호</th>
+<th>확인할 것</th>
+<th>근거가 있는 곳</th>
+<th>점수</th>
+<th>의견</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>키 파일 없이 WIF로 배포 권한을 설정했는가</td>
+<td>3-3</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>공급자 조건을 저장소 하나로 좁혔는가</td>
+<td>3-3, 3-8</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>문서에 없던 권한 함정을 스스로 찾아 해결했는가</td>
+<td>3-4</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>배포 실패 사고와 “성공했지만 틀린” 사고를 구분해 재현했는가</td>
+<td>3-5, 3-6</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>되돌리기(revert)로 안전하게 복구하고 재확인했는가</td>
+<td>3-5, 3-6</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>다른 저장소에서 배포가 거절되는 것을 직접 확인했는가</td>
+<td>3-8</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>감사 로그로 사람 배포와 자동 배포를 구분했는가</td>
+<td>3-9</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td>풀지 못한 것을 숨기지 않고 적었는가</td>
+<td>5장</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>전체 의견</strong>:</p>
+<hr />
+<h2 id="첨부할-증거-화면-notion에-직접-붙여-넣기">8. 첨부할 증거 화면
+(Notion에 직접 붙여 넣기)</h2>
+<ul>
+<li><code>hello.yml</code> 실행 로그 — 코드 받기 전 파일 목록,
+<code>.env 없음</code></li>
+<li><code>hello.yml</code>에 <code>exit 1</code> 추가 후 뒤 단계가
+<code>skipped</code>로 표시된 로그</li>
+<li>서비스 계정 2개의 Keys 탭(키 없음), <code>github-deployer</code>의
+IAM 역할 화면</li>
+<li>첫 배포 실패
+로그(<code>does not have permission to act as service account</code>) →
+권한 추가 → 재시도 성공 로그</li>
+<li>사고 1: <code>deploy</code> 작업 실패 화면 + Cloud Run 리비전 탭(새
+리비전 0%, 이전 리비전 100%)</li>
+<li>사고 2: <code>/api/chat</code> 응답의 <code>due_at</code>(08:00
+의도) vs <code>/api/reminders</code> 화면(17:00 표시) 스크린샷</li>
+<li>과제 1: 화면 좌측 하단 “빌드 d920a2b” 배지 스크린샷</li>
+<li>과제 2: 연습용 저장소의 <code>auth</code> 실패 로그(“rejected by the
+attribute condition”)</li>
+<li>과제 3: 로그 탐색기의 두 <code>principalEmail</code> 비교 화면</li>
+</ul>
+<p><em>이 문서에는 API 키 값과 서비스 주소가 없습니다.</em></p>
+
+</main>
+</body>
+</html>
