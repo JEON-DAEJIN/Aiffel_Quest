@@ -149,179 +149,178 @@
 
 <p><strong>수신</strong>: N049 강의 강사님 · <strong>발신</strong>: 수강생 전대진(DJ)</p>
 <p><strong>실습일</strong>: 2026-10-23</p>
-<p><strong>과제 대상</strong>: N048에서 자동 배포를 붙인 AI 친구 에이전트 서비스(<code>friend-agent</code>)에 ① 자동 테스트(CI), ② 사용자에게 나가기 전에 먼저 써 보는 staging 환경, ③ 검사를 우회하지 못하게 하는 브랜치 보호와 배포 승인을 차례로 붙이고, 일부러 망가뜨린 변경 4건(A~D)을 올려 "어떤 게이트가 어떤 문제를 잡고 어떤 문제는 놓치는지" 직접 확인하는 실습</p>
-<p><strong>평가 방법</strong>: 맨 아래 "평가 체크리스트"를 보고 항목별로 점수와 한 줄 의견을 남겨 주세요.</p>
-<blockquote>이 문서는 제가 직접 해 본 실습의 <strong>수행 기록과 증거</strong>입니다. 서비스 주소는 요청마다 수업에서 받은 LLM 키로 비용이 나가는 공개 서비스라서 일부러 싣지 않았습니다(N046~N048 보고서와 같은 이유). 대신 리비전 이름·커밋 해시·PR 번호·로그 내용을 그대로 적었습니다.</blockquote>
-<h2 id="ch1">1. 한 장 요약</h2>
-<div class="table-scroll"><table>
-<thead><tr><th>단계</th><th>한 일</th><th>확인한 핵심</th></tr></thead>
-<tbody>
-<tr><td>1</td><td>시작 상태 확인</td><td>서비스·변수·deploy 실행 정상. 교재가 말한 저장소 변수 5개 중 <code>BUILD_SA</code>만 없었지만 이 템플릿이 쓰지 않는 변수라 그대로 진행</td></tr>
-<tr><td>2</td><td>로컬 테스트와 약속 시각 테스트(E07)</td><td><code>10 passed</code> → 추가 후 <code>11 passed</code>. 시간대 패치를 넣어도 한국 시간(로컬)에서는 <code>11 passed</code>로 <strong>통과</strong>(버그가 숨음)</td></tr>
-<tr><td>3</td><td>CI 붙이기(#10)</td><td>첫 CI는 <code>ModuleNotFoundError: No module named 'app'</code>으로 <strong>실패</strong> → <code>pytest.ini</code> 추가로 해결. 시간대 변경 PR(#11)은 CI에서 <strong>실패</strong>(08:00 기대, 17:00 저장)</td></tr>
-<tr><td>4</td><td>staging 환경 만들기</td><td>수업 키를 별도 시크릿 <code>llm-api-key-staging</code>으로 복사, staging 서비스·GitHub 환경 생성. 비공개 저장소라서 승인자 설정이 <strong>422로 거절</strong>되어 저장소를 공개로 전환한 뒤 성공</td></tr>
-<tr><td>5</td><td>환경 분리 배포(#12·#13)</td><td>staging 머지 → staging만 새 커밋, production 그대로. main 머지 → 승인 대기 → 승인 후 production이 같은 코드로 교체, <code>env</code>가 <code>local</code>에서 <code>production</code>으로</td></tr>
-<tr><td>6</td><td>브랜치 보호</td><td><code>main</code>·<code>staging</code>에 PR 필수·필수 체크 <code>test</code>·관리자 적용. 직접 push가 <code>GH006</code>으로 거절됨</td></tr>
-<tr><td>7</td><td>문제 A~D(#14~#18)</td><td>A·B·C는 CI가 잡고 머지가 <code>BLOCKED</code>. D(버튼 숨김)는 CI를 통과하고 staging에서 발견 → Revert PR로 복구</td></tr>
-<tr><td>8</td><td>기본 과제 E08(#19)</td><td>"일정만 말하면 약속을 저장하지 않는다" 테스트 추가. 일부러 깨뜨리면 실패, CI 통과</td></tr>
-</tbody>
-</table></div>
+<p><strong>과제 대상</strong>: N048에서 자동 배포를 붙인 AI 친구 에이전트 서비스(<code>friend-agent</code>)에 CI·staging·브랜치 보호·배포 승인을 차례로 붙이고, 일부러 망가뜨린 변경 4개(A~D)를 올려 "어떤 게이트가 어떤 문제를 잡고 어떤 문제는 놓치는지" 직접 확인하는 실습</p>
+<p><strong>평가 방법</strong>: 맨 아래 12번 "평가 체크리스트"를 보고 항목별로 점수와 한 줄 의견을 남겨 주세요.</p>
+<blockquote>이 문서는 노션 「강의정리 양식」 구조(한눈에 → 절별 기록 → 사고 표 → 정리 → 궁금했던 것)로 쓴 <strong>한눈에 읽는 보고서</strong>입니다. 명령·로그·수치를 있는 그대로 남긴 상세 기록은 같은 폴더의 부록 <code>N049_실습과제_제출보고서_부록_상세기록</code>에 있습니다. 서비스 주소·프로젝트 번호는 일부러 싣지 않았습니다(요청마다 수업 키로 비용이 나가는 공개 서비스라서).</blockquote>
+<h2 id="ch0">0. 한눈에</h2>
 <div class="diagram-wrap">
-<svg viewBox="0 0 602 172" xmlns="http://www.w3.org/2000/svg" role="img"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--svg-stroke)"/></marker></defs><g font-size="12" class="svg-text"><rect x="10" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill1)"/><text x="70" y="42" text-anchor="middle">"1 시작 상태"</text><rect x="164" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill2)"/><text x="224" y="35" text-anchor="middle">"2 로컬</text><text x="224" y="49" text-anchor="middle">테스트·E07"</text><rect x="318" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill3)"/><text x="378" y="35" text-anchor="middle">"3 CI</text><text x="378" y="49" text-anchor="middle">붙이기"</text><rect x="472" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill4)"/><text x="532" y="28" text-anchor="middle">"4</text><text x="532" y="42" text-anchor="middle">staging</text><text x="532" y="56" text-anchor="middle">만들기"</text><rect x="10" y="106" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill1)"/><text x="70" y="131" text-anchor="middle">"5 환경 분리</text><text x="70" y="145" text-anchor="middle">배포"</text><rect x="164" y="106" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill2)"/><text x="224" y="131" text-anchor="middle">"6 브랜치</text><text x="224" y="145" text-anchor="middle">보호"</text><rect x="318" y="106" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill3)"/><text x="378" y="131" text-anchor="middle">"7 문제</text><text x="378" y="145" text-anchor="middle">A~D"</text><rect x="472" y="106" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill4)"/><text x="532" y="131" text-anchor="middle">"8 기본 과제</text><text x="532" y="145" text-anchor="middle">E08"</text></g><path class="svg-arrow" d="M130 38 L162 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M284 38 L316 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M438 38 L470 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M532 66 L532 86 L70 86 L70 104" marker-end="url(#ah)"/><path class="svg-arrow" d="M130 134 L162 134" marker-end="url(#ah)"/><path class="svg-arrow" d="M284 134 L316 134" marker-end="url(#ah)"/><path class="svg-arrow" d="M438 134 L470 134" marker-end="url(#ah)"/></svg>
+<svg viewBox="0 0 602 172" xmlns="http://www.w3.org/2000/svg" role="img"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--svg-stroke)"/></marker></defs><g font-size="12" class="svg-text"><rect x="10" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill1)"/><text x="70" y="42" text-anchor="middle">작업 브랜치</text><rect x="164" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill2)"/><text x="224" y="42" text-anchor="middle">CI 테스트</text><rect x="318" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill3)"/><text x="378" y="35" text-anchor="middle">staging</text><text x="378" y="49" text-anchor="middle">배포</text><rect x="472" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill4)"/><text x="532" y="35" text-anchor="middle">staging</text><text x="532" y="49" text-anchor="middle">확인</text><rect x="10" y="106" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill1)"/><text x="70" y="131" text-anchor="middle">CI 테스트</text><text x="70" y="145" text-anchor="middle">main PR</text><rect x="164" y="106" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill2)"/><text x="224" y="138" text-anchor="middle">배포 승인</text><rect x="318" y="106" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill3)"/><text x="378" y="131" text-anchor="middle">production</text><text x="378" y="145" text-anchor="middle">배포</text></g><path class="svg-arrow" d="M130 38 L162 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M284 38 L316 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M438 38 L470 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M532 66 L532 86 L70 86 L70 104" marker-end="url(#ah)"/><path class="svg-arrow" d="M130 134 L162 134" marker-end="url(#ah)"/><path class="svg-arrow" d="M284 134 L316 134" marker-end="url(#ah)"/></svg>
 </div>
-<p><strong>진행 방식</strong>: AI 코딩 도우미(Claude)가 교재 순서대로 단계별 명령과 확인 방법을 안내하고, <code>gcloud</code>·<code>git</code>·<code>gh</code> 명령 실행과 PR 생성·머지, 로그 조회까지 도우미가 직접 수행했습니다. <strong>LLM 제공사 대시보드 확인, Google Cloud 콘솔, 저장소 공개 전환, production 배포 승인 버튼은 제가 직접</strong> 눌렀습니다. 키 값은 대화에 한 번도 나오지 않았습니다. 머지는 매번 제가 확인하고 지시한 뒤에만 했습니다.</p>
-<h2 id="ch2">2. 실습 환경 (시작 상태)</h2>
+<p>자동 배포는 머지된 코드를 그대로 내보낼 뿐 맞는지는 확인하지 않는다.</p>
+<p>그래서 <strong>기계가 보는 CI → 사람이 먼저 써 보는 staging → 직접 누르는 승인</strong>을 겹겹이 세우고, 브랜치 보호로 그 검사를 우회하지 못하게 막았다.</p>
+<ul>
+<li>저장소: friend-agent (공개로 전환함 — 4번 참고)</li>
+<li>오늘 연 PR <strong>11개</strong> (머지 7 · 닫음 4)</li>
+<li>staging 자동 배포 <strong>4번</strong> · production 자동 배포 <strong>1번</strong>(내가 직접 승인) · 손으로 친 배포 명령 <strong>1번</strong>(staging 서비스를 처음 만들 때)</li>
+<li>일부러 망가뜨린 변경 4개: <strong>CI가 잡은 것 3개 · CI를 통과해 staging에서 사람이 발견한 것 1개</strong></li>
+</ul>
+<h2 id="ch1">1. 시작 상태 (2장)</h2>
+<ul>
+<li>N048에서 만든 <code>deploy.yml</code>(main 머지 시 배포)과 저장소 변수 4개, 최근 deploy 실행 <code>completed success</code>를 확인했다</li>
+<li>교재와 다르게 본 것: 교재는 저장소 변수가 5개(<code>BUILD_SA</code> 포함)라는데 이 템플릿에는 4개뿐이고 어디서도 쓰지 않는다 → 그대로 진행</li>
+<li>서비스는 <code>llm-api-key</code> 시크릿을 쓰고 있었다(값은 열어 보지 않음)</li>
+</ul>
+<h2 id="ch2">2. 테스트를 만들고 일부러 깨뜨려 보기 (3~4장)</h2>
+<div class="diagram-wrap">
+<svg viewBox="0 0 448 76" xmlns="http://www.w3.org/2000/svg" role="img"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--svg-stroke)"/></marker></defs><g font-size="12" class="svg-text"><rect x="10" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill1)"/><text x="70" y="35" text-anchor="middle">시간대 정보가</text><text x="70" y="49" text-anchor="middle">빠진 코드</text><rect x="164" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill2)"/><text x="224" y="28" text-anchor="middle">내 PC 한국</text><text x="224" y="42" text-anchor="middle">시간 08:00</text><text x="224" y="56" text-anchor="middle">통과</text><rect x="318" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill3)"/><text x="378" y="35" text-anchor="middle">CI 러너 UTC</text><text x="378" y="49" text-anchor="middle">17:00 실패</text></g><path class="svg-arrow" d="M130 38 L162 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M284 38 L316 38" marker-end="url(#ah)"/></svg>
+</div>
+<ul>
+<li>로컬 <code>pytest</code>로 템플릿 테스트 <code>10 passed</code> → "내일 아침 8시" 테스트(E07)를 더해 <code>11 passed</code></li>
+<li>시간대 정보를 빼는 한 줄 패치를 넣어도 <strong>한국 시간 로컬에서는 여전히 <code>11 passed</code></strong> — 버그가 숨는다</li>
+<li>기존 테스트 <code>test_reminder_is_saved_with_timezone</code>은 시간대 정보 유무(형식)만 봐서 통과, 새 테스트는 사용자가 보는 <code>08:00</code>을 확인해 같은 버그를 잡는다</li>
+<li>Windows PowerShell에는 <code>TZ=UTC</code>가 안 먹어서 UTC 쪽 확인은 CI로 넘겼다</li>
+</ul>
+<h2 id="ch3">3. CI 붙이기 (5장)</h2>
+<ul>
+<li><code>ci.yml</code>을 넣은 첫 실행이 <strong>실패</strong>했다: <code>ModuleNotFoundError: No module named 'app'</code></li>
+<li>원인: CI 러너에서 <code>pytest</code>만 치면 저장소 루트가 import 경로에 들어가지 않는다. 내가 로컬에서 <code>python -m pytest</code>로 돌려서 가려져 있었다(로컬에서도 <code>pytest</code>만 치면 재현됨)</li>
+<li>교재와 다르게 한 것: <code>ci.yml</code>은 그대로 두고 루트에 <code>pytest.ini</code>(<code>pythonpath = .</code>, <code>testpaths = tests</code>) 추가</li>
+<li>그다음 시간대 변경을 PR로 올리자 CI가 <code>08:00</code> 기대·<code>17:00</code> 저장으로 <strong>실패</strong> — 로컬에서는 통과했던 변경이다</li>
+<li>이때 Merge 버튼은 눌렸다(<code>UNSTABLE</code>). CI는 알려 줄 뿐 막지는 않는다</li>
+</ul>
+<h2 id="ch4">4. staging 만들기 (6장 1~3단계)</h2>
 <div class="table-scroll"><table>
-<thead><tr><th>항목</th><th>값</th></tr></thead>
+<thead><tr><th>항목</th><th>dev</th><th>staging</th><th>production</th></tr></thead>
 <tbody>
-<tr><td>클라우드</td><td>Google Cloud Run, 리전 <code>us-central1</code>, 프로젝트 <code>&lt;프로젝트 ID&gt;</code></td></tr>
-<tr><td>서비스</td><td><code>friend-agent</code>(production), 이번에 만든 <code>friend-agent-staging</code></td></tr>
-<tr><td>저장소</td><td><code>github.com/JEON-DAEJIN/friend-agent</code>(시작 시 <strong>비공개</strong>, 4단계에서 공개로 전환)</td></tr>
-<tr><td>시작 시점 상태</td><td>N048에서 만든 <code>deploy.yml</code>(main 머지 시 배포)과 저장소 변수 4개(<code>GCP_PROJECT_ID</code>, <code>WIF_PROVIDER</code>, <code>DEPLOY_SA</code>, <code>RUNTIME_SA</code>), 최근 deploy 실행 성공</td></tr>
-<tr><td>테스트</td><td>템플릿 테스트 10개(<code>tests/test_app.py</code> 6개, <code>tests/test_claude.py</code> 4개), 실제 LLM 대신 페이크 LLM으로 실행</td></tr>
+<tr><td>실행 위치</td><td>내 컴퓨터</td><td><code>friend-agent-staging</code></td><td><code>friend-agent</code></td></tr>
+<tr><td>언제 바뀌나</td><td>코드를 고칠 때</td><td><code>staging</code> 브랜치에 머지되면 자동</td><td><code>main</code> 머지 + 승인 후</td></tr>
+<tr><td>화면 표시(<code>ENV</code>)</td><td><code>local</code></td><td><code>staging</code> — "테스트 환경" 배너</td><td><code>production</code> — 배너 없음</td></tr>
+<tr><td>LLM 키</td><td><code>.env</code> 개인 키</td><td><code>llm-api-key-staging</code></td><td><code>llm-api-key</code></td></tr>
+<tr><td>최대 인스턴스</td><td>—</td><td>1</td><td>2</td></tr>
 </tbody>
 </table></div>
-<h2 id="ch3">3. 단계별 수행 내용</h2>
-<h3>3-1. 시작 상태 확인과 로컬 테스트</h3>
-<p><code>gcloud run services describe</code>, <code>gh variable list</code>, <code>ls .github/workflows/</code>, <code>gh run list</code> 네 명령으로 서비스 주소·변수·워크플로·최근 실행(<code>completed success</code>)을 확인했습니다. 서비스가 <code>llm-api-key</code> 시크릿을 쓰는 것도 확인했습니다.</p>
-<p>로컬에서 <code>pip install -r requirements-dev.txt</code> 후 테스트를 돌려 <code>10 passed</code>를 확인했습니다. 이때 저는 <code>python -m pytest</code>로 돌렸는데, 이것이 3-3의 CI 실패를 한동안 가린 원인이었습니다.</p>
-<h3>3-2. 약속 시각 테스트(E07)와 "일부러 깨뜨려 보기"</h3>
-<p>교재의 <code>tests/test_reminder_time.py</code>를 그대로 만들었습니다("내일 아침 8시에 물 마시라고 알려 줘" → 저장된 시각이 <code>08:00</code>으로 끝나는지). <code>11 passed</code>를 확인했습니다.</p>
-<p><code>starter/incidents/reminder-timezone.patch</code>(약속 시각에서 시간대 정보를 빼는 한 줄 변경)를 연습 브랜치 <code>try/timezone</code>에 넣고 돌리자, <strong>한국 시간 환경에서는 여전히 <code>11 passed</code></strong>였습니다. 변경된 줄은 이렇습니다.</p>
-<pre><code>+    due = due.replace(tzinfo=None)  # 저장 형식을 단순하게: 시간대 정보는 빼고 날짜와 시각만 남긴다</code></pre>
-<p>Windows PowerShell에서는 <code>TZ=UTC</code>를 붙일 수 없어 UTC 쪽 확인은 CI로 넘겼습니다. 패치는 되돌리고 연습 브랜치도 지웠습니다. 테스트 파일은 PR #9로 <code>main</code>에 올렸습니다.</p>
-<h3>3-3. CI 붙이기 — 첫 실패와 해결 (#10·#11)</h3>
-<p><code>starter/workflows/ci.yml</code>을 <code>.github/workflows/</code>에 복사해 PR #10을 올렸더니 <strong>첫 실행이 실패</strong>했습니다.</p>
-<pre><code>ModuleNotFoundError: No module named 'app'
-ERROR tests/test_app.py / tests/test_claude.py / tests/test_reminder_time.py
-3 errors in 0.59s</code></pre>
-<p>원인은 CI 러너에서 <code>pytest</code> 명령만 치면 저장소 루트가 import 경로에 들어가지 않는 것이었습니다. 로컬에서도 <code>pytest.exe</code>만 치면 같은 오류가 재현됐습니다(제가 <code>python -m pytest</code>로 돌려서 가려져 있었습니다). 템플릿에는 pytest 설정 파일이 없었습니다. 교재는 <code>ci.yml</code>을 바꾸지 말라고 해서 <code>ci.yml</code>은 그대로 두고, 루트에 <code>pytest.ini</code>를 추가해 같은 PR에 넣었습니다.</p>
-<pre><code>[pytest]
-pythonpath = .
-testpaths = tests</code></pre>
-<p>수정 후 로컬 <code>11 passed</code>, PR 체크 <code>test</code>·<code>hello</code> 통과로 PR #10을 머지했습니다.</p>
-<p>이어서 같은 시간대 패치를 PR #11로 올렸습니다. 로컬에서 통과하던 변경인데 <strong>CI의 <code>test</code>는 실패</strong>했습니다.</p>
-<pre><code>&gt;       assert labels and labels[-1].endswith("08:00")
-E       AssertionError: assert (['10월 24일(토) 17:00', '10월 24일(토) 17:00'] and False)
-FAILED tests/test_reminder_time.py::test_reminder_is_saved_in_korean_time
-1 failed, 10 passed</code></pre>
-<p>이때 머지 상태는 <code>mergeable=MERGEABLE</code>, <code>state=UNSTABLE</code>이라 <strong>실패했는데도 머지 버튼이 눌리는 상태</strong>였습니다(아직 브랜치 보호 전). PR은 머지하지 않고 닫았습니다.</p>
-<h3>3-4. staging 만들기 — 키 문제와 공개 전환</h3>
-<p><strong>staging 전용 키를 만들지 못했습니다.</strong> 교재는 LLM 제공사에서 staging용 키와 낮은 한도를 따로 만들라고 하지만, 제가 쓰는 키는 수업에서 받은 키였습니다. OpenAI 대시보드를 확인하니 제 조직(Personal)은 무료 체험에 크레딧 <code>$0.00</code>이었고 두 프로젝트의 월 사용액이 모두 <code>$0</code>이라, 그 키는 제 계정 것이 아님을 확인했습니다. 그래서 기존 시크릿 <code>llm-api-key</code> 값을 <strong>값을 출력하지 않고</strong> 별도 시크릿 <code>llm-api-key-staging</code>으로 복사했습니다(해시 비교로 값 동일 확인). 이름과 권한은 환경별로 분리했지만 <strong>키와 사용 한도는 production과 공유</strong>합니다. 첫 시도는 Windows에서 프로세스 치환이 지원되지 않아 시크릿이 만들어지지 않았고, 표준 입력 파이프로 다시 했습니다.</p>
-<p>런타임 서비스 계정 <code>friend-agent-runtime</code>에는 <code>llm-api-key-staging</code> <strong>하나에 대해서만</strong> <code>secretmanager.secretAccessor</code>를 주고, 정책을 다시 읽어 그 계정 하나만 등록돼 있음을 확인했습니다.</p>
-<p><code>friend-agent-staging</code> 서비스를 <code>--allow-unauthenticated</code>, <code>ENV=staging</code>, 최소 0·최대 인스턴스 1로 만들었습니다(리비전 <code>00001-tn9</code>). staging 화면에는 "테스트 환경" 배너가 보이고 production에는 없습니다.</p>
-<p>GitHub 환경은 <code>staging</code>(변수 <code>SERVICE=friend-agent-staging</code>, <code>ENV=staging</code>)과 <code>production</code>(<code>SERVICE=friend-agent</code>, <code>ENV=production</code>)을 만들었습니다. production에 승인자를 거는 단계에서 이렇게 거절됐습니다.</p>
-<pre><code>Failed to create the environment protection rule. Please ensure the billing plan
-supports the required reviewers protection rule. (HTTP 422)</code></pre>
-<p>저장소가 <strong>비공개</strong>라서 승인자와 브랜치 보호(유료 플랜 기능)가 막힌 것이었습니다. 저장소 전체와 커밋 기록 25개를 검사해(OpenAI·Google·Supabase·Anthropic 키 패턴, 개인키, JWT, GitHub 토큰) 노출된 키가 0건이고 <code>.env</code>가 한 번도 커밋되지 않았음을 확인한 뒤, <strong>제가 직접 공개로 전환</strong>했습니다. 전환이 GitHub 쪽에 반영되기까지 한 번은 <code>PRIVATE</code>으로 보였고, 다시 확인하자 <code>PUBLIC</code>이었습니다. 그 뒤 승인자 <code>JEON-DAEJIN</code>(<code>prevent_self_review=false</code>)이 걸렸습니다.</p>
-<h3>3-5. 환경 분리 배포 (#12·#13)</h3>
-<p><code>starter/workflows/deploy-envs.yml</code>로 <code>deploy.yml</code>을 바꾸는 PR #12를 <code>staging</code> 브랜치로 올려(대상이 <code>main</code>이 아님을 확인) 머지했습니다. <code>test</code> 작업 → <code>deploy</code> 작업(staging 환경) 순으로 성공했고 결과는 이렇습니다.</p>
+<ul>
+<li>staging 시크릿 <code>llm-api-key-staging</code>은 <strong>수업 키를 값 출력 없이 복사</strong>해 만들었다(해시로 같은 값인지만 확인). 읽기 권한은 <code>friend-agent-runtime</code>에 시크릿 <strong>하나</strong>에만 줬다</li>
+<li>교재와 다르게 한 것: 수업에서 받은 키는 내 계정 것이 아니라 staging 전용 키·낮은 한도를 만들 수 없었다 → <strong>이름과 권한만 분리하고 키·한도는 production과 공유</strong></li>
+<li><code>friend-agent-staging</code>을 처음 한 번만 직접 만들었다(<code>ENV=staging</code>, 최대 인스턴스 1). 화면에 "테스트 환경" 배너가 뜬다</li>
+<li>production 환경에 승인자를 걸려다 <strong>HTTP 422</strong>: 저장소가 비공개라서(승인자·브랜치 보호는 비공개 저장소에서 유료) → 커밋 기록 25개를 키 패턴으로 검사해 0건임을 확인한 뒤 <strong>내가 직접 공개로 전환</strong>했다. 전환 직후 한 번은 <code>PRIVATE</code>으로 보였고 잠시 뒤 <code>PUBLIC</code>이 됐다</li>
+<li>Windows에서 <code>&lt;(...)</code> 프로세스 치환은 시크릿 만들기에 실패해서 표준 입력 파이프로 다시 했다</li>
+</ul>
+<h2 id="ch5">5. 머지하면 staging, 승인하면 production (6장 4~6단계)</h2>
 <div class="table-scroll"><table>
 <thead><tr><th></th><th>commit</th><th>revision</th><th>env</th></tr></thead>
 <tbody>
-<tr><td>staging</td><td><code>d69c08b</code>(방금 머지한 커밋)</td><td><code>friend-agent-staging-00002-g9s</code></td><td><code>staging</code></td></tr>
-<tr><td>production</td><td><code>187a4bf</code>(그대로)</td><td><code>friend-agent-00016-2xg</code></td><td><code>local</code></td></tr>
+<tr><td>staging (#12 머지 후)</td><td><code>d69c08b</code></td><td>00002</td><td><code>staging</code></td></tr>
+<tr><td>production (그대로)</td><td><code>187a4bf</code></td><td>00016</td><td><code>local</code></td></tr>
+<tr><td>production (승인 후)</td><td><code>fae6cc9</code></td><td>00017</td><td><code>production</code></td></tr>
 </tbody>
 </table></div>
-<p>새 워크플로가 시크릿을 따로 지정하지 않는데도 staging 서비스의 <code>LLM_API_KEY</code>는 <code>llm-api-key-staging</code> 연결을 유지했습니다.</p>
-<p><code>staging</code>을 <code>main</code>으로 보내는 PR #13을 머지하자(<code>staging</code> 브랜치는 지우지 않음) deploy 실행이 <code>waiting</code>에서 멈췄습니다. 승인은 도우미가 아니라 <strong>제가 GitHub 화면에서 직접</strong> 눌렀는데, <strong>처음 누른 승인은 반영되지 않아</strong> 실행이 10분 넘게 <code>waiting</code>이었습니다(<code>pending_deployments</code>에 production이 그대로 남아 있었음). 다시 눌렀더니 반영되어 배포가 시작됐습니다. 결과는 production 커밋 <code>fae6cc9</code>, 리비전 <code>friend-agent-00017-ckh</code>, <strong><code>env</code>가 <code>local</code>에서 <code>production</code>으로</strong> 바뀌었고 배너는 없습니다. <code>fae6cc9</code>는 머지 커밋이라 staging의 <code>d69c08b</code>와 해시가 다르지만 코드 트리 해시가 같고 차이는 0줄이었습니다.</p>
-<h3>3-6. 브랜치 보호</h3>
-<p><code>gh api</code>로 <code>main</code>과 <code>staging</code>에 같은 규칙을 걸었습니다. PR 필수(승인 수 0), 필수 상태 체크 <code>test</code>, <code>enforce_admins: true</code>입니다. 두 브랜치만 <code>protected=true</code>이고 다른 브랜치는 보호되지 않습니다.</p>
-<p><code>main</code>에 빈 커밋을 만들어 직접 push해 보니 이렇게 거절됐습니다.</p>
+<ul>
+<li><code>fae6cc9</code>는 머지 커밋이라 staging의 <code>d69c08b</code>와 해시가 다르지만 <strong>코드 트리 해시가 같고 차이는 0줄</strong></li>
+<li>새 워크플로가 시크릿을 따로 적지 않는데도 staging의 키 연결(<code>llm-api-key-staging</code>)이 그대로 남았다</li>
+<li>승인 대기에서 <strong>처음 누른 승인은 반영되지 않았다</strong>(10분 넘게 <code>waiting</code>, 대기 목록에 production이 남아 있음). 다시 누르니 배포가 시작됐다</li>
+<li><code>env</code>가 <code>local</code>이던 production이 이번에 처음 새 워크플로로 배포되며 <code>production</code>이 됐다</li>
+</ul>
+<h2 id="ch6">6. 우회를 막기 — 브랜치 보호 (7장)</h2>
+<div class="diagram-wrap">
+<svg viewBox="0 0 448 76" xmlns="http://www.w3.org/2000/svg" role="img"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--svg-stroke)"/></marker></defs><g font-size="12" class="svg-text"><rect x="10" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill1)"/><text x="70" y="42" text-anchor="middle">같은 실패 PR</text><rect x="164" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill2)"/><text x="224" y="28" text-anchor="middle">보호 전</text><text x="224" y="42" text-anchor="middle">UNSTABLE</text><text x="224" y="56" text-anchor="middle">머지 가능</text><rect x="318" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill3)"/><text x="378" y="28" text-anchor="middle">보호 후</text><text x="378" y="42" text-anchor="middle">BLOCKED</text><text x="378" y="56" text-anchor="middle">머지 차단</text></g><path class="svg-arrow" d="M130 38 L162 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M284 38 L316 38" marker-end="url(#ah)"/></svg>
+</div>
+<ul>
+<li><code>main</code>·<code>staging</code>에 PR 필수(승인 수 0) · 필수 체크 <code>test</code> · 관리자에게도 적용</li>
+<li><code>main</code>에 직접 push 시도 → 거절</li>
+</ul>
 <pre><code>remote: error: GH006: Protected branch update failed for refs/heads/main.
 - Changes must be made through a pull request.
 - Required status check "test" is expected.</code></pre>
-<p>거절된 빈 커밋을 로컬 <code>main</code>에서 지우려는 <code>git reset --hard origin/main</code>은 AI 도우미 환경의 안전 검사가 "되돌릴 수 없는 로컬 삭제"로 막아서, 이 커밋(<code>1f7dfd4</code>)은 <strong>로컬 <code>main</code>에 아직 남아 있습니다</strong>(원격에는 올라가지 않음).</p>
-<h3>3-7. 문제 A~C — CI가 잡은 변경 (#14~#16)</h3>
-<p>문제마다 <code>staging</code>에서 작업 브랜치를 만들고 패치를 적용해 <code>staging</code>으로 PR을 올렸습니다. 세 PR 모두 <code>mergeStateStatus=BLOCKED</code>였습니다. 원인은 로그의 실패 테스트·바뀐 줄로 찾았고, 고치지는 않았습니다.</p>
-<div class="table-scroll"><table>
-<thead><tr><th>문제</th><th>실패한 테스트와 로그</th><th>원인 한 문장</th></tr></thead>
-<tbody>
-<tr><td>A. <code>safety-exact-match</code></td><td><code>test_crisis_message_gets_fixed_safety_reply</code>, <code>assert '109' in '(가짜 응답) 그랬구나. 조금 더 얘기해 줄래?'</code></td><td>위기 표현 판정을 <code>any(k in text ...)</code>(포함)에서 <code>text.strip() in CRISIS_KEYWORDS</code>(정확히 같음)로 바꿔서, "요즘 너무 죽고 싶어"가 목록의 "죽고 싶"과 같지 않다고 판정돼 109 안내가 나가지 않았다</td></tr>
-<tr><td>B. <code>weather-keyword</code></td><td><code>test_weather_question_picks_weather_tool</code>, <code>assert [] == ['get_weather']</code></td><td>날씨 키워드 <code>"날씨"</code>를 <code>"날씨 알려"</code>로 좁혀서, "내일 서울 날씨 어때?"가 어떤 키워드에도 걸리지 않아 도구가 하나도 선택되지 않았다</td></tr>
-<tr><td>C. <code>reminder-timezone</code></td><td><code>test_reminder_is_saved_in_korean_time</code>, 08:00 기대·17:00 저장</td><td>저장 직전 <code>due.replace(tzinfo=None)</code>으로 시간대 정보를 지워서, UTC로 도는 CI 러너가 시간대 없는 값을 UTC로 읽어 9시간 어긋난 17:00이 저장됐다</td></tr>
-</tbody>
-</table></div>
-<p>A와 B는 환경과 무관한 실패라 로컬 <code>pytest</code>만 돌렸어도 잡혔습니다. <strong>C만 로컬(한국 시간)에서는 통과</strong>해서, CI처럼 서버와 같은 환경에서 돌려야 보이는 문제였습니다. 세 PR은 머지하지 않고 닫았고 브랜치도 지웠습니다.</p>
-<h3>3-8. 문제 D — CI를 통과해 staging에서 발견한 변경 (#17·#18)</h3>
-<p><code>static/index.html</code> 95번째 줄 <code>.send{...}</code>에 <code>display:none;</code>을 넣은 PR #17을 <code>staging</code>으로 올렸습니다. <strong>CI는 통과</strong>했고(<code>test</code>·<code>hello</code> 통과, <code>CLEAN</code>) 보호 규칙이 걸려 있어도 머지됐습니다. 테스트가 화면 모양을 확인하지 않기 때문입니다.</p>
-<p>머지 후 staging(<code>e264971</code>, 리비전 새 배포)에서 <code>.send</code> 버튼의 CSS <code>display</code>가 <code>none</code>이고 화면에 보이지 않음을 브라우저로 확인했습니다. production은 <code>fae6cc9</code> 그대로였고, 이 변경은 <code>main</code>으로 보내지 않았습니다.</p>
-<p>되돌릴 때는 머지 커밋이라 부모가 둘이어서 <code>git revert -m 1</code>이 필요했습니다. Revert PR #18을 <code>staging</code>으로 올려 체크 통과 후 머지하자 staging이 <code>3b5d42a</code>로 바뀌고 <code>.send</code>의 <code>display</code>가 <code>none</code>에서 <code>block</code>으로 돌아왔습니다(production은 계속 <code>fae6cc9</code>).</p>
-<h3>3-9. 기본 과제 — 예시 하나를 테스트로 (E08, #19)</h3>
-<p><code>docs/examples.md</code>에서 판정 방법이 <code>코드</code>이고 테스트가 없는 예시 중 <strong>E08</strong>("이번 주 금요일에 자격증 시험 있어" → 약속을 저장하지 않는다)을 골랐습니다. 약속은 "~라고 알려 줘" 같은 <strong>부탁하는 말</strong>(<code>ASK_PATTERN</code>)이 있을 때만 저장되는 규칙입니다. 테스트는 <code>create_reminder</code>가 도구 선택에 없고, 저장된 약속 개수가 전후로 같은지 확인합니다(메모리 저장소가 테스트 사이에 공유되므로 절대 개수가 아니라 변화를 비교).</p>
-<div class="table-scroll"><table>
-<thead><tr><th>확인</th><th>결과</th></tr></thead>
-<tbody>
-<tr><td>로컬 <code>pytest</code></td><td><code>12 passed</code></td></tr>
-<tr><td>일부러 깨뜨림(<code>ASK_PATTERN</code>에 <code>있어</code> 임시 추가)</td><td><code>assert 'create_reminder' not in ['create_reminder']</code>로 <strong>실패</strong></td></tr>
-<tr><td>되돌린 뒤</td><td><code>12 passed</code>, 변경 파일은 새 테스트 하나뿐</td></tr>
-<tr><td>CI</td><td>PR #19에서 <code>test</code> 통과(러너에서도 <code>12 passed</code>)</td></tr>
-</tbody>
-</table></div>
-<p>PR #19를 <code>staging</code>에 머지하자 staging이 <code>44230b1</code>로 바뀌었고 production은 그대로입니다.</p>
-<h2 id="ch4">4. 이 실습에서 얻은 핵심 다섯 가지</h2>
-<ol>
-<li><strong>로컬에서 통과한 것이 서버에서 통과한다는 보장은 없다.</strong> 시간대 변경은 한국 시간 로컬에서 <code>11 passed</code>였고 UTC 러너에서만 08:00이 17:00이 됐다. 테스트는 서버와 같은 환경에서도 돌려야 한다.</li>
-<li><strong>CI는 "알려 주는 것"이고 "막는 것"은 브랜치 보호다.</strong> 같은 실패 PR이 보호 전에는 <code>UNSTABLE</code>(머지 가능), 보호 후에는 <code>BLOCKED</code>였다. PR 필수와 필수 체크는 둘 다 걸어야 빈틈이 없다.</li>
-<li><strong>CI를 통과해도 사람이 써 봐야 보이는 문제가 있다.</strong> 버튼이 사라진 변경은 모든 체크를 통과했고 staging에서 열어 본 사람만 발견할 수 있었다. 그래서 gate가 세 겹(테스트·staging·승인)이다.</li>
-<li><strong>교안의 명령은 교안 그대로 재현해야 한다.</strong> 제가 <code>python -m pytest</code>로 돌려서 <code>pytest</code>만 칠 때의 <code>app</code> 모듈 문제가 CI에서야 드러났다.</li>
-<li><strong>유료·계정 의존 기능은 시작 전에 확인해야 한다.</strong> 비공개 저장소는 환경 승인자와 브랜치 보호를 쓸 수 없었고, 수업에서 받은 키로는 staging 전용 키와 한도를 분리할 수 없었다.</li>
-</ol>
-<h2 id="ch5">5. 발견한 한계와 풀지 못한 것</h2>
 <ul>
-<li><strong>staging 전용 키와 낮은 사용 한도를 만들지 못했습니다.</strong> 수업 키를 별도 시크릿으로 복사해 이름·권한만 환경별로 분리했고, 비용·한도는 production과 공유합니다. 제 OpenAI 계정(Personal)은 무료 체험에 크레딧 <code>$0.00</code>이었고, 그곳의 <code>friend-agent-staging</code> 프로젝트는 쓰이지 않는 빈 프로젝트로 남아 있습니다.</li>
-<li><strong>저장소를 비공개에서 공개로 바꿨습니다.</strong> 승인자와 브랜치 보호를 쓰려면 필요했고, 전환 전에 키 패턴 검사로 노출 위험이 없음을 확인했습니다. 다만 공개 저장소의 Actions 로그에는 프로젝트 ID 같은 식별자가 보일 수 있습니다.</li>
-<li><strong>중간 과제(배포 결과 메신저 알림)와 도전 과제(내 앱에 CI 붙이기)는 하지 않았습니다.</strong> 기본 과제만 수행했습니다.</li>
-<li><strong>배포 후 모니터링·알림은 만들지 않았습니다.</strong> 시작 질문에서 막을 수 있는 지점으로 떠올렸지만 이 실습에서 만든 게이트는 아닙니다. 다양한 시간대·날짜 경계 테스트와 화면(브라우저) 자동 테스트도 만들지 않았습니다. 문제 D를 CI에서 막으려면 이런 테스트가 더 필요합니다.</li>
-<li><strong>UTC 재현을 로컬에서 직접 하지 못했습니다.</strong> Windows PowerShell에서 <code>TZ=UTC</code>가 되지 않아 UTC 쪽 확인은 CI 결과로 대신했습니다.</li>
-<li><strong>문제 A·B의 실제 실패 로그는 교재·해설서에 제시되지 않았습니다.</strong> 해설서도 "직접 실행한 결과를 근거로 확인해야 한다"고 적었고, 이 보고서의 3-7이 제가 실행해서 얻은 결과입니다.</li>
-<li><strong>처음 누른 production 승인이 반영되지 않았습니다.</strong> 원인은 확인하지 못했고(확정 버튼까지 누르지 않았을 가능성), 다시 눌러 해결했습니다.</li>
-<li><strong>로컬 <code>main</code>에 거절된 빈 커밋 <code>1f7dfd4</code>가 남아 있습니다.</strong> 안전 검사가 <code>git reset --hard</code>를 막았고, 원격에는 올라가지 않았습니다.</li>
-<li><strong><code>BUILD_SA</code>는 교재가 말한 변수 5개에 있지만 이 템플릿에는 없고 어디서도 쓰지 않았습니다.</strong> 교재와 템플릿 버전 차이로 보이나 확정하지는 못했습니다.</li>
+<li>"PR 필수"와 "필수 체크"는 서로 다른 규칙이라 <strong>둘 다</strong> 걸어야 빈틈이 없다</li>
+<li>거절된 빈 커밋은 로컬 <code>main</code>에 남았고, <code>git reset --hard</code>가 AI 도우미 환경의 안전 검사에 막혀 내가 허락한 뒤 <code>main</code> 브랜치·앞선 커밋 1개를 확인하고 정리했다</li>
 </ul>
-<h2 id="ch6">6. 직접 따라 해 보려면</h2>
-<p>본인 프로젝트와 저장소에서만 하세요. 키 값은 대화나 문서에 붙여 넣지 말고, 시크릿 복사처럼 값이 필요한 작업은 출력 없이 파이프로 옮기세요.</p>
+<h2 id="ch7">7. 일부러 망가뜨린 변경 네 개 (8장)</h2>
 <div class="table-scroll"><table>
-<thead><tr><th>단계</th><th>확인 방법</th></tr></thead>
+<thead><tr><th>변경</th><th>CI 결과</th><th>머지</th><th>사용자에게 보였을 것</th><th>원인을 찾은 곳</th><th>처리</th></tr></thead>
 <tbody>
-<tr><td>교안 명령 재현</td><td><code>pytest -q</code> 등 교안의 명령을 <strong>그대로</strong> 실행해 보기. 다른 방식으로 돌려서 통과했다고 믿지 않기</td></tr>
-<tr><td>테스트가 버그를 잡는지</td><td>지키려는 동작을 일부러 깨뜨려 실패하는지, 되돌리면 통과하는지까지 확인</td></tr>
-<tr><td>환경에 따라 갈리는 버그</td><td>시간대 같은 문제는 CI 러너(UTC)에서 돌려 보기</td></tr>
-<tr><td>승인자·브랜치 보호</td><td>저장소가 비공개면 유료 플랜이 필요함을 먼저 확인</td></tr>
-<tr><td>staging 만들기</td><td>명령 실행 전 서비스 이름이 <code>-staging</code>인지, 시크릿이 <code>-staging</code> 쪽인지 확인. 권한은 <code>projects</code>가 아니라 <code>secrets add-iam-policy-binding</code>으로 시크릿 하나에만</td></tr>
-<tr><td>머지 상태 확인</td><td><code>gh pr view --json mergeStateStatus</code>로 <code>UNSTABLE</code>(머지 가능)과 <code>BLOCKED</code>(머지 차단) 구분</td></tr>
-<tr><td>승인 전</td><td>staging의 <code>/version</code> 커밋과 승인 대기 중인 실행의 코드가 같은지 확인</td></tr>
+<tr><td>A. 위기 표현을 "정확히 같을 때만"으로 판정 (PR #14)</td><td>실패 · 109 안내가 안 나감</td><td>차단</td><td>"죽고 싶어"에 안전 안내 대신 일반 응답</td><td>CI 로그 <code>assert '109' in '(가짜 응답) 그랬구나…'</code></td><td>닫음</td></tr>
+<tr><td>B. 날씨 키워드를 <code>날씨 알려</code>로 좁힘 (PR #15)</td><td>실패 · 도구 선택 <code>[]</code></td><td>차단</td><td>"날씨 어때?"에 날씨 도구가 안 불림</td><td>CI 로그 <code>assert [] == ['get_weather']</code></td><td>닫음</td></tr>
+<tr><td>C. 약속 시각에서 시간대 제거 (PR #16)</td><td>실패 · 08:00 기대, 17:00 저장</td><td>차단</td><td>아침 8시 부탁이 17:00로 저장</td><td>CI 로그, UTC 러너에서만</td><td>닫음</td></tr>
+<tr><td>D. 보내기 버튼 <code>display:none</code> (PR #17)</td><td><strong>통과</strong></td><td>가능</td><td>입력창 옆 버튼이 사라짐</td><td><strong>staging 화면에서 직접</strong></td><td>Revert PR #18, 머지 후 <code>display</code>가 <code>block</code>으로 복구</td></tr>
 </tbody>
 </table></div>
-<h2 id="ch7">7. 평가 체크리스트 (1~5점, 한 줄 의견)</h2>
+<ul>
+<li>A·B는 환경과 무관해서 로컬에서도 잡혔고, <strong>C만 서버와 같은 환경(UTC)에서 보였다</strong></li>
+<li>D는 모든 자동 검사를 통과했다. 검사가 화면 모양을 보지 않기 때문이다 — staging이 없었다면 사용자가 먼저 발견했을 것</li>
+<li>D를 되돌릴 때 머지 커밋은 부모가 둘이라 <code>git revert -m 1</code>이 필요했다</li>
+<li>원인 한 문장씩은 로그의 실패 테스트 이름 → 테스트가 보내는 문장 → 바뀐 줄을 이어서 썼다(문제별 한 문장은 부록 3-7)</li>
+</ul>
+<h2 id="ch8">8. 기본 과제 · 예시 하나를 테스트로 (9장)</h2>
+<ul>
+<li><code>docs/examples.md</code>의 <strong>E08</strong>("이번 주 금요일에 자격증 시험 있어" → 약속을 저장하지 않는다)을 골랐다</li>
+<li>확인 순서: 로컬 <code>12 passed</code> → <code>ASK_PATTERN</code>에 <code>있어</code>를 임시로 끼워 넣어 <strong>실패 확인</strong> → <code>git restore</code>로 되돌려 통과 → CI 통과 → staging에 머지</li>
+<li>저장소의 메모리 저장소가 테스트 사이에 공유돼서 약속 개수는 절대값이 아니라 <strong>전후 변화</strong>로 비교했다</li>
+</ul>
+<h2 id="ch9">9. 풀지 못한 것 · 교재와 달라진 것</h2>
+<ul>
+<li>staging 전용 키와 낮은 사용 한도를 만들지 못했다(수업 키 공유)</li>
+<li>저장소를 비공개에서 공개로 바꿨다 — 승인자·브랜치 보호에 필요했고, 전환 전에 키 노출을 검사했다</li>
+<li>중간 과제(배포 결과 메신저 알림)와 도전 과제(내 앱에 CI)는 하지 않았다</li>
+<li>배포 후 모니터링·알림, 시간대 경계 테스트, 화면(브라우저) 자동 테스트는 만들지 않았다(문제 D를 CI에서 막으려면 필요)</li>
+<li>UTC 재현을 로컬에서 직접 하지 못했다(Windows에서 <code>TZ=UTC</code> 불가) — CI 결과로 대신했다</li>
+<li>처음 누른 production 승인이 왜 반영되지 않았는지 확인하지 못했다</li>
+<li>정식 docx 검증기(<code>validate.py</code>)를 이 PC에서 찾지 못해 이 문서 세트의 docx는 XML 구조 검사와 LibreOffice 렌더링으로만 확인했다</li>
+</ul>
+<h2 id="ch10">10. 정리</h2>
+<ul>
+<li>자동 배포는 맞는지 확인하지 않는다 → <strong>기계가 보는 문(CI) · 사람이 먼저 써 보는 문(staging) · 직접 누르는 문(승인) · 우회를 막는 문(브랜치 보호)</strong></li>
+<li>CI는 알려 줄 뿐 막지 않는다. 막는 것은 PR 필수 + 필수 체크다</li>
+<li>로컬에서 통과한 것이 서버에서 통과한다는 보장은 없다. 테스트는 서버와 같은 환경에서, 사용자가 보는 값을, 일부러 깨뜨려 확인한다</li>
+<li>CI가 못 보는 화면·말투·실제 AI의 답은 staging에서 사람이 본다</li>
+<li>교안 명령은 다른 방식으로 바꾸지 않고 그대로 먼저 돌려 본다</li>
+<li>다음: 배포 후 모니터링·알림, 화면 자동 테스트</li>
+</ul>
+<h2 id="ch11">11. 궁금했던 것</h2>
+<p><strong>Q. <code>python -m pytest</code>로는 통과했는데 왜 CI에서만 실패했나?</strong></p>
+<ul>
+<li><code>python -m pytest</code>는 현재 폴더를 import 경로에 넣고, <code>pytest</code> 명령은 넣지 않는다. 교안은 <code>pytest -q</code>였다</li>
+<li>교안 명령은 다른 방식으로 바꾸지 않고 그대로 먼저 돌려 봐야 한다</li>
+</ul>
+<p><strong>Q. staging이 production과 같은 키를 쓰면 의미가 있나?</strong></p>
+<ul>
+<li>환경을 나누는 구조(이름·권한·변수·배너·승인)는 그대로 연습된다. 다만 비용·한도 분리 효과는 없다</li>
+<li>내 계정에서 발급한 키라면 staging용 키·월 사용 한도를 따로 거는 것이 맞다</li>
+</ul>
+<p><strong>Q. 비공개 저장소로는 이 실습이 안 되나?</strong></p>
+<ul>
+<li>승인자(Required reviewers)와 브랜치 보호는 비공개 저장소에서 유료 플랜이 필요하다. 공개로 바꾸기 전에 커밋 기록의 키 패턴과 <code>.env</code> 커밋 이력을 검사한다</li>
+</ul>
+<h2 id="ch12">12. 평가 체크리스트 (1~5점, 한 줄 의견)</h2>
 <div class="table-scroll"><table>
-<thead><tr><th>번호</th><th>확인할 것</th><th>근거가 있는 곳</th><th>점수</th><th>의견</th></tr></thead>
+<thead><tr><th>번호</th><th>확인할 것</th><th>근거가 있는 절</th><th>점수</th><th>의견</th></tr></thead>
 <tbody>
-<tr><td>1</td><td>사용자 기준 동작(08:00)을 확인하는 테스트를 만들고 버그를 잡는지 확인했는가</td><td>3-2, 3-3</td><td></td><td></td></tr>
-<tr><td>2</td><td>CI가 서버와 같은 환경(UTC)에서 로컬에서 놓친 버그를 잡는 것을 확인했는가</td><td>3-3</td><td></td><td></td></tr>
-<tr><td>3</td><td>첫 CI 실패의 원인을 찾아 <code>ci.yml</code>을 바꾸지 않고 해결했는가</td><td>3-3</td><td></td><td></td></tr>
-<tr><td>4</td><td>환경별로 시크릿 이름과 최소 권한을 분리해 staging을 만들었는가</td><td>3-4</td><td></td><td></td></tr>
-<tr><td>5</td><td>staging만 먼저 바뀌고 production은 승인 후 바뀌는 것을 <code>/version</code>으로 확인했는가</td><td>3-5</td><td></td><td></td></tr>
-<tr><td>6</td><td>브랜치 보호로 직접 push와 실패한 체크의 머지를 막았는가</td><td>3-6, 3-7</td><td></td><td></td></tr>
-<tr><td>7</td><td>CI가 잡는 문제와 staging에서만 보이는 문제를 구분해 재현하고 Revert로 복구했는가</td><td>3-7, 3-8</td><td></td><td></td></tr>
-<tr><td>8</td><td>예시 하나를 테스트로 옮기고 일부러 깨뜨려 확인했는가</td><td>3-9</td><td></td><td></td></tr>
-<tr><td>9</td><td>풀지 못한 것과 교재와 달라진 점을 숨기지 않고 적었는가</td><td>5장</td><td></td><td></td></tr>
+<tr><td>1</td><td>사용자 기준 동작(08:00)을 확인하는 테스트를 만들고 버그를 잡는지 확인했는가</td><td>2</td><td></td><td></td></tr>
+<tr><td>2</td><td>CI가 서버와 같은 환경(UTC)에서 로컬이 놓친 버그를 잡는 것을 확인했는가</td><td>3</td><td></td><td></td></tr>
+<tr><td>3</td><td>첫 CI 실패의 원인을 찾아 <code>ci.yml</code>을 바꾸지 않고 해결했는가</td><td>3</td><td></td><td></td></tr>
+<tr><td>4</td><td>환경별로 시크릿 이름과 최소 권한을 분리해 staging을 만들었는가</td><td>4</td><td></td><td></td></tr>
+<tr><td>5</td><td>staging만 먼저 바뀌고 production은 승인 후 바뀌는 것을 <code>/version</code>으로 확인했는가</td><td>5</td><td></td><td></td></tr>
+<tr><td>6</td><td>브랜치 보호로 직접 push와 실패한 체크의 머지를 막았는가</td><td>6</td><td></td><td></td></tr>
+<tr><td>7</td><td>CI가 잡는 문제와 staging에서만 보이는 문제를 구분해 재현하고 Revert로 복구했는가</td><td>7</td><td></td><td></td></tr>
+<tr><td>8</td><td>예시 하나를 테스트로 옮기고 일부러 깨뜨려 확인했는가</td><td>8</td><td></td><td></td></tr>
+<tr><td>9</td><td>풀지 못한 것과 교재와 달라진 점을 숨기지 않고 적었는가</td><td>9</td><td></td><td></td></tr>
 </tbody>
 </table></div>
 <p><strong>전체 의견</strong>:</p>
-<h2 id="ch8">8. 첨부할 증거 화면 (Notion에 직접 붙여 넣기)</h2>
+<h2 id="ch13">13. 첨부할 증거 화면 (Notion에 직접 붙여 넣기)</h2>
 <ul>
 <li>첫 CI 실패 로그(<code>No module named 'app'</code>)와 <code>pytest.ini</code> 추가 후 통과 화면</li>
-<li>시간대 변경 PR의 CI 실패 로그(08:00 기대, 17:00 저장)와 머지 버튼 상태 비교(보호 전 <code>UNSTABLE</code>, 보호 후 <code>BLOCKED</code>)</li>
-<li>staging 화면의 "테스트 환경" 배너, staging과 production의 <code>/version</code> 비교</li>
+<li>시간대 변경 PR의 CI 실패 로그(08:00 기대, 17:00 저장)와 머지 상태 비교(보호 전 <code>UNSTABLE</code>, 보호 후 <code>BLOCKED</code>) PR 화면</li>
 <li>비공개 저장소에서 승인자 설정이 거절된 422 메시지</li>
 <li>production 배포의 <code>Review deployments</code> 승인 대기 화면</li>
+<li>staging 화면의 "테스트 환경" 배너, staging과 production의 <code>/version</code> 비교</li>
 <li>브랜치 보호 규칙 화면과 직접 push 거절(<code>GH006</code>) 메시지</li>
 <li>문제 D: CI 통과 화면 → staging에서 보내기 버튼이 사라진 화면 → Revert 후 돌아온 화면</li>
 <li>기본 과제: E08 테스트 코드와 "일부러 깨뜨림" 실패 로그</li>
 </ul>
 <p>*이 문서에는 API 키 값과 서비스 주소가 없습니다.*</p>
-<p class="footer-note">N049 · N049 실습과제 제출보고서 — 실습과제 제출보고서</p>
+<p class="footer-note">N049 · 실습과제 제출보고서</p>
 
 </main>
 </body>
