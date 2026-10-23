@@ -1,6 +1,6 @@
 # N049 · CI 테스트와 staging 환경 만들기
 
-> 버전 1.0 · 2026-10-23
+> 버전 1.1 · 2026-10-23 (실습 결과 반영)
 
 ## 목차
 
@@ -226,6 +226,8 @@ flowchart LR
 
 템플릿의 `starter/workflows/ci.yml`이 CI 워크플로다. PR이 열리거나 새 커밋이 올라오면 의존성을 설치하고 `pytest -q`를 실행한다. 이 파일을 `.github/workflows/`로 복사해 PR로 main에 넣는다(명령은 부록 A-4). 워크플로 파일은 반드시 `.github/workflows/` 아래에 있어야 하고, 교안의 내용과 액션 버전은 임의로 바꾸지 않는다.
 
+> 🧪 **예제** — [실습 확인] 실제로 해 보니 이 CI는 **첫 실행에서 실패**했다. 로그는 `ModuleNotFoundError: No module named 'app'`. CI 러너에서 `pytest` 명령만 치면 저장소 루트가 import 경로에 들어가지 않기 때문이다. 로컬에서도 `pytest`만 치면 같은 오류가 재현되는데, `python -m pytest`로 돌리면 가려진다. `ci.yml`은 그대로 두고 루트에 `pytest.ini`(`pythonpath = .`, `testpaths = tests`)를 추가해 해결했다. 교안의 명령은 교안 그대로 먼저 실행해 보는 것이 좋다.
+
 이 PR을 열면 PR 안의 `ci.yml`이 바로 돌기 시작한다. PR 화면 아래쪽 Checks 칸의 `test` 상태 체크가 노란 점으로 돌다가 **초록 체크**로 바뀌면 통과다. Details를 누르면 러너에서도 `11 passed`가 나온 것을 볼 수 있다. 통과를 확인했으면 머지한다.
 
 ### CI가 버그를 막는지 확인하기
@@ -308,12 +310,16 @@ flowchart LR
 
 staging에 올린 코드는 production과 똑같은 main 코드인데, 주소를 열면 배너가 나타난다. 코드가 아니라 서비스에 넣은 **환경변수 `ENV`**가 다르기 때문이다. `app/main.py`는 화면을 보낼 때 `ENV` 값을 읽어, 값이 `production`이거나 `local`이면 배너를 붙이지 않고 그 밖의 값이면 "테스트 환경 (값)" 배너를 붙인다. **코드는 하나로 두고 환경마다 설정값만 다르게 주는 것**이 환경을 나누는 기본 구조다. production에는 `ENV=production`이 들어가야 배너가 없고 개발용 "이번 턴" 패널 정보도 사용자에게 나가지 않는다.
 
+> ⚠️ **주의** — [실습 확인] 1단계에서 "staging 전용 키와 낮은 한도"를 따로 만들 수 없는 경우가 있다. 수업에서 받은 키는 발급 계정이 따로 있어서, 내 계정에서 새 키·한도를 만들 수 없었다. 이때는 기존 시크릿 값을 **출력하지 않고 파이프로** `llm-api-key-staging`에 복사(해시로 같은 값인지 확인)하고, 시크릿 이름과 읽기 권한만 환경별로 분리했다. 환경 구조는 그대로 연습되지만 비용·한도는 production과 공유한다. Windows에서는 프로세스 치환(`<(...)`)이 지원되지 않아 표준 입력 파이프(`| ... --data-file=-`)를 써야 한다.
+
 **3단계 — GitHub 환경과 배포 승인.** GitHub Environments는 환경마다 변수와 배포 규칙을 따로 두는 기능이다. staging에는 서비스 이름(`SERVICE`)과 `ENV` 값만 넣고, production에는 여기에 **승인자(Required reviewers)**를 더한다. 승인자가 있는 환경의 배포는 승인 전까지 기다린다. 공개 저장소에서는 무료이고, 혼자 하는 실습이라 승인자는 나 자신(`prevent_self_review: false`)으로 둔다. 저장소 공통 변수 5개는 건드리지 않는다. 명령은 부록 A-6.
 
 | 환경 | `SERVICE` | `ENV` | 승인 |
 |---|---|---|---|
 | staging | `friend-agent-staging` | `staging` | 없음 |
 | production | `friend-agent` | `production` | 승인자 필요 |
+
+> ⚠️ **주의** — [실습 확인] 저장소가 **비공개**이면 승인자(Required reviewers) 설정이 `HTTP 422 ... billing plan supports the required reviewers protection rule`로 거절된다. 승인자와 브랜치 보호는 비공개 저장소에서는 유료 플랜 기능이라서다. 교재가 "공개 저장소에서는 무료"라고 한 이유다. 공개로 전환하기 전에 저장소 전체와 커밋 기록에 키가 없는지(키 패턴 검색, `.env`가 커밋된 적이 없는지) 확인한다. 전환 직후 한 번은 API가 `PRIVATE`으로 응답했고 잠시 뒤 `PUBLIC`이 됐으니, 거절되면 다시 확인한다. 또 production 승인 버튼은 처음 누른 것이 반영되지 않아 다시 눌러야 했다. 승인이 반영되면 `pending_deployments`가 비고 `deploy` 작업이 시작된다.
 
 **4단계 — 환경을 나누는 배포 워크플로.** 템플릿의 `starter/workflows/deploy-envs.yml`은 `staging` 또는 `main` 브랜치에 커밋이 들어오면 먼저 `ci.yml`의 테스트를 불러 돌리고(`needs: test`), 통과해야 배포 작업을 시작한다. 배포 작업은 브랜치가 `main`이면 production, 아니면 staging 환경으로 실행되고, 서비스 이름과 `ENV`는 그 환경의 변수에서 읽는다. `staging` 브랜치를 만들고 이 파일로 `.github/workflows/deploy.yml`을 바꾸는 PR을 올린다(명령은 부록 A-7).
 
@@ -385,7 +391,17 @@ main 머지 → test 작업 → 승인 대기(Review deployments) → 내가 직
 | B | `weather-keyword` | 날씨 도구를 고르는 키워드를 좁힘 | 실패한 테스트의 질문 문장에 들어 있던 단어가 키워드 목록에서 빠졌는지 |
 | C | `reminder-timezone` | 약속 시각에서 시간대를 뺌 | 08:00 vs 17:00의 9시간 차이가 로컬과 러너의 시간대 차이와 같은지. 브랜치 보호가 걸린 상태에서 머지 버튼이 어떻게 보이는지도 확인 |
 
-> ⚠️ **주의** — 해설서는 "강의 자료에는 문제 A~C의 실제 실패 테스트 이름과 로그 메시지가 제시되어 있지 않다"고 밝힌다. 정확한 원인은 직접 실행한 결과를 근거로 확인한다(C는 5장에서 이미 본 `test_reminder_is_saved_in_korean_time` 실패가 단서다). `git branch -D`는 로컬 브랜치를 강제로 지우므로 지울 브랜치가 맞는지 확인하고 실행한다.
+> ⚠️ **주의** — 해설서는 "강의 자료에는 문제 A~C의 실제 실패 테스트 이름과 로그 메시지가 제시되어 있지 않다"고 밝힌다. 정확한 원인은 직접 실행한 결과를 근거로 확인한다. `git branch -D`는 로컬 브랜치를 강제로 지우므로 지울 브랜치가 맞는지 확인하고 실행한다.
+
+**[실습 확인] 문제 A~C의 실제 로그와 원인** — 세 PR 모두 `mergeStateStatus`가 `BLOCKED`였다(5장에서 보호 전에는 `UNSTABLE`, 머지 가능).
+
+| 문제 | 실패한 테스트와 로그 | 원인 한 문장 |
+|---|---|---|
+| A. `safety-exact-match` | `test_crisis_message_gets_fixed_safety_reply`, `assert '109' in '(가짜 응답) 그랬구나. 조금 더 얘기해 줄래?'` | 위기 표현 판정을 "포함"(`any(k in text ...)`)에서 "정확히 같음"(`text.strip() in CRISIS_KEYWORDS`)으로 바꿔서 "요즘 너무 죽고 싶어"가 목록의 "죽고 싶"과 같지 않다고 판정돼 109 안내가 나가지 않았다 |
+| B. `weather-keyword` | `test_weather_question_picks_weather_tool`, `assert [] == ['get_weather']` | 키워드 `"날씨"`를 `"날씨 알려"`로 좁혀서 "내일 서울 날씨 어때?"가 어떤 키워드에도 걸리지 않아 도구가 하나도 선택되지 않았다 |
+| C. `reminder-timezone` | `test_reminder_is_saved_in_korean_time`, 08:00 기대·17:00 저장 | 저장 직전 `due.replace(tzinfo=None)`으로 시간대 정보를 지워서 UTC 러너가 시간대 없는 값을 UTC로 읽어 9시간 어긋난 17:00이 저장됐다 |
+
+A와 B는 환경과 무관해서 로컬 `pytest`만 돌렸어도 잡혔다. C만 로컬(한국 시간)에서는 통과해 서버와 같은 환경(UTC)에서 돌려야 보였다.
 
 ### staging에서만 보이는 문제 — 문제 D
 
@@ -410,6 +426,8 @@ flowchart LR
 ```arrow
 버튼 숨김 PR → CI 통과(화면은 검사 안 함) → staging 배포 → 사람이 열어 보고 발견 → Revert PR로 되돌림
 ```
+
+> 🧪 **예제** — [실습 확인] 문제 D의 PR은 `test`·`hello` 모두 통과(`CLEAN`)했고 보호 규칙이 있어도 머지됐다. 머지 후 staging에서 `.send` 버튼의 `display`가 `none`이고 화면에 보이지 않았으며 production은 그대로였다. 되돌릴 때는 PR #17의 **머지 커밋**을 되돌리는 것이라 부모가 둘이어서 `git revert -m 1 <머지 커밋>`이 필요했다(그냥 `git revert`는 오류). Revert PR을 머지하자 `display`가 `block`으로 돌아왔다.
 
 > 📌 **요약** — 이 변경은 CI를 통과했지만 staging을 열어 본 사람에게는 바로 보였다. staging이 없었다면 같은 변경이 production에서 **사용자에게 먼저** 발견되었을 것이다. 해설서의 답: 이를 CI에서 미리 막으려면 "보내기 버튼이 화면에 보이는지"를 확인하는 자동 브라우저 테스트가 더 필요하다. 자동 테스트와 사람의 확인은 대체 관계가 아니라 **보완 관계**다.
 
@@ -675,7 +693,122 @@ gh secret set DEPLOY_WEBHOOK_URL
 gh secret list
 ```
 
-> ⚠️ **주의** — `ci.yml`과 `deploy-envs.yml`의 전체 내용은 교안 본문에 나오지 않고 템플릿 `starter/workflows/`에 있다. 이 노트는 동작(트리거·환경·`needs: test`)만 요약했고 파일 내용은 지어내지 않았다. 실제 파일은 템플릿에서 열어 확인한다.
+### A-11. 실습에서 확인한 파일 내용 (템플릿 `starter/`)
+
+교안 본문에는 이 파일들의 내용이 나오지 않아, 실습에서 템플릿을 열어 확인한 내용을 옮긴다.
+
+```yaml
+# starter/workflows/ci.yml  →  .github/workflows/ci.yml
+name: ci
+
+on:
+  pull_request:
+  workflow_call:   # 배포 워크플로가 배포 전에 이 검사를 불러 쓴다
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: pytest -q
+```
+
+```yaml
+# starter/workflows/deploy-envs.yml  →  .github/workflows/deploy.yml
+name: deploy
+
+on:
+  push:
+    branches: [staging, main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SA }}
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: ${{ vars.SERVICE }}
+          region: us-central1
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          source: .
+          env_vars: |
+            COMMIT_SHA=${{ github.sha }}
+            ENV=${{ vars.ENV }}
+          flags: --service-account=${{ vars.RUNTIME_SA }}
+```
+
+`environment:` 한 줄이 브랜치에 따라 환경을 고르고, `vars.SERVICE`·`vars.ENV`는 그 환경의 변수에서 읽힌다. 이 템플릿은 `BUILD_SA` 변수를 쓰지 않는다.
+
+```ini
+# pytest.ini (실습에서 추가 — 템플릿에는 없었음)
+[pytest]
+pythonpath = .
+testpaths = tests
+```
+
+### A-12. 기본 과제 E08 테스트와 일부러 깨뜨려 확인하기
+
+```python
+# tests/test_no_reminder_without_request.py
+import json
+
+from fastapi.testclient import TestClient
+
+from app.main import app, store
+
+client = TestClient(app)
+
+
+def chat(message):
+    r = client.post("/api/chat", json={"message": message})
+    assert r.status_code == 200
+    return [json.loads(line) for line in r.text.splitlines()]
+
+
+def test_schedule_mention_without_request_is_not_saved():
+    # 예시 E08: "이번 주 금요일에 자격증 시험 있어" → 알려 달라는 부탁이 없으니 약속을 저장하지 않는다
+    before = len(store.list_reminders("local-user", status="pending"))
+    turn = next(e for e in chat("이번 주 금요일에 자격증 시험 있어") if e["type"] == "turn")
+    assert "create_reminder" not in [t["name"] for t in turn["tools"]]
+    assert len(store.list_reminders("local-user", status="pending")) == before
+```
+
+일부러 깨뜨릴 때는 `app/router.py`의 `ASK_PATTERN`에 `|있어`를 임시로 끼워 넣어 이 테스트가 `assert 'create_reminder' not in ['create_reminder']`로 실패하는지 본 뒤 `git restore app/router.py`로 되돌린다. 메모리 저장소가 테스트 사이에 공유되므로 약속 개수는 절대값이 아니라 전후 변화로 비교한다.
+
+### A-13. 머지 커밋 되돌리기와 머지 상태 확인
+
+```bash
+# PR 머지 커밋(부모가 둘)은 -m 1 로 staging 쪽을 기준으로 되돌린다
+git revert -m 1 --no-edit <머지 커밋 해시>
+
+# PR의 머지 상태: UNSTABLE=체크 실패지만 머지 가능, BLOCKED=머지 차단, CLEAN=문제 없음
+gh pr view <번호> --json mergeable,mergeStateStatus --jq '"mergeable=\(.mergeable) state=\(.mergeStateStatus)"'
+
+# 배포 승인 대기 확인 (승인이 반영되면 비어야 한다)
+gh api repos/{owner}/{repo}/actions/runs/<실행 번호>/pending_deployments
+```
 
 ---
 
@@ -699,6 +832,14 @@ gh secret list
 | staging 머지 후 production `/version`이 바뀜 | 배포 워크플로가 브랜치별로 환경을 고르지 못함 | `deploy.yml`이 `deploy-envs.yml`로 바뀌었는지, 브랜치 이름이 `staging`인지 확인 |
 | 테스트는 통과했는데 화면에서 버튼이 사라짐 | 테스트가 화면 모양을 검사하지 않음 | staging에서 직접 확인 → Revert PR. 필요하면 브라우저 테스트 추가 |
 | 웹훅 주소가 코드·로그에 노출될 위험 | 워크플로 파일에 주소를 직접 씀 | `gh secret set`으로 저장소 Secrets에 넣고 이름으로만 읽음 |
+| CI에서만 `ModuleNotFoundError: No module named 'app'` (로컬 `python -m pytest`는 통과) | `pytest` 명령은 저장소 루트를 import 경로에 넣지 않음. `python -m pytest`는 현재 폴더를 넣어서 가려짐 | 루트에 `pytest.ini`(`pythonpath = .`, `testpaths = tests`) 추가. 교안 명령은 `pytest -q` 그대로 재현해 본다 |
+| 환경 승인자 설정이 `HTTP 422 ... billing plan supports the required reviewers` | 저장소가 비공개라 승인자·브랜치 보호가 유료 기능 | 저장소를 공개로 전환(전환 전 키 노출 점검), 또는 유료 플랜. 전환 직후 `PRIVATE`으로 보이면 잠시 뒤 다시 확인 |
+| production 승인 버튼을 눌렀는데 `deploy`가 계속 `waiting` | 승인이 반영되지 않음(확정 버튼까지 안 눌렀거나 다른 실행을 승인) | `pending_deployments`에 production이 남았는지 확인하고 해당 실행에서 `Approve and deploy`를 다시 누름 |
+| Windows에서 `gcloud secrets create ... --data-file=<(...)` 실패(`/proc/.../fd/63 No such file`) | 프로세스 치환이 Windows 환경에서 지원되지 않음(시크릿은 만들어지지 않음) | 표준 입력 파이프 `gcloud secrets versions access ... \| gcloud secrets create ... --data-file=-` |
+| 머지 커밋을 `git revert`했더니 오류(mainline 지정 필요) | 머지 커밋은 부모가 둘이라 어느 쪽을 기준으로 되돌릴지 모름 | `git revert -m 1 <머지 커밋>` |
+| 거절된 직접 push 뒤 로컬 `main`에 커밋이 남음 / `git reset --hard`가 안전 검사에 막힘 | 원격은 거절돼도 로컬 커밋은 남고, AI 도우미 환경은 로컬 삭제 명령을 막을 수 있음 | `main` 브랜치인지·지울 커밋이 하나뿐인지 확인한 뒤 터미널에서 직접 `git reset --hard origin/main` |
+| 시크릿 복사 후 staging 키·한도를 분리하지 못함 | 수업에서 받은 키는 내 계정에서 새 키·한도를 만들 수 없음 | 시크릿 이름·권한만 환경별로 분리하고 한계를 기록. 필요하면 내 계정에 소액 충전해 키를 따로 발급 |
+| 저장소 변수 `BUILD_SA`가 없다고 느껴짐 | 교재는 변수 5개라 하지만 이 템플릿은 쓰지 않음 | 템플릿 `deploy-envs.yml`에 `BUILD_SA`가 없으면 그대로 진행 |
 
 ---
 
@@ -971,6 +1112,7 @@ staging 과 production 의 /version 응답을 각각 가져와서 commit 이 같
 - staging·production 환경을 코드 하나·설정 둘로 나누고, 환경별 키·변수·인스턴스를 분리할 수 있다.
 - 브랜치 보호와 배포 승인으로 우회 경로를 막을 수 있다.
 - CI가 잡는 문제와 staging에서만 보이는 문제를 구분하고, Revert PR로 되돌릴 수 있다.
+- 교안 명령을 그대로 재현해서 템플릿·교재의 차이(`pytest.ini`, `BUILD_SA`, 비공개 저장소의 유료 기능)를 직접 찾아낼 수 있다.
 
 ### 다음에 배우면 좋을 것
 

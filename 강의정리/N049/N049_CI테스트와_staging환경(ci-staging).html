@@ -146,7 +146,7 @@
 <button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
 <main>
 <h1>N049 · CI 테스트와 staging 환경 만들기</h1>
-<p class="subtitle">버전 1.0 · 2026-10-23</p>
+<p class="subtitle">버전 1.1 · 2026-10-23 (실습 결과 반영)</p>
 
 <nav class="toc">
 <h2>목차</h2>
@@ -308,6 +308,7 @@
 <div class="callout example"><span class="label">🧪 예제</span>[해설서 비유] 과제를 제출한다고 생각해 보자. 로컬 테스트는 제출 전에 학생이 직접 답을 확인하는 것, CI는 제출할 때마다 자동 채점기가 검사하는 것, PR 상태 체크는 채점 결과(통과/실패)를 보여 주는 것이다. <code>ci.yml</code>은 자동 검사 담당자에게 전달하는 업무 지침서라고 보면 된다.</div>
 <h3>CI 워크플로 붙이기</h3>
 <p>템플릿의 <code>starter/workflows/ci.yml</code>이 CI 워크플로다. PR이 열리거나 새 커밋이 올라오면 의존성을 설치하고 <code>pytest -q</code>를 실행한다. 이 파일을 <code>.github/workflows/</code>로 복사해 PR로 main에 넣는다(명령은 부록 A-4). 워크플로 파일은 반드시 <code>.github/workflows/</code> 아래에 있어야 하고, 교안의 내용과 액션 버전은 임의로 바꾸지 않는다.</p>
+<div class="callout example"><span class="label">🧪 예제</span>[실습 확인] 실제로 해 보니 이 CI는 <strong>첫 실행에서 실패</strong>했다. 로그는 <code>ModuleNotFoundError: No module named 'app'</code>. CI 러너에서 <code>pytest</code> 명령만 치면 저장소 루트가 import 경로에 들어가지 않기 때문이다. 로컬에서도 <code>pytest</code>만 치면 같은 오류가 재현되는데, <code>python -m pytest</code>로 돌리면 가려진다. <code>ci.yml</code>은 그대로 두고 루트에 <code>pytest.ini</code>(<code>pythonpath = .</code>, <code>testpaths = tests</code>)를 추가해 해결했다. 교안의 명령은 교안 그대로 먼저 실행해 보는 것이 좋다.</div>
 <p>이 PR을 열면 PR 안의 <code>ci.yml</code>이 바로 돌기 시작한다. PR 화면 아래쪽 Checks 칸의 <code>test</code> 상태 체크가 노란 점으로 돌다가 <strong>초록 체크</strong>로 바뀌면 통과다. Details를 누르면 러너에서도 <code>11 passed</code>가 나온 것을 볼 수 있다. 통과를 확인했으면 머지한다.</p>
 <h3>CI가 버그를 막는지 확인하기</h3>
 <p>4장의 시간대 변경을 이번에는 PR로 올려 본다(<code>try/timezone-pr</code> 브랜치, 명령은 부록 A-4). 로컬에서 그냥 <code>pytest</code>를 돌리면 통과했던 변경이다.</p>
@@ -382,6 +383,7 @@
 <div class="callout warning"><span class="label">⚠️ 주의</span>실행 전에 서비스 이름이 <code>friend-agent-staging</code>인지, 시크릿이 <code>-staging</code> 쪽인지 본다. 이름을 잘못 쓰면 production 서비스의 설정이 바뀐다. 배포 후 나온 주소를 열어 "테스트 환경 (staging)" 배너가 보이면 성공이다.</div>
 <h3>같은 코드인데 staging에서만 배너가 보이는 이유</h3>
 <p>staging에 올린 코드는 production과 똑같은 main 코드인데, 주소를 열면 배너가 나타난다. 코드가 아니라 서비스에 넣은 <strong>환경변수 <code>ENV</code></strong>가 다르기 때문이다. <code>app/main.py</code>는 화면을 보낼 때 <code>ENV</code> 값을 읽어, 값이 <code>production</code>이거나 <code>local</code>이면 배너를 붙이지 않고 그 밖의 값이면 "테스트 환경 (값)" 배너를 붙인다. <strong>코드는 하나로 두고 환경마다 설정값만 다르게 주는 것</strong>이 환경을 나누는 기본 구조다. production에는 <code>ENV=production</code>이 들어가야 배너가 없고 개발용 "이번 턴" 패널 정보도 사용자에게 나가지 않는다.</p>
+<div class="callout warning"><span class="label">⚠️ 주의</span>[실습 확인] 1단계에서 "staging 전용 키와 낮은 한도"를 따로 만들 수 없는 경우가 있다. 수업에서 받은 키는 발급 계정이 따로 있어서, 내 계정에서 새 키·한도를 만들 수 없었다. 이때는 기존 시크릿 값을 <strong>출력하지 않고 파이프로</strong> <code>llm-api-key-staging</code>에 복사(해시로 같은 값인지 확인)하고, 시크릿 이름과 읽기 권한만 환경별로 분리했다. 환경 구조는 그대로 연습되지만 비용·한도는 production과 공유한다. Windows에서는 프로세스 치환(<code>&lt;(...)</code>)이 지원되지 않아 표준 입력 파이프(<code>| ... --data-file=-</code>)를 써야 한다.</div>
 <p><strong>3단계 — GitHub 환경과 배포 승인.</strong> GitHub Environments는 환경마다 변수와 배포 규칙을 따로 두는 기능이다. staging에는 서비스 이름(<code>SERVICE</code>)과 <code>ENV</code> 값만 넣고, production에는 여기에 <strong>승인자(Required reviewers)</strong>를 더한다. 승인자가 있는 환경의 배포는 승인 전까지 기다린다. 공개 저장소에서는 무료이고, 혼자 하는 실습이라 승인자는 나 자신(<code>prevent_self_review: false</code>)으로 둔다. 저장소 공통 변수 5개는 건드리지 않는다. 명령은 부록 A-6.</p>
 <div class="table-scroll"><table>
 <thead><tr><th>환경</th><th><code>SERVICE</code></th><th><code>ENV</code></th><th>승인</th></tr></thead>
@@ -390,6 +392,7 @@
 <tr><td>production</td><td><code>friend-agent</code></td><td><code>production</code></td><td>승인자 필요</td></tr>
 </tbody>
 </table></div>
+<div class="callout warning"><span class="label">⚠️ 주의</span>[실습 확인] 저장소가 <strong>비공개</strong>이면 승인자(Required reviewers) 설정이 <code>HTTP 422 ... billing plan supports the required reviewers protection rule</code>로 거절된다. 승인자와 브랜치 보호는 비공개 저장소에서는 유료 플랜 기능이라서다. 교재가 "공개 저장소에서는 무료"라고 한 이유다. 공개로 전환하기 전에 저장소 전체와 커밋 기록에 키가 없는지(키 패턴 검색, <code>.env</code>가 커밋된 적이 없는지) 확인한다. 전환 직후 한 번은 API가 <code>PRIVATE</code>으로 응답했고 잠시 뒤 <code>PUBLIC</code>이 됐으니, 거절되면 다시 확인한다. 또 production 승인 버튼은 처음 누른 것이 반영되지 않아 다시 눌러야 했다. 승인이 반영되면 <code>pending_deployments</code>가 비고 <code>deploy</code> 작업이 시작된다.</div>
 <p><strong>4단계 — 환경을 나누는 배포 워크플로.</strong> 템플릿의 <code>starter/workflows/deploy-envs.yml</code>은 <code>staging</code> 또는 <code>main</code> 브랜치에 커밋이 들어오면 먼저 <code>ci.yml</code>의 테스트를 불러 돌리고(<code>needs: test</code>), 통과해야 배포 작업을 시작한다. 배포 작업은 브랜치가 <code>main</code>이면 production, 아니면 staging 환경으로 실행되고, 서비스 이름과 <code>ENV</code>는 그 환경의 변수에서 읽는다. <code>staging</code> 브랜치를 만들고 이 파일로 <code>.github/workflows/deploy.yml</code>을 바꾸는 PR을 올린다(명령은 부록 A-7).</p>
 <div class="callout warning"><span class="label">⚠️ 주의</span>실행 전에 PR 대상이 <code>main</code>이 아니라 <strong><code>staging</code></strong>인지 본다. 이 단계에서는 PR만 만들고 아직 머지하지 않는다.</div>
 <p><strong>5단계 — staging에 머지해 배포 확인.</strong> 4단계 PR의 상태 체크가 통과하면 <code>staging</code>에 머지한다. 머지하는 순간 새 배포 워크플로가 처음으로 돌아 test 작업 → deploy 작업(staging 환경) 순으로 진행되고 <code>friend-agent-staging</code>만 새 커밋으로 바뀐다. 확인은 세 가지다: ① Actions 탭에서 deploy가 staging 환경으로 돌았는가, ② staging 주소 끝에 <code>/version</code>을 붙여 <code>commit</code>이 방금 머지한 커밋 SHA로 바뀌었는가, ③ production 주소의 <code>/version</code>은 <strong>바뀌지 않았는가</strong>.</p>
@@ -440,7 +443,17 @@
 <tr><td>C</td><td><code>reminder-timezone</code></td><td>약속 시각에서 시간대를 뺌</td><td>08:00 vs 17:00의 9시간 차이가 로컬과 러너의 시간대 차이와 같은지. 브랜치 보호가 걸린 상태에서 머지 버튼이 어떻게 보이는지도 확인</td></tr>
 </tbody>
 </table></div>
-<div class="callout warning"><span class="label">⚠️ 주의</span>해설서는 "강의 자료에는 문제 A~C의 실제 실패 테스트 이름과 로그 메시지가 제시되어 있지 않다"고 밝힌다. 정확한 원인은 직접 실행한 결과를 근거로 확인한다(C는 5장에서 이미 본 <code>test_reminder_is_saved_in_korean_time</code> 실패가 단서다). <code>git branch -D</code>는 로컬 브랜치를 강제로 지우므로 지울 브랜치가 맞는지 확인하고 실행한다.</div>
+<div class="callout warning"><span class="label">⚠️ 주의</span>해설서는 "강의 자료에는 문제 A~C의 실제 실패 테스트 이름과 로그 메시지가 제시되어 있지 않다"고 밝힌다. 정확한 원인은 직접 실행한 결과를 근거로 확인한다. <code>git branch -D</code>는 로컬 브랜치를 강제로 지우므로 지울 브랜치가 맞는지 확인하고 실행한다.</div>
+<p><strong>[실습 확인] 문제 A~C의 실제 로그와 원인</strong> — 세 PR 모두 <code>mergeStateStatus</code>가 <code>BLOCKED</code>였다(5장에서 보호 전에는 <code>UNSTABLE</code>, 머지 가능).</p>
+<div class="table-scroll"><table>
+<thead><tr><th>문제</th><th>실패한 테스트와 로그</th><th>원인 한 문장</th></tr></thead>
+<tbody>
+<tr><td>A. <code>safety-exact-match</code></td><td><code>test_crisis_message_gets_fixed_safety_reply</code>, <code>assert '109' in '(가짜 응답) 그랬구나. 조금 더 얘기해 줄래?'</code></td><td>위기 표현 판정을 "포함"(<code>any(k in text ...)</code>)에서 "정확히 같음"(<code>text.strip() in CRISIS_KEYWORDS</code>)으로 바꿔서 "요즘 너무 죽고 싶어"가 목록의 "죽고 싶"과 같지 않다고 판정돼 109 안내가 나가지 않았다</td></tr>
+<tr><td>B. <code>weather-keyword</code></td><td><code>test_weather_question_picks_weather_tool</code>, <code>assert [] == ['get_weather']</code></td><td>키워드 <code>"날씨"</code>를 <code>"날씨 알려"</code>로 좁혀서 "내일 서울 날씨 어때?"가 어떤 키워드에도 걸리지 않아 도구가 하나도 선택되지 않았다</td></tr>
+<tr><td>C. <code>reminder-timezone</code></td><td><code>test_reminder_is_saved_in_korean_time</code>, 08:00 기대·17:00 저장</td><td>저장 직전 <code>due.replace(tzinfo=None)</code>으로 시간대 정보를 지워서 UTC 러너가 시간대 없는 값을 UTC로 읽어 9시간 어긋난 17:00이 저장됐다</td></tr>
+</tbody>
+</table></div>
+<p>A와 B는 환경과 무관해서 로컬 <code>pytest</code>만 돌렸어도 잡혔다. C만 로컬(한국 시간)에서는 통과해 서버와 같은 환경(UTC)에서 돌려야 보였다.</p>
 <h3>staging에서만 보이는 문제 — 문제 D</h3>
 <p>A~C는 모두 CI가 머지 <strong>전에</strong> 막아 준 변경이다. 이번에는 CI를 <strong>통과해</strong> staging까지 가는 변경을 하나 올려, 사람이 직접 써 봐야 보이는 문제가 있다는 것을 확인한다.</p>
 <p><strong>문제 D — 보내기 버튼이 사라진 변경.</strong> 화면 코드 <code>static/index.html</code>에서 보내기 버튼 스타일 <code>.send{...}</code> 중괄호 안에 <code>display:none;</code>을 넣고 <code>staging</code>으로 PR을 올린다. 테스트는 화면 모양을 확인하지 않으므로 상태 체크는 <strong>통과</strong>하고, 브랜치 보호가 걸려 있어도 머지할 수 있다. 머지하면 staging에 배포되니, staging 주소를 열어 입력창 옆 보내기 버튼이 보이는지 확인한다. 버튼이 사라진 것을 확인했으면 production으로 보내지 않고, <strong>그 머지를 되돌리는 Revert PR</strong>을 <code>staging</code>으로 올려 머지한다. staging에 버튼이 돌아오면 끝이다. 이 변경은 <code>main</code>으로 PR을 올리지 않는다.</p>
@@ -455,6 +468,7 @@
 <div class="diagram-wrap">
 <svg viewBox="0 0 756 76" xmlns="http://www.w3.org/2000/svg" role="img"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--svg-stroke)"/></marker></defs><g font-size="12" class="svg-text"><rect x="10" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill1)"/><text x="70" y="35" text-anchor="middle">버튼 숨김 변경</text><text x="70" y="49" text-anchor="middle">PR</text><rect x="164" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill2)"/><text x="224" y="42" text-anchor="middle">CI 테스트 통과</text><rect x="318" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill3)"/><text x="378" y="35" text-anchor="middle">staging</text><text x="378" y="49" text-anchor="middle">배포</text><rect x="472" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill4)"/><text x="532" y="35" text-anchor="middle">사람이 열어 보고</text><text x="532" y="49" text-anchor="middle">발견</text><rect x="626" y="10" width="120" height="56" rx="8" class="svg-box" fill="var(--svg-fill1)"/><text x="686" y="35" text-anchor="middle">Revert</text><text x="686" y="49" text-anchor="middle">PR로 되돌림</text></g><path class="svg-arrow" d="M130 38 L162 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M284 38 L316 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M438 38 L470 38" marker-end="url(#ah)"/><path class="svg-arrow" d="M592 38 L624 38" marker-end="url(#ah)"/></svg>
 </div>
+<div class="callout example"><span class="label">🧪 예제</span>[실습 확인] 문제 D의 PR은 <code>test</code>·<code>hello</code> 모두 통과(<code>CLEAN</code>)했고 보호 규칙이 있어도 머지됐다. 머지 후 staging에서 <code>.send</code> 버튼의 <code>display</code>가 <code>none</code>이고 화면에 보이지 않았으며 production은 그대로였다. 되돌릴 때는 PR #17의 <strong>머지 커밋</strong>을 되돌리는 것이라 부모가 둘이어서 <code>git revert -m 1 &lt;머지 커밋&gt;</code>이 필요했다(그냥 <code>git revert</code>는 오류). Revert PR을 머지하자 <code>display</code>가 <code>block</code>으로 돌아왔다.</div>
 <div class="callout summary"><span class="label">📌 요약</span>이 변경은 CI를 통과했지만 staging을 열어 본 사람에게는 바로 보였다. staging이 없었다면 같은 변경이 production에서 <strong>사용자에게 먼저</strong> 발견되었을 것이다. 해설서의 답: 이를 CI에서 미리 막으려면 "보내기 버튼이 화면에 보이는지"를 확인하는 자동 브라우저 테스트가 더 필요하다. 자동 테스트와 사람의 확인은 대체 관계가 아니라 <strong>보완 관계</strong>다.</div>
 <h2 id="ch9">9. 과제 고르기</h2>
 <p>아래 세 과제 중 하나 이상을 고른다. 위에서부터 차례로 어려워지며, 어느 과제든 작업 브랜치에서 시작해 PR로 올리고 상태 체크가 통과하는 것까지 확인한다.</p>
@@ -646,7 +660,102 @@ gh run watch
 <pre><code># 실행하면 값을 입력하라는 안내가 나온다. 메신저에서 복사한 웹훅 주소를 붙여 넣는다
 gh secret set DEPLOY_WEBHOOK_URL
 gh secret list</code></pre>
-<div class="callout warning"><span class="label">⚠️ 주의</span><code>ci.yml</code>과 <code>deploy-envs.yml</code>의 전체 내용은 교안 본문에 나오지 않고 템플릿 <code>starter/workflows/</code>에 있다. 이 노트는 동작(트리거·환경·<code>needs: test</code>)만 요약했고 파일 내용은 지어내지 않았다. 실제 파일은 템플릿에서 열어 확인한다.</div>
+<h3>A-11. 실습에서 확인한 파일 내용 (템플릿 <code>starter/</code>)</h3>
+<p>교안 본문에는 이 파일들의 내용이 나오지 않아, 실습에서 템플릿을 열어 확인한 내용을 옮긴다.</p>
+<pre><code># starter/workflows/ci.yml  →  .github/workflows/ci.yml
+name: ci
+
+on:
+  pull_request:
+  workflow_call:   # 배포 워크플로가 배포 전에 이 검사를 불러 쓴다
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: pytest -q</code></pre>
+<pre><code># starter/workflows/deploy-envs.yml  →  .github/workflows/deploy.yml
+name: deploy
+
+on:
+  push:
+    branches: [staging, main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' &amp;&amp; 'production' || 'staging' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SA }}
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: ${{ vars.SERVICE }}
+          region: us-central1
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          source: .
+          env_vars: |
+            COMMIT_SHA=${{ github.sha }}
+            ENV=${{ vars.ENV }}
+          flags: --service-account=${{ vars.RUNTIME_SA }}</code></pre>
+<p><code>environment:</code> 한 줄이 브랜치에 따라 환경을 고르고, <code>vars.SERVICE</code>·<code>vars.ENV</code>는 그 환경의 변수에서 읽힌다. 이 템플릿은 <code>BUILD_SA</code> 변수를 쓰지 않는다.</p>
+<pre><code># pytest.ini (실습에서 추가 — 템플릿에는 없었음)
+[pytest]
+pythonpath = .
+testpaths = tests</code></pre>
+<h3>A-12. 기본 과제 E08 테스트와 일부러 깨뜨려 확인하기</h3>
+<pre><code># tests/test_no_reminder_without_request.py
+import json
+
+from fastapi.testclient import TestClient
+
+from app.main import app, store
+
+client = TestClient(app)
+
+
+def chat(message):
+    r = client.post("/api/chat", json={"message": message})
+    assert r.status_code == 200
+    return [json.loads(line) for line in r.text.splitlines()]
+
+
+def test_schedule_mention_without_request_is_not_saved():
+    # 예시 E08: "이번 주 금요일에 자격증 시험 있어" → 알려 달라는 부탁이 없으니 약속을 저장하지 않는다
+    before = len(store.list_reminders("local-user", status="pending"))
+    turn = next(e for e in chat("이번 주 금요일에 자격증 시험 있어") if e["type"] == "turn")
+    assert "create_reminder" not in [t["name"] for t in turn["tools"]]
+    assert len(store.list_reminders("local-user", status="pending")) == before</code></pre>
+<p>일부러 깨뜨릴 때는 <code>app/router.py</code>의 <code>ASK_PATTERN</code>에 <code>|있어</code>를 임시로 끼워 넣어 이 테스트가 <code>assert 'create_reminder' not in ['create_reminder']</code>로 실패하는지 본 뒤 <code>git restore app/router.py</code>로 되돌린다. 메모리 저장소가 테스트 사이에 공유되므로 약속 개수는 절대값이 아니라 전후 변화로 비교한다.</p>
+<h3>A-13. 머지 커밋 되돌리기와 머지 상태 확인</h3>
+<pre><code># PR 머지 커밋(부모가 둘)은 -m 1 로 staging 쪽을 기준으로 되돌린다
+git revert -m 1 --no-edit &lt;머지 커밋 해시&gt;
+
+# PR의 머지 상태: UNSTABLE=체크 실패지만 머지 가능, BLOCKED=머지 차단, CLEAN=문제 없음
+gh pr view &lt;번호&gt; --json mergeable,mergeStateStatus --jq '"mergeable=\(.mergeable) state=\(.mergeStateStatus)"'
+
+# 배포 승인 대기 확인 (승인이 반영되면 비어야 한다)
+gh api repos/{owner}/{repo}/actions/runs/&lt;실행 번호&gt;/pending_deployments</code></pre>
 <h2 id="app-b">부록 B · 트러블슈팅 표</h2>
 <div class="table-scroll"><table>
 <thead><tr><th>증상</th><th>원인</th><th>해결</th></tr></thead>
@@ -667,6 +776,14 @@ gh secret list</code></pre>
 <tr><td>staging 머지 후 production <code>/version</code>이 바뀜</td><td>배포 워크플로가 브랜치별로 환경을 고르지 못함</td><td><code>deploy.yml</code>이 <code>deploy-envs.yml</code>로 바뀌었는지, 브랜치 이름이 <code>staging</code>인지 확인</td></tr>
 <tr><td>테스트는 통과했는데 화면에서 버튼이 사라짐</td><td>테스트가 화면 모양을 검사하지 않음</td><td>staging에서 직접 확인 → Revert PR. 필요하면 브라우저 테스트 추가</td></tr>
 <tr><td>웹훅 주소가 코드·로그에 노출될 위험</td><td>워크플로 파일에 주소를 직접 씀</td><td><code>gh secret set</code>으로 저장소 Secrets에 넣고 이름으로만 읽음</td></tr>
+<tr><td>CI에서만 <code>ModuleNotFoundError: No module named 'app'</code> (로컬 <code>python -m pytest</code>는 통과)</td><td><code>pytest</code> 명령은 저장소 루트를 import 경로에 넣지 않음. <code>python -m pytest</code>는 현재 폴더를 넣어서 가려짐</td><td>루트에 <code>pytest.ini</code>(<code>pythonpath = .</code>, <code>testpaths = tests</code>) 추가. 교안 명령은 <code>pytest -q</code> 그대로 재현해 본다</td></tr>
+<tr><td>환경 승인자 설정이 <code>HTTP 422 ... billing plan supports the required reviewers</code></td><td>저장소가 비공개라 승인자·브랜치 보호가 유료 기능</td><td>저장소를 공개로 전환(전환 전 키 노출 점검), 또는 유료 플랜. 전환 직후 <code>PRIVATE</code>으로 보이면 잠시 뒤 다시 확인</td></tr>
+<tr><td>production 승인 버튼을 눌렀는데 <code>deploy</code>가 계속 <code>waiting</code></td><td>승인이 반영되지 않음(확정 버튼까지 안 눌렀거나 다른 실행을 승인)</td><td><code>pending_deployments</code>에 production이 남았는지 확인하고 해당 실행에서 <code>Approve and deploy</code>를 다시 누름</td></tr>
+<tr><td>Windows에서 <code>gcloud secrets create ... --data-file=&lt;(...)</code> 실패(<code>/proc/.../fd/63 No such file</code>)</td><td>프로세스 치환이 Windows 환경에서 지원되지 않음(시크릿은 만들어지지 않음)</td><td>표준 입력 파이프 <code>gcloud secrets versions access ... | gcloud secrets create ... --data-file=-</code></td></tr>
+<tr><td>머지 커밋을 <code>git revert</code>했더니 오류(mainline 지정 필요)</td><td>머지 커밋은 부모가 둘이라 어느 쪽을 기준으로 되돌릴지 모름</td><td><code>git revert -m 1 &lt;머지 커밋&gt;</code></td></tr>
+<tr><td>거절된 직접 push 뒤 로컬 <code>main</code>에 커밋이 남음 / <code>git reset --hard</code>가 안전 검사에 막힘</td><td>원격은 거절돼도 로컬 커밋은 남고, AI 도우미 환경은 로컬 삭제 명령을 막을 수 있음</td><td><code>main</code> 브랜치인지·지울 커밋이 하나뿐인지 확인한 뒤 터미널에서 직접 <code>git reset --hard origin/main</code></td></tr>
+<tr><td>시크릿 복사 후 staging 키·한도를 분리하지 못함</td><td>수업에서 받은 키는 내 계정에서 새 키·한도를 만들 수 없음</td><td>시크릿 이름·권한만 환경별로 분리하고 한계를 기록. 필요하면 내 계정에 소액 충전해 키를 따로 발급</td></tr>
+<tr><td>저장소 변수 <code>BUILD_SA</code>가 없다고 느껴짐</td><td>교재는 변수 5개라 하지만 이 템플릿은 쓰지 않음</td><td>템플릿 <code>deploy-envs.yml</code>에 <code>BUILD_SA</code>가 없으면 그대로 진행</td></tr>
 </tbody>
 </table></div>
 <h2 id="app-c">부록 C · AI 프롬프트 모음집</h2>
@@ -853,6 +970,7 @@ staging 으로 가는 PR을 만들고 상태 체크 결과를 알려 줘. 머지
 <li>staging·production 환경을 코드 하나·설정 둘로 나누고, 환경별 키·변수·인스턴스를 분리할 수 있다.</li>
 <li>브랜치 보호와 배포 승인으로 우회 경로를 막을 수 있다.</li>
 <li>CI가 잡는 문제와 staging에서만 보이는 문제를 구분하고, Revert PR로 되돌릴 수 있다.</li>
+<li>교안 명령을 그대로 재현해서 템플릿·교재의 차이(<code>pytest.ini</code>, <code>BUILD_SA</code>, 비공개 저장소의 유료 기능)를 직접 찾아낼 수 있다.</li>
 </ul>
 <h3>다음에 배우면 좋을 것</h3>
 <div class="table-scroll"><table>
