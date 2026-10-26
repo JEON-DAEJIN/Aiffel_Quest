@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dockerfile로 실행 환경을 정하는 법 (N050 방법론 실전적용)</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>Dockerfile로 실행 환경을 정하는 법 — N050 방법론을 실제로 적용하기</h1>
+<p class="footer-note" style="text-align:left;margin:0 0 24px">버전 1.0 · 2026-10-26</p>
+<div class="callout tip"><p><span class="label">💡 팁</span> — 이 문서는 N050(Dockerfile로 실행환경 정하기) 강의가 가르친 순서를 실습용 서비스 <code>friend-agent</code>에 처음부터 끝까지 적용해 본 기록이자 <strong>다음 프로젝트에서 그대로 따라 할 수 있는 레시피</strong>다. N049 방법론 문서와 같은 형식으로, "무엇을 왜 하는지"는 일반 원리로, "실제로 어떻게 됐는지"는 friend-agent 예시로 함께 보여 준다. 시간순 기록과 증거는 제출보고서에 있다. 이 방법을 <strong>실제로 적용한 곳은 friend-agent 하나뿐</strong>이며, 다른 프로젝트에 대한 내용은 11장에 "계획"으로 따로 적었다. 각 장 머리의 <code>G375~G377</code>은 프로젝트 가이드라인(project_guideline)의 번호이고 한 줄은 그 원문의 취지 요약이다.</p></div>
+<nav class="toc" id="목차"><h2>목차</h2><ol><li><a href="#1-한-장-요약">1. 한 장 요약</a></li><li><a href="#2-0단계--시작-전에-점검하기">2. 0단계 — 시작 전에 점검하기</a></li><li><a href="#3-원리-①--문제를-코드환경배포로-가른다">3. 원리 ① — 문제를 코드·환경·배포로 가른다</a></li><li><a href="#4-원리-②--새-기능은-운영체제에-따로-설치할-프로그램이-있는가를-먼저-묻는다">4. 원리 ② — 새 기능은 "운영체제에 따로 설치할 프로그램이 있는가"를 먼저 묻는다</a></li><li><a href="#5-원리-③--dockerfile-5기준으로-검토하고-이미지-안을-열어-본다">5. 원리 ③ — Dockerfile 5기준으로 검토하고, 이미지 안을 열어 본다</a></li><li><a href="#6-원리-④--키는-이미지에-넣지-않고-ignore-파일은-단계별로-구분한다">6. 원리 ④ — 키는 이미지에 넣지 않고, ignore 파일은 단계별로 구분한다</a></li><li><a href="#7-원리-⑤--네-곳에서-같은-입력으로-같은-결과를-비교한다">7. 원리 ⑤ — 네 곳에서 같은 입력으로 같은 결과를 비교한다</a></li><li><a href="#8-원리-⑥--같은-dockerfile이-같은-이미지는-아니다">8. 원리 ⑥ — 같은 Dockerfile이 같은 이미지는 아니다</a></li><li><a href="#9-게이트가-놓치는-것">9. 게이트가 놓치는 것</a></li><li><a href="#10-체크리스트프롬프트역할-나누기">10. 체크리스트·프롬프트·역할 나누기</a></li><li><a href="#11-다른-프로젝트에-적용하면계획">11. 다른 프로젝트에 적용하면(계획)</a></li><li><a href="#12-하지-않은-것--한계">12. 하지 않은 것 · 한계</a></li><li><a href="#13-용어-사전">13. 용어 사전</a></li></ol></nav>
+<hr>
+<h2 id="1-한-장-요약">1. 한 장 요약</h2>
+<div class="diagram-wrap"><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>시작 전 점검</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>문제 가르기</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>시스템 프로그램 묻기</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>Dockerfile 검토·이미지 열어 보기</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>네 곳에서 같은 입력 비교</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>같은 이미지가 아님 확인</strong></div></div></div>
+<div class="table-scroll"><table><thead><tr><th>장</th><th>원리</th><th>한 줄</th><th>friend-agent에서 실제로</th></tr></thead><tbody><tr><td>2</td><td>시작 전 점검</td><td>로컬 준비물과 키 출처를 먼저 확인한다</td><td>Docker 미설치, tesseract에 한국어 없음 발견</td></tr><tr><td>3</td><td>문제 가르기</td><td>코드·환경·배포 중 무엇인지 먼저 가른다</td><td>staging OCR 500, 원인은 로그의 한 줄</td></tr><tr><td>4</td><td>시스템 프로그램 묻기</td><td>새 기능마다 "pip 말고 설치할 프로그램"을 먼저 묻는다</td><td>PDF 읽기에 poppler가 필요</td></tr><tr><td>5</td><td>Dockerfile 검토</td><td>5기준으로 읽고 만든 이미지 안을 열어 본다</td><td>이미지 안에서 <code>.pyc</code> 17개 발견</td></tr><tr><td>6</td><td>키와 ignore</td><td>키는 실행 때 건네고 ignore 세 파일은 단계가 다르다</td><td><code>.env</code>가 이미지에 없음을 확인</td></tr><tr><td>7</td><td>같은 입력 비교</td><td>로컬 → 로컬 컨테이너 → staging → production을 해시로 비교한다</td><td>네 곳이 153글자·같은 해시</td></tr><tr><td>8</td><td>같은 이미지가 아님</td><td>staging과 production은 따로 빌드되어 이미지 ID가 다르다</td><td>패키지는 같고 ID만 다름</td></tr><tr><td>9</td><td>게이트의 빈틈</td><td>CI 통과·배포 성공은 실행 환경 검증이 아니다</td><td>가짜 함수 테스트는 poppler를 확인하지 못함</td></tr></tbody></table></div>
+<div class="callout summary"><p><span class="label">📌 요약</span> — 코드가 같다는 것은 실행 환경이 같다는 증거가 아니다. 실행 환경은 Dockerfile 한 파일에 적어 저장소에 넣고, 만든 이미지는 <strong>열어서 확인</strong>하며, 로컬 컨테이너에서 먼저 검증한 뒤 staging·production에서 같은 입력의 결과를 <strong>해시로 비교</strong>한다. "staging에서 확인한 이미지가 production에 나간 이미지와 같은가"는 이번에 풀지 못한 숙제다.</p></div>
+<hr>
+<h2 id="2-0단계--시작-전에-점검하기">2. 0단계 — 시작 전에 점검하기</h2>
+<h3 id="일반-원리">일반 원리</h3>
+<p>준비가 안 된 채 시작하면 "Dockerfile 문제"가 아니라 "내 PC 준비 문제"에서 막힌다. 점검은 읽기만 하는 확인이라 비용이 거의 없다.</p>
+<ul><li><strong>컨테이너 도구</strong>: Docker Desktop, 그 아래의 WSL 2(Windows 안에서 리눅스를 실행하는 기능), 가상화 설정, Docker Hub 로그인.</li><li><strong>로컬이 "정상 환경"인가</strong>: 새 기능이 부르는 프로그램이 로컬에 제대로 깔려 있어야 "로컬에서는 되는데 서버에서는 안 된다"를 정확히 재현할 수 있다.</li><li><strong>키의 출처</strong>: 로컬 시험은 가짜 LLM으로 키 없이 돌리고, 서버의 키는 이미지 밖에 둔다.</li></ul>
+<h3 id="friend-agent에서-실제로">friend-agent에서 실제로</h3>
+<div class="table-scroll"><table><thead><tr><th>항목</th><th>점검에서 알게 된 것</th></tr></thead><tbody><tr><td>PC</td><td>Windows 11, WSL 2 Ubuntu 있음, 가상화 켜짐</td></tr><tr><td>Docker</td><td>미설치. Docker Desktop(v4.96.3, Docker 29.9.2)을 설치하고 리눅스 컨테이너·WSL 2 모드로 로그인(개인용)</td></tr><tr><td>로컬 tesseract</td><td>5.4가 있었지만 영어·방향 감지 데이터(eng·osd)만 있고 <strong>한국어(kor)가 없었고</strong> Path에도 없었다</td></tr><tr><td>서비스</td><td><code>friend-agent</code>(production), <code>friend-agent-staging</code>(staging), 리전 us-central1. 둘 다 <code>OCR_ENABLED</code>가 없었다</td></tr><tr><td>저장소</td><td>저장소 변수 4개(교재는 5개 — 템플릿이 <code>BUILD_SA</code>를 쓰지 않는 것을 N049에서 확인)</td></tr><tr><td>LLM</td><td>staging·production은 gpt-4o-mini(수업에서 받은 키를 공유), 로컬 시험은 <code>LLM_PROVIDER=fake</code>(키 없음)</td></tr></tbody></table></div>
+<p>로컬을 정상 환경으로 만들기 위해 한국어 데이터(<code>kor.traineddata</code>, 1.6MB)를 받아 사용자가 관리자 PowerShell로 설치 폴더에 복사하고 사용자 Path에 등록했다. <code>tesseract --list-langs</code>에 <code>eng</code>·<code>kor</code>·<code>osd</code>가 나왔고, 새 터미널에서 <code>tesseract --version</code>이 5.4.0으로 확인됐다.</p>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 도구 사정으로 막힌 곳이 셋 있었고 모두 Docker 문제가 아니었다. ① <code>.env</code>가 접근 규칙에 막혀 환경변수를 명령에 직접 넘겼다. ② Git Bash가 <code>/app</code> 인자를 윈도 경로로 바꿔 <code>ls -a /app</code>이 한 번 실패해 <code>MSYS_NO_PATHCONV=1</code>로 해결했다(같은 Git Bash에서 <code>curl -d</code>로 한글 JSON을 보내면 HTTP 400이 나서 파이썬으로 UTF-8 JSON을 보냈다). ③ 로컬 서버가 8080 포트를 잡고 있었고, 가상환경 실행기가 자식 프로세스를 따로 띄워서 부모만 끄면 포트가 비워지지 않았다.</p></div>
+<h3 id="체크리스트">체크리스트</h3>
+<ul><li>Docker Desktop 엔진이 실행 중인가(<code>docker --version</code>, <code>docker info</code>), WSL 2·가상화·로그인이 준비됐는가</li><li>새 기능이 부르는 프로그램과 언어 데이터를 설치하고 <strong>새 터미널에서</strong> 목록으로 확인했는가</li></ul>
+<hr>
+<h2 id="3-원리-①--문제를-코드환경배포로-가른다">3. 원리 ① — 문제를 코드·환경·배포로 가른다</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — (가이드라인 G375) CI 통과와 배포 성공은 실행 환경이 맞다는 증거가 아니므로, 문제를 코드·환경·배포로 가르고 로그의 오류 줄로 원인을 찾으며 같은 입력의 결과를 로컬 → 로컬 컨테이너 → staging → production에서 비교한다.</p></div>
+<h3 id="일반-원리">일반 원리</h3>
+<p>"서버에서만 안 된다"는 말을 들으면 코드부터 뒤지기 쉽다. 먼저 오류의 성격을 가른다.</p>
+<table><thead><tr><th>구분</th><th>묻는 것</th><th>이번 사례</th></tr></thead><tbody><tr><td>코드 문제</td><td>로직이 올바른가</td><td>로컬에서 잘 돌았으므로 아님</td></tr><tr><td>환경 문제</td><td>서버에 필요한 프로그램이 설치돼 있는가</td><td>OCR 프로그램이 서버에 없음</td></tr><tr><td>배포 문제</td><td>staging과 production에 같은 조건이 적용됐는가</td><td>8장에서 다시 등장</td></tr></tbody></table>
+<p>화면의 안내문은 결과만 말해 준다. 원인은 <strong>서버 로그의 오류 줄</strong>과 같은 시각의 요청 기록(경로·상태 코드)을 한 쌍으로 읽어 찾는다. 서버에서 기능을 처음 켤 때는 production을 건드리지 않고 <strong>staging에서 먼저</strong> 재현한다.</p>
+<div class="callout tip"><p><span class="label">💡 팁</span> — [해설서 비유] 요리법(코드)이 같아도 주방(실행 환경)에 도구가 없으면 요리가 안 된다. <code>pytesseract</code>는 통역을 부탁하는 사람이고 <code>tesseract</code>는 실제로 글자를 읽는 통역사다.</p></div>
+<h3 id="friend-agent에서-실제로">friend-agent에서 실제로</h3>
+<ul><li>로컬에서 같은 사진(<code>schedule.png</code>, 산책 동아리 10월 일정)을 보내면 200, 153글자가 읽혔다.</li><li>staging에 <code>gcloud run services update friend-agent-staging --region us-central1 --update-env-vars OCR_ENABLED=true</code>로 스위치를 켰다(11:34~11:35 KST, 새 리비전 <code>friend-agent-staging-00006-dst</code>, 트래픽 100%). 기존 환경변수는 두고 이 값만 추가하는 <code>--update-env-vars</code>를 썼고 production은 건드리지 않았다.</li><li>같은 사진이 HTTP 500과 <code>{"detail":"사진에서 글자를 읽는 프로그램이 서버에 없습니다."}</code>를 냈다. 서비스 루트는 200, <code>/version</code>도 정상이었다.</li><li>Cloud Run 로그(11:35:05 KST)에서 원인을 찾았다.</li></ul>
+<table><thead><tr><th>기록</th><th>내용</th></tr></thead><tbody><tr><td>오류 메시지</td><td>tesseract 프로그램을 찾을 수 없습니다. 실행 환경에 tesseract 가 설치되어 있지 않습니다.</td></tr><tr><td>요청 기록</td><td><code>POST /api/ocr</code></td></tr><tr><td>상태 코드</td><td>500(응답 182 B, 219 ms)</td></tr></tbody></table>
+<p>해석: 서비스는 정상으로 시작했고 사진 요청이 들어온 순간에야 프로그램을 부르다 실패했다. 그래서 <strong>배포는 성공, 대화 기능도 정상</strong>이었다. 시작할 때 프로그램이 있는지 검사하지 않으면 없다는 사실은 그 기능을 처음 쓰는 순간에야 드러난다.</p>
+<h3 id="체크리스트">체크리스트</h3>
+<ul><li>오류를 코드·환경·배포 중 무엇으로 볼지 한 줄로 적었는가</li><li>화면 안내가 아니라 서버 로그의 오류 줄과 요청 상태 코드까지 읽었는가</li><li>서비스 이름이 <code>-staging</code>인지, 옵션이 기존 값을 지우지 않는 <code>--update-env-vars</code>인지 실행 전에 확인했는가</li></ul>
+<hr>
+<h2 id="4-원리-②--새-기능은-운영체제에-따로-설치할-프로그램이-있는가를-먼저-묻는다">4. 원리 ② — 새 기능은 "운영체제에 따로 설치할 프로그램이 있는가"를 먼저 묻는다</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — (가이드라인 G376) 새 기능을 붙이기 전에 운영체제에 따로 설치할 프로그램이 있는지 먼저 묻고, Dockerfile에 더할 줄은 사람이 정하며, 세 곳 비교와 한 문장 설명으로 끝낸다. 요청문에는 "기존 기능과 워크플로 파일은 바꾸지 마"를 명시한다.</p></div>
+<h3 id="일반-원리">일반 원리</h3>
+<p>코드를 짜기 전에 질문 하나를 먼저 한다. <strong>"파이썬 라이브러리 말고, 운영체제에 따로 설치해야 하는 프로그램이 있는가?"</strong> 라이브러리는 <code>requirements.txt</code>가 챙기지만 운영체제 프로그램은 코드 어디에도 적히지 않는다. 이 질문의 답이 Dockerfile에 더할 줄이 된다.</p>
+<table><thead><tr><th>기능</th><th>pip로 설치(라이브러리)</th><th>운영체제에 설치(시스템 패키지)</th></tr></thead><tbody><tr><td>사진 글자 읽기</td><td><code>pytesseract</code></td><td><code>tesseract-ocr</code>, 한국어 데이터 <code>tesseract-ocr-kor</code></td></tr><tr><td>PDF 글자 읽기</td><td><code>pdf2image</code></td><td><code>poppler-utils</code>(PDF를 이미지로 바꾸는 <code>pdftoppm</code>)</td></tr></tbody></table>
+<p>순서는 이렇다.</p>
+<ol><li>기능과 필요한 시스템 프로그램을 정한다(모르면 에이전트에게 같은 질문을 한다).</li><li>로컬에 설치하고 기능을 만들어 <strong>로컬에서</strong> 동작을 확인한다.</li><li>Dockerfile에 더할 줄을 <strong>사람이 정해</strong> 고치고 5기준으로 다시 검토한다.</li><li><strong>로컬 컨테이너</strong>에서 같은 입력으로 같은 결과가 나오는지 본다.</li><li>staging으로 PR을 보내 머지하고 staging에서도 같은 결과를 본다.</li></ol>
+<p>에이전트에게 맡길 때도 무엇을 넣을지는 요청문에 직접 적고, 요청문에는 <strong>"기존 기능과 워크플로 파일은 바꾸지 마"</strong>를 함께 명시한다. 에이전트는 요청받은 대로 쓸 뿐 Python 버전을 고정할지 같은 판단을 대신하지 않는다.</p>
+<h3 id="friend-agent에서-실제로--사건-pdf-읽기">friend-agent에서 실제로 — 사건: PDF 읽기</h3>
+<p>OCR이 끝난 뒤 같은 순서를 처음 보는 기능에 적용했다. 후보 가운데 PDF(poppler)를 골랐다. QR(zbar)은 2순위였고, HEIC는 <code>pillow-heif</code>가 라이브러리를 포함해 시스템 패키지가 필요 없을 수도 있어(<strong>미확인</strong>) 비추천, ffmpeg는 음성을 글로 옮기는 API까지 얽혀 비추천이었다.</p>
+<p>로컬 준비는 <code>winget install oschwartz10612.Poppler</code>로 했다. 이것은 <strong>비공식 빌드</strong>의 휴대용 압축 파일(<code>Release-25.07.0-0.zip</code>, 약 16.0MB, MIT)이고 winget이 <code>pdftoppm</code> 별칭을 만들어 Path 등록이 필요 없었다. 변경은 5개 파일이다: <code>requirements.txt</code>(pdf2image 추가), <code>app/ocr.py</code>(PDF 판별, 앞 3쪽·200dpi·시간 제한 30초, 프로그램이 없으면 로그에 오류), <code>static/index.html</code>(파일 선택에 PDF 허용), <code>tests/test_ocr_pdf.py</code>(새 테스트 3개), <code>Dockerfile</code>(apt 줄에 <code>poppler-utils</code>).</p>
+<p>시험 입력은 <code>schedule.png</code>로 만든 1쪽 PDF, 4쪽 PDF, 일부러 깨뜨린 PDF(<code>%PDF-1.4 not a real pdf</code>)였고 샘플 PDF는 저장소에 커밋하지 않았다. 로컬(Windows)에서는 사진과 1쪽 PDF가 같은 153글자, 4쪽 PDF는 앞 3쪽만 읽어 461글자(153×3+줄바꿈 2), 깨진 PDF는 500과 "PDF 파일을 읽을 수 없습니다."였다.</p>
+<p>핵심 장면은 <strong>로컬 컨테이너</strong>에서 나왔다. poppler 줄이 없는 이미지(460MB)로 컨테이너를 띄우자 컨테이너 안에 <code>pdftoppm</code>이 없었고(tesseract는 있었다), 사진은 200이었지만 <strong>PDF 1쪽이 500</strong>("PDF를 읽는 프로그램이 서버에 없습니다.")이었다. 로그에는 "poppler 프로그램을 찾을 수 없습니다…"가 남았다. 로컬에서 되던 PDF가 컨테이너에서 처음 실패했고, 이번에는 이 실패를 staging에 올리기 전에 컨테이너에서 잡았다.</p>
+<p>apt 줄을 <code>tesseract-ocr tesseract-ocr-kor poppler-utils</code>로 고치고 다시 빌드하자 이미지가 473MB(+13MB)가 됐고 컨테이너 안에 <code>/usr/bin/pdftoppm</code>(22.12.0)이 생겼다. 네 가지 입력이 모두 로컬과 같은 결과였다(로컬 poppler는 25.07.0, 컨테이너는 22.12.0으로 버전이 달랐지만 결과는 같았다). 한 문장 설명은 이렇다. "PDF를 이미지로 바꾸는 <code>pdftoppm</code>이 운영체제 프로그램이라 <code>pip</code>로는 설치되지 않기 때문이다."</p>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 비공식 빌드는 이 PC의 로컬 도구일 뿐이다. 서버에는 이 파일이 아니라 Dockerfile의 <code>poppler-utils</code>(Debian 패키지)가 들어간다.</p></div>
+<h3 id="체크리스트">체크리스트</h3>
+<ul><li>코드를 쓰기 전에 "pip 말고 운영체제에 설치할 프로그램이 있는가"를 물었는가</li><li>Dockerfile에 더할 줄을 사람이 정했고, 요청문에 "기존 기능과 워크플로 파일은 바꾸지 마"를 넣었는가</li><li>줄이 없었다면 로컬·로컬 컨테이너·staging 중 어디서 처음 실패했을지 예상하고 확인했는가</li><li>시험 입력에 정상·경계(여러 쪽)·깨진 입력을 모두 넣었고 샘플은 저장소에 커밋하지 않았는가</li></ul>
+<hr>
+<h2 id="5-원리-③--dockerfile-5기준으로-검토하고-이미지-안을-열어-본다">5. 원리 ③ — Dockerfile 5기준으로 검토하고, 이미지 안을 열어 본다</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — (가이드라인 G377) Dockerfile은 5기준으로 검토하고, 만든 이미지 안을 열어 실제로 확인한다. 같은 G377이 6장(키·ignore 세 파일)과 8장(같은 이미지가 아님)까지 이어진다.</p></div>
+<h3 id="일반-원리">일반 원리</h3>
+<p>Dockerfile에 무엇을 넣을지의 판단은 사람의 몫이고, 검토는 다섯 기준으로 한다.</p>
+<table><thead><tr><th>기준</th><th>올바른 모습</th><th>고치지 않으면</th></tr></thead><tbody><tr><td>베이스 이미지 고정</td><td><code>python:3.13-slim-bookworm</code>처럼 구체적으로(<code>latest</code> 금지)</td><td>빌드할 때마다 다른 Python이 들어올 수 있다</td></tr><tr><td>시스템 패키지</td><td>필요한 프로그램과 언어 데이터를 설치하는 줄</td><td>기능이 서버에서 실패한다</td></tr><tr><td><code>.env</code> 제외</td><td><code>.dockerignore</code>에 <code>.env</code></td><td><code>COPY . .</code>이 키가 든 파일을 이미지에 넣는다</td></tr><tr><td>포트</td><td><code>${PORT:-8080}</code>처럼 <code>PORT</code> 환경변수를 읽는다</td><td>Cloud Run이 정한 포트와 달라 시작에 실패할 수 있다</td></tr><tr><td>실행 사용자</td><td><code>USER appuser</code> 같은 일반 사용자(non-root)</td><td>문제가 생겼을 때 컨테이너 안에서 할 수 있는 일이 많아진다</td></tr></tbody></table>
+<p>그런데 5기준을 통과했다고 끝이 아니다. <strong>만든 이미지의 안을 직접 열어 본다.</strong> 파일에 적은 것과 이미지에 실제로 들어간 것이 다를 수 있다.</p>
+<div class="callout tip"><p><span class="label">💡 팁</span> — [보충 비유] 프랜차이즈 본사가 새 점포를 낼 때 "주방 설비 목록과 표준 조리 순서"를 문서로 내려보내면 어느 지점에서든 같은 맛이 난다. Dockerfile이 이 설비 목록이고, 이미지 안을 열어 보는 일은 개점 전에 본사 담당이 점포 주방을 직접 둘러보는 일이다.</p></div>
+<h3 id="friend-agent에서-실제로">friend-agent에서 실제로</h3>
+<p>최종 Dockerfile은 교재 예시에 poppler 한 단어를 더한 형태다(빌드 로그에서 9단계까지 이 줄들과 일치했다).</p>
+<pre><code>FROM python:3.13-slim-bookworm
+RUN apt-get update \
+    &amp;&amp; apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-kor poppler-utils \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+RUN useradd --create-home appuser
+USER appuser
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]</code></pre>
+<p>5기준은 모두 통과했고 <code>Procfile</code>·<code>.python-version</code>(3.13)도 <code>FROM</code> 줄과 일치했다. 첫 빌드는 이미지 460MB(레이어: tesseract 94.9MB, 라이브러리 120MB, 코드 442kB)였고, 같은 사진이 컨테이너에서 200, 153글자, 해시 <code>e61b2db05f</code>로 로컬과 같았다. 이번에는 <strong>이미지 안의 tesseract</strong>가 읽은 것이다. 그다음 이미지 안을 열어 보았다.</p>
+<div class="table-scroll"><table><thead><tr><th>확인</th><th>결과</th></tr></thead><tbody><tr><td><code>/app</code>의 파일 목록</td><td><code>app</code>·<code>static</code>·<code>requirements.txt</code> 있음, <code>.env</code>·<code>tests</code>·<code>docs</code> 없음</td></tr><tr><td>실행 사용자</td><td><code>whoami</code> = <code>appuser</code></td></tr><tr><td>컨테이너 안 tesseract 언어</td><td><code>eng</code>, <code>kor</code>, <code>osd</code></td></tr><tr><td><code>app</code> 안의 <code>__pycache__</code></td><td><strong>있었다. <code>.pyc</code> 17개, 모두 cpython-314</strong></td></tr></tbody></table></div>
+<p>마지막 줄이 함정이었다. 템플릿 <code>.dockerignore</code>의 <code>__pycache__/</code>와 <code>*.pyc</code>는 <strong>맨 위 폴더에만</strong> 적용돼 <code>/app/app/__pycache__</code>가 이미지로 들어갔다(내 PC의 <code>.venv</code>가 만든 파일이다). 두 줄을 <code>**/__pycache__/</code>와 <code>**/*.pyc</code>로 고쳐 다시 빌드하자 <code>__pycache__</code>와 <code>.pyc</code>가 0개가 됐다. 재빌드는 apt·pip 단계가 <code>CACHED</code>였고 <code>COPY . .</code>와 <code>useradd</code>만 새로 실행돼 전체 약 0.5초였다. 이미지는 460MB 그대로였고 코드 복사 레이어는 442kB에서 266kB가 됐다(<code>.pyc</code>가 빠진 영향으로 보이나 직접 측정하지는 않았다). 새 이미지로 OCR 200도 다시 확인했다.</p>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 5기준을 모두 통과했는데도 <code>.pyc</code> 17개가 들어갔다. 파일을 읽는 검토와 이미지를 여는 점검은 다른 일이다. 이번에 걸린 것은 캐시 파일이었지만 같은 방식으로 <code>.env</code>가 들어갈 수도 있다. <code>.env</code>가 보이면 <code>.dockerignore</code>를 고쳐 다시 빌드하고 <strong>그 이미지는 다른 곳에 올리지 않는다.</strong></p></div>
+<p><strong>배포에 태울 때.</strong> 바뀐 것은 <code>deploy.yml</code> 43행 <code>flags:</code> 끝의 <code>--clear-base-image</code> 한 단어(diff +1/−1)뿐이다. 이 옵션은 Dockerfile 이미지에서 쓸 수 없는 자동 베이스 이미지 업데이트를 끈다. 교재 안내대로 처음부터 넣었고 <strong>이 옵션 없이 배포해 오류를 직접 본 적은 없다.</strong> PR #20은 파일 3개(<code>Dockerfile</code>, <code>.dockerignore</code>, <code>deploy.yml</code>)만 담았고 <code>.env</code>가 없음을 확인했다. CI(<code>test</code> 19초, <code>hello</code> 4초)가 통과해 CLEAN이었고 사용자가 머지를 승인했다. 배포 뒤에는 Actions 성공(deploy 2분 0초)에서 멈추지 않고 <strong>Cloud Build 기록</strong>을 열었다. 빌드 <code>615ce1d8</code>에 <code>Step 1/11 FROM python:3.13-slim-bookworm</code>, <code>Step 2/11 apt-get install … tesseract-ocr tesseract-ocr-kor</code>가 있었고 buildpacks 언급은 0줄이었다. Dockerfile이 실제로 쓰였다는 증거다. staging의 새 리비전(<code>00007-94j</code>)이 100%를 받았고 같은 사진이 200이 되었으며 로그에 ERROR가 없었다. <code>OCR_ENABLED=true</code>는 배포 뒤에도 유지됐다.</p>
+<p><strong>이미지는 그대로, 컨테이너는 일회용(과제 1).</strong> 컨테이너를 이름 붙여 띄워(<code>friend-agent-test</code>) <code>docker exec</code>로 <code>whoami</code>(<code>appuser</code>)·<code>pwd</code>(<code>/app</code>)·<code>ls</code>를 확인하고 대화를 두 턴 나누자 <code>/api/messages</code>에 4개가 쌓였다. 컨테이너를 지우고 같은 이미지로 다시 띄우자 컨테이너 ID는 바뀌고(<code>e6f131713f90</code> → <code>8ed3418b358a</code>), 이미지 ID는 <code>90cbc2725f5f</code> 그대로이며, 메시지는 <strong>4개에서 0개</strong>가 됐다. 컨테이너 메모리는 영속 저장소가 아니다. 이 확인은 브라우저 대화 대신 API로 했다(화면 캡처 없음).</p>
+<h3 id="체크리스트">체크리스트</h3>
+<ul><li>5기준을 한 줄씩 대조했고 <code>Procfile</code>·<code>.python-version</code>이 <code>FROM</code> 줄과 같은 버전인가</li><li>이미지 안에서 <code>.env</code>·<code>tests</code>·<code>docs</code>와 <code>__pycache__</code>·<code>.pyc</code>가 없고 <code>whoami</code>가 root가 아닌지 열어 보았는가</li><li>컨테이너 안의 프로그램과 언어 목록(<code>tesseract --list-langs</code>, <code>pdftoppm</code>)을 확인했는가</li><li>빌드 기록에서 <code>FROM</code>과 설치 단계를 찾고 buildpacks 언급이 없는지 보았는가</li></ul>
+<hr>
+<h2 id="6-원리-④--키는-이미지에-넣지-않고-ignore-파일은-단계별로-구분한다">6. 원리 ④ — 키는 이미지에 넣지 않고, ignore 파일은 단계별로 구분한다</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — (가이드라인 G377의 일부) 키는 이미지에 넣지 않고 실행 때 건네며(<code>--env-file</code>, 따옴표 없이), <code>.gitignore</code>·<code>.gcloudignore</code>·<code>.dockerignore</code>는 서로 다른 단계라 세 번 확인한다.</p></div>
+<h3 id="일반-원리">일반 원리</h3>
+<p>이미지는 여러 곳으로 내려받아 실행되는 파일이라 안에 든 값은 이미지를 받은 누구나 꺼내 볼 수 있다. 그래서 키는 <strong>실행할 때 환경변수로 건넨다</strong>. 같은 이미지를 키만 바꿔 다른 곳에서 실행할 수 있고, 이미지가 밖으로 나가도 키는 따라가지 않는다. 피할 것은 Dockerfile의 <code>COPY .env .</code>다.</p>
+<p>비밀 파일이 밖으로 나가는 길은 <strong>세 단계</strong>이고 단계마다 거르는 파일이 다르다. 한 곳을 막았다고 나머지가 막히는 것이 아니다.</p>
+<table><thead><tr><th>단계</th><th>파일</th><th>막는 일</th></tr></thead><tbody><tr><td>① 저장소에 올릴 때</td><td>커밋 대상 목록(<code>.gitignore</code>)</td><td>커밋에 <code>.env</code>가 들어가는 것</td></tr><tr><td>② 소스를 클라우드로 올릴 때</td><td><code>.gcloudignore</code></td><td>소스 배포가 비밀 파일을 함께 올리는 것</td></tr><tr><td>③ 이미지를 빌드할 때</td><td><code>.dockerignore</code></td><td><code>COPY . .</code>이 비밀 파일을 이미지에 넣는 것</td></tr></tbody></table>
+<p><code>.gcloudignore</code>는 Dockerfile 자체를 빼지 않았는지도 본다. 빼면 소스가 올라갈 때 Dockerfile이 전달되지 않아 Dockerfile로 빌드되지 못한다.</p>
+<div class="callout tip"><p><span class="label">💡 팁</span> — [보충 비유] 기밀 문서가 사외로 나가는 길에 결재선이 세 개 있다고 하자. 기안해 올리는 단계(커밋), 사외 발송 직전 검토(소스 업로드), 납품 포장을 닫기 직전의 최종 검수(이미지 빌드). 앞에서 걸렀다고 마지막 검수를 생략하지 않는다. 담당이 다르기 때문이다.</p></div>
+<h3 id="friend-agent에서-실제로">friend-agent에서 실제로</h3>
+<ul><li>커밋 단계: PR #20의 커밋은 3개 파일이었고 <code>.env</code>가 없음을 눈으로 확인했다.</li><li>소스 업로드 단계: <code>.gcloudignore</code>는 이미 있었고 <code>.env</code>를 빼며 Dockerfile은 빼지 않았다.</li><li>이미지 빌드 단계: <code>.dockerignore</code>에 <code>.env</code>가 있고 만든 이미지 안에 <code>.env</code>가 없음을 <code>ls -a /app</code>로 확인했다.</li><li>로컬 컨테이너는 <code>--env-file .env</code> 대신 <code>-e</code>로 환경변수를 직접 건넸다(<code>.env</code>가 접근 규칙에 막혔고 가짜 LLM이라 키 자체가 없었다). 키를 이미지에 넣지 않는 원칙은 같다.</li><li>서버의 환경변수는 <strong>이름만</strong> 확인했고 값은 열어 보지 않았다.</li></ul>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — <code>.dockerignore</code>는 비밀 파일이 이미지에 들어갈 위험을 줄이는 장치이지 시크릿 관리 자체가 아니다. <code>--env-file</code>은 값을 감싼 따옴표를 지우지 않으므로 <code>.env</code> 값은 따옴표 없이 적는다. 이미지에서 키를 뺐더라도 실행 중인 컨테이너의 환경이나 로그에서 노출될 가능성까지 없어지지는 않으며, 운영 서버에서는 Secret Manager 같은 수단을 쓰는 것이 좋다.</p></div>
+<h3 id="체크리스트">체크리스트</h3>
+<ul><li>커밋 직전에 커밋 대상 목록을 눈으로 확인했는가(<code>.env</code>가 없는가)</li><li><code>.gcloudignore</code>가 <code>.env</code>를 빼고 <strong>Dockerfile은 빼지 않는가</strong></li><li><code>.dockerignore</code>에 <code>.env</code>와 하위 폴더까지 닿는 캐시 패턴(<code>**/</code>)이 있는가</li><li>키를 이미지에 넣지 않고 실행할 때 건넸으며, 서버 환경변수는 이름만 보았는가</li></ul>
+<hr>
+<h2 id="7-원리-⑤--네-곳에서-같은-입력으로-같은-결과를-비교한다">7. 원리 ⑤ — 네 곳에서 같은 입력으로 같은 결과를 비교한다</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — (가이드라인 G375의 일부) 새 환경은 실제 입력(같은 사진)으로 로컬 → 로컬 컨테이너 → staging → production에서 같은 결과가 나오는지 본다.</p></div>
+<h3 id="일반-원리">일반 원리</h3>
+<p>환경이 같은지는 "화면이 뜬다"가 아니라 <strong>같은 입력에 같은 결과가 나오는지</strong>로 확인한다.</p>
+<div class="diagram-wrap"><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>로컬</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">내 PC</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>로컬 컨테이너</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">이미지 안</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>staging</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>production</strong></div></div></div>
+<p>각 칸이 잡는 것이 다르다. 로컬은 코드를, 로컬 컨테이너는 Dockerfile에서 빠진 프로그램을, staging은 실제 서버에 올린 결과를, production은 승인 후 운영에서도 같은지를 본다. 비교는 눈으로 글자를 맞추지 않고 <strong>글자 수와 해시(결과 전체를 요약한 짧은 값, 여기서는 앞 10자)</strong>로 한다. 입력에는 정상 외에 경계(여러 쪽)와 일부러 깨뜨린 입력을 넣어 실패할 때의 안내문까지 같은지 본다.</p>
+<h3 id="friend-agent에서-실제로">friend-agent에서 실제로</h3>
+<p>같은 입력을 네 곳에 보낸 결과(글자 수, 해시 앞 10자)다.</p>
+<div class="table-scroll"><table><thead><tr><th>입력</th><th>로컬(Windows)</th><th>로컬 컨테이너</th><th>staging</th><th>production</th></tr></thead><tbody><tr><td>사진(PNG)</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td></tr><tr><td>PDF 1쪽</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td></tr><tr><td>PDF 4쪽(앞 3쪽)</td><td>200, 461, 4ba6dbbc32</td><td>200, 461, 4ba6dbbc32</td><td>200, 461, 4ba6dbbc32</td><td>200, 461, 4ba6dbbc32</td></tr><tr><td>깨진 PDF</td><td>500 PDF 파일을 읽을 수 없습니다</td><td>500 (같음)</td><td>500 (같음)</td><td>500 (같음)</td></tr></tbody></table></div>
+<p>production 열은 PDF 읽기가 반영된 리비전 <code>friend-agent-00020-clm</code>에서 잰 값이다. PDF를 올리기 전의 production도 사진은 200, 153글자, <code>e61b2db05f</code>였다. 사진과 1쪽 PDF의 해시가 같다는 것은 PDF를 이미지로 바꾼 뒤 읽은 글이 사진을 읽은 글과 같다는 뜻이다. 칸별로 보면 로컬은 사진·PDF 모두 200이었고, 로컬 컨테이너는 poppler 줄이 없을 때 PDF만 500으로 잡았으며, staging은 처음 OCR을 켰을 때 500에서 Dockerfile 적용 후 200이 되었고, production은 스위치를 켜기 전 <code>/api/ocr</code>가 404("사진 글자 읽기가 꺼져 있습니다")였다가 켠 뒤 200이 되었다.</p>
+<p>production의 스위치는 배포 뒤에 따로 켰다(<code>friend-agent-00018-klq</code> 배포 후 <code>OCR_ENABLED=true</code>로 <code>00019-nlc</code>). 이 값은 PDF를 반영한 새 리비전(00020)에도 그대로 유지돼 다시 켤 필요가 없었다. production 배포는 두 번 모두 <strong>승인 대기</strong>에서 멈췄고 사용자가 직접 승인했다.</p>
+<h3 id="체크리스트">체크리스트</h3>
+<ul><li>입력을 정상·경계·깨진 입력으로 정해 두고 결과를 글자 수와 해시로 기록했는가</li><li>로컬 컨테이너에서 먼저 확인하고 staging으로 갔는가</li><li>기능 스위치가 서버마다 켜져 있는지, production은 승인 후 마지막 비교까지 했는가</li></ul>
+<hr>
+<h2 id="8-원리-⑥--같은-dockerfile이-같은-이미지는-아니다">8. 원리 ⑥ — 같은 Dockerfile이 같은 이미지는 아니다</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — (가이드라인 G377의 일부) 같은 Dockerfile이어도 staging·production을 따로 빌드하면 같은 이미지가 아니므로, 확인한 이미지를 그대로 보내려면 태그·digest로 추적·승격한다.</p></div>
+<h3 id="일반-원리">일반 원리</h3>
+<p>배포 흐름은 Dockerfile 한 파일로 거의 그대로 가지만 빌드는 여전히 <strong>두 번</strong> 일어난다. <code>staging</code>에 머지할 때 한 번, <code>main</code>에 머지할 때 한 번 Cloud Build가 같은 Dockerfile로 이미지를 새로 만든다.</p>
+<table><thead><tr><th>구분</th><th>의미</th></tr></thead><tbody><tr><td>Dockerfile의 일관성</td><td>이미지를 어떤 방식으로 만들지 명시되어 있다</td></tr><tr><td>빌드 결과의 동일성</td><td>실제 이미지에 들어간 구성요소까지 같다</td></tr></tbody></table>
+<p>앞의 것은 지켰지만 뒤의 것은 보장되지 않는다. <code>apt-get install</code>은 빌드 시점의 패키지 저장소를 보므로 간격이 길면 새 패키지 버전이 들어갈 수 있다(이번에는 재현하지 않았다). staging에서 확인한 이미지와 production에서 도는 이미지는 <strong>별개</strong>다.</p>
+<div class="callout tip"><p><span class="label">💡 팁</span> — [보충 비유] 시제품 검수(staging)를 통과했는데 납품(production) 때 공장에서 같은 설계도로 <strong>다시 양산</strong>하는 것과 같다. 설계도는 같아도 그사이 원자재 로트가 바뀌었다면 검수한 제품과 납품한 제품이 같다고 말할 수 없다.</p></div>
+<h3 id="friend-agent에서-실제로">friend-agent에서 실제로</h3>
+<div class="table-scroll"><table><thead><tr><th>비교</th><th>이미지 ID</th><th>베이스 digest</th><th>pip</th><th>apt</th><th>빌드 간격</th></tr></thead><tbody><tr><td>PR #20 staging <code>615ce1d8</code> vs PR #21 production <code>4718e203</code></td><td><code>a31820f7a6bf</code> vs <code>a3c0f9af949f</code> (다름)</td><td>같음</td><td>30개 같음</td><td>62개 같음</td><td>약 1시간 33분</td></tr><tr><td>PR #22 staging <code>aa4d5d58</code> vs PR #23 production <code>057dbfd2</code></td><td><code>7cd90c50e99a</code> vs <code>cb253b448e50</code> (다름)</td><td>같음</td><td>31개 같음</td><td>67개 같음</td><td>약 18분</td></tr></tbody></table></div>
+<p>두 쌍 모두 패키지는 같은데 이미지 ID는 달랐다. 빌드마다 붙는 <code>LABEL google.build_id</code>가 달랐고, 이것과 빌드 시각이 ID를 다르게 만든 것으로 보인다(레이어별 정확한 원인은 확인하지 않았다).</p>
+<p>로컬에서도 <code>docker build --no-cache</code>로 같은 Dockerfile을 두 번 빌드했다(과제 2). <code>try-a</code>는 약 31초, <code>try-b</code>는 약 30초였다(교안은 "몇 분"이라 했지만 이 PC에서는 30초대).</p>
+<ul><li>이미지 ID는 <code>8d665740853b…</code>와 <code>3a23685075fb…</code>로 <strong>달랐고</strong> 크기는 둘 다 460MB였다.</li><li><code>pip freeze</code>(30줄)와 <code>dpkg -l</code>(deb 159개)은 <strong>같았다</strong>.</li><li>레이어 10개 중 베이스 4개와 <code>COPY . .</code>는 같고 나머지 5개(apt·WORKDIR·requirements 복사·pip·useradd)가 달랐다. 레이어와 Dockerfile 줄의 대응은 <code>docker history</code>의 줄 수가 레이어 수와 같다는 점에서 <strong>추정</strong>이며 달라진 원인 파일은 확인하지 않았다.</li></ul>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 이번 비교는 모두 몇 시간 이내여서 패키지가 같았다. <strong>며칠 간격 빌드로 패키지까지 달라지는 것은 재현하지 않았다.</strong> 이 장에서 한 일은 "이미지가 다르다는 것을 확인"한 것까지이며 같게 만드는 일은 <strong>하지 않았다.</strong></p></div>
+<p><strong>다음 단계(하지 않은 것).</strong> 교안이 숙제로 남긴 세 가지이며 이번 실습에서는 어느 것도 하지 않았다. ① 이미지 추적: 지금 production에서 도는 이미지가 어느 커밋으로 만든 것인지 알기 어렵다(태그와 digest 관리). ② 이미지 일관성: 검증한 이미지를 그대로 승격하는 빌드·배포 흐름. ③ 저장 공간: 400MB대 이미지가 배포마다 쌓인다.</p>
+<h3 id="체크리스트">체크리스트</h3>
+<ul><li>staging과 production이 같은 이미지를 쓰는지 따로 빌드하는지 알고 있고, 문서에서 "Dockerfile이 같다"와 "이미지가 같다"를 구분해 적었는가</li><li>두 빌드의 베이스 digest, pip·apt 목록, 이미지 ID를 로그에서 비교해 보았는가</li><li>태그·digest·승격을 하지 않았다면 숙제로 기록했는가</li></ul>
+<hr>
+<h2 id="9-게이트가-놓치는-것">9. 게이트가 놓치는 것</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — (가이드라인 G375의 일부) CI 통과와 배포 성공은 "실행 환경이 맞다"는 증거가 아니다. 코드·테스트·배포가 멀쩡해도 서버에서만 실패할 수 있다.</p></div>
+<p>이번 사건은 모든 신호가 정상인데 기능이 안 되는 장면이었다.</p>
+<table><thead><tr><th>신호</th><th>이번에 알려 준 것</th><th>알려 주지 못한 것</th></tr></thead><tbody><tr><td>배포 성공</td><td>서비스가 시작됨(초기 staging 500 상태에서도 배포는 성공이었다)</td><td>기능 요청이 처리되는지</td></tr><tr><td>CI <code>test</code> 통과(19초, 22초)</td><td>정해 둔 테스트의 조건이 충족됨</td><td>테스트가 확인하지 않은 환경</td></tr><tr><td>Cloud Build 기록</td><td><strong>Dockerfile이 실제로 쓰였다</strong>(buildpacks 0줄)</td><td>기능이 동작하는지(같은 입력 비교로 확인)</td></tr></tbody></table>
+<p>강의 교재의 설명대로 템플릿의 OCR 테스트는 기능이 꺼졌을 때의 거절만 확인하고, 테스트가 도는 CI 러너와 staging 이미지는 서로 다른 실행 환경이다.</p>
+<p><strong>가짜 함수 테스트의 한계.</strong> PDF 읽기의 새 테스트 3개는 기존 12개와 합쳐 <strong>15 passed</strong>였고, CI와 같게 poppler·tesseract가 없는 셸에서 UTC로 돌렸다. 3쪽 제한을 99로 일부러 깨뜨리자 <code>assert 99 == 3</code>으로 실패했고 되돌리자 15 passed가 되어 테스트 자체는 믿을 수 있었다. 그러나 이 테스트는 PDF를 이미지로 바꾸는 함수를 <strong>가짜로 바꿔 놓고</strong> 돌리므로 poppler가 서버에 실제로 있는지는 검증하지 못한다. N049의 CI 한계와 같은 구멍이며, 실제 확인은 이미지 안 점검과 로컬 컨테이너·staging의 몫이다.</p>
+<hr>
+<h2 id="10-체크리스트프롬프트역할-나누기">10. 체크리스트·프롬프트·역할 나누기</h2>
+<p>체크리스트는 각 장 끝에 있고, 2장부터 8장까지 순서대로 따라가면 한 바퀴가 된다.</p>
+<h3 id="문제-상황별-프롬프트에이전트에게-맡길-때">문제 상황별 프롬프트(에이전트에게 맡길 때)</h3>
+<p>아래는 레시피로 정리한 <strong>예시 프롬프트</strong>이며 실습에서 실제로 쓴 문장을 그대로 옮긴 것이 아니다.</p>
+<p><strong>① 원인 가르기</strong></p>
+<pre><code>staging에서 같은 사진을 보내면 500이 난다. 로컬에서는 된다.
+서비스 friend-agent-staging의 Cloud Run 로그에서 사진을 보낸 시각 근처의 ERROR 줄과
+POST /api/ocr의 상태 코드를 찾아 알려줘. 코드는 고치지 말고 읽기만 해.</code></pre>
+<p><strong>② 시스템 프로그램 묻기와 Dockerfile 반영</strong></p>
+<pre><code>PDF 공지문에서 글자를 읽는 기능을 붙이려 한다.
+먼저 파이썬 라이브러리 말고 운영체제에 따로 설치해야 하는 프로그램이 있는지,
+apt 패키지 이름과 공식 문서 근거를 알려줘.
+내가 정한 줄만 Dockerfile에 반영하고(베이스 python:3.13-slim-bookworm 고정, .dockerignore에 .env와 **/__pycache__/,
+PORT 환경변수, USER appuser 유지), 기존 기능과 워크플로 파일은 바꾸지 마.</code></pre>
+<p><strong>③ 이미지 안 점검</strong></p>
+<pre><code>friend-agent:local 이미지를 열어 읽기만 해. /app에 .env·tests·docs가 없는지, __pycache__와 .pyc 개수,
+whoami가 appuser인지, 컨테이너 안에서 tesseract --list-langs와 pdftoppm이 있는지 표로 보고해.</code></pre>
+<p>배포 PR은 같은 틀로 맡긴다. 지정한 파일 몇 개만 커밋하고, <code>deploy.yml</code>은 <code>flags:</code> 끝에 옵션 하나만 더하며, 기존 기능과 워크플로 파일의 다른 줄은 바꾸지 말고, 커밋 대상에 <code>.env</code>가 없는지 <code>git diff --cached</code>로 보여 주고, 강제 푸시는 쓰지 말고, 머지는 내가 확인한 뒤에 한다고 요청문에 적는다.</p>
+<h3 id="사람이-직접-할-것-vs-에이전트에게-맡길-것">사람이 직접 할 것 vs 에이전트에게 맡길 것</h3>
+<table><thead><tr><th>작업</th><th>사람이 한다</th><th>에이전트에게 맡긴다</th></tr></thead><tbody><tr><td>로컬 준비</td><td>관리자 권한이 필요한 설치·복사, Path 등록</td><td>설치 확인 명령, 목록 확인</td></tr><tr><td>Dockerfile</td><td>어떤 줄을 넣을지 결정, 5기준 최종 판단</td><td>결정한 내용 반영, 기준 대조표 작성</td></tr><tr><td>이미지 점검</td><td>결과 해석</td><td>이미지 안 명령 실행과 보고</td></tr><tr><td>코드와 테스트</td><td>변경 범위 승인</td><td>코드 작성, 로컬 테스트, 일부러 깨뜨려 보기</td></tr><tr><td>배포</td><td>PR 머지 승인, production 배포 승인</td><td>PR 생성, CI 결과 확인과 보고</td></tr></tbody></table>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 승인은 에이전트에게 맡기지 않는다. 이번에도 PR 머지는 사용자가 승인했고 production 배포 승인은 두 번 모두 사용자가 직접 눌렀다.</p></div>
+<hr>
+<h2 id="11-다른-프로젝트에-적용하면계획">11. 다른 프로젝트에 적용하면(계획)</h2>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 이 장은 <strong>아직 하지 않은 계획</strong>이다. 아래 네 프로젝트는 해설서가 제안한 적용 방향이며 이번 실습에서 실제로 한 일이 아니다. 프로젝트의 코드와 실행 환경은 열어 보지 않았으므로 구체적인 줄은 각 프로젝트를 열어 본 뒤 정한다. 이 방법을 실제로 적용한 곳은 friend-agent 하나뿐이다.</p></div>
+<p>공통 순서(계획)는 이렇다. ① 기능 목록에서 "파이썬 라이브러리 말고 운영체제 프로그램이 필요한 것"을 가려낸다. ② 로컬 컨테이너에서 같은 입력으로 같은 결과가 나오는지 확인한 뒤 staging으로 간다. ③ 5기준과 이미지 안 점검을 하고 같은 입력을 여러 곳에서 해시로 비교한다. ④ staging과 production이 같은 이미지가 아니라는 점을 한계로 기록한다.</p>
+<div class="table-scroll"><table><thead><tr><th>프로젝트</th><th>해설서가 제안한 적용</th><th>먼저 해 볼 점검(계획)</th></tr></thead><tbody><tr><td>My-Story-Maker(MSM)</td><td>글 분석·문서 변환·전자책 생성에 필요한 프로그램과 라이브러리를 실행 환경에 포함하고, 사용자의 글과 인터뷰 기록은 컨테이너 메모리가 아니라 데이터베이스에 보존한다</td><td>문서 변환·전자책 단계에 시스템 프로그램이 필요한지 확인한다. 컨테이너를 지웠다 띄워 기록이 남는지 확인한다(5장의 과제 1 방식)</td></tr><tr><td>Travel Creator</td><td>일정표·이미지·문서 처리 기능을 배포할 때 필요한 시스템 의존성을 점검한다</td><td>이미지·문서 처리 라이브러리가 부르는 외부 프로그램이 있는지 4장의 질문으로 확인한다</td></tr><tr><td>뉴스레터 에이전트</td><td>로컬에서 성공한 자동화가 서버에서도 같은 조건으로 실행되도록 환경을 같게 유지하고 배포 결과를 추적한다</td><td>로컬 성공 입력을 컨테이너와 staging에 같이 넣어 결과를 비교한다</td></tr><tr><td>AI 컨설팅</td><td>코드·환경·배포 문제를 구분해 진단하고, 개발자나 코딩 에이전트가 쓴 Dockerfile을 검토해 실행 환경 누락·보안 위험·배포 설정 문제를 찾는다</td><td>5기준과 "이미지 안 열어 보기" 점검표를 진단 질문지로 쓴다</td></tr></tbody></table></div>
+<hr>
+<h2 id="12-하지-않은-것--한계">12. 하지 않은 것 · 한계</h2>
+<table><thead><tr><th>항목</th><th>상태</th></tr></thead><tbody><tr><td>이미지 태그·digest 관리, 검증한 이미지를 그대로 승격하는 흐름, 저장 공간 관리</td><td>하지 않음(교안이 다음 실습으로 남긴 숙제)</td></tr><tr><td>며칠 간격 빌드로 패키지 버전이 달라지는 것</td><td>재현하지 않음. 이번 비교는 모두 몇 시간 이내</td></tr><tr><td><code>--clear-base-image</code> 없이 배포해 오류를 보는 것</td><td>직접 재현하지 않음</td></tr><tr><td>staging 전용 키와 낮은 한도</td><td>다루지 않음. 수업 키를 staging·production이 공유하는 N049 상태 그대로</td></tr><tr><td>과제 1의 브라우저 직접 대화</td><td>API로 대체함(화면 캡처 없음)</td></tr><tr><td>QR·HEIC·ffmpeg</td><td>후보로만 비교, 구현하지 않음</td></tr><tr><td>새 PDF 테스트의 poppler 설치 검증</td><td>못 함(변환 함수를 가짜로 바꿈). 컨테이너와 staging에서 확인</td></tr><tr><td>레이어와 Dockerfile 줄의 정확한 대응, 달라진 원인 파일</td><td>추정이며 확인하지 않음</td></tr><tr><td>원격 브랜치 <code>add-dockerfile</code>·<code>add-pdf-ocr</code></td><td>삭제하지 않고 남김</td></tr></tbody></table>
+<hr>
+<h2 id="13-용어-사전">13. 용어 사전</h2>
+<div class="table-scroll"><table><thead><tr><th>용어</th><th>정의</th></tr></thead><tbody><tr><td>Dockerfile</td><td>이미지를 어떻게 만들지(출발 환경·설치할 것·복사할 것·시작 명령)를 적은 파일</td></tr><tr><td>이미지(image)</td><td>실행에 필요한 것을 묶어 둔, 한번 만들면 바뀌지 않는 파일</td></tr><tr><td>컨테이너(container)</td><td>이미지를 실행한 것. 컨테이너마다 메모리와 파일 변경이 따로이고 지우면 사라진다</td></tr><tr><td>buildpacks</td><td>소스 코드를 보고 실행 환경을 자동 구성해 이미지를 만드는 도구. 코드에 적히지 않은 운영체제 프로그램은 알 수 없다</td></tr><tr><td>시스템 패키지(시스템 의존성)</td><td>파이썬 라이브러리 밖에서 운영체제에 설치하는 프로그램(apt 등)</td></tr><tr><td>tesseract / pytesseract</td><td>tesseract는 실제로 글자를 읽는 프로그램, pytesseract는 그것을 부르는 파이썬 라이브러리</td></tr><tr><td>poppler / pdf2image</td><td>poppler는 PDF를 이미지로 바꾸는 프로그램 모음(<code>pdftoppm</code>), pdf2image는 그것을 부르는 파이썬 라이브러리</td></tr><tr><td>레이어·레이어 캐시</td><td>Dockerfile 한 줄이 만든 변경의 묶음, 바뀌지 않은 줄은 이전 레이어를 다시 쓰는 것</td></tr><tr><td><code>.dockerignore</code></td><td>이미지 빌드 때 <code>COPY . .</code>에서 뺄 파일 목록. 하위 폴더까지 닿게 하려면 <code>**/</code> 패턴이 필요</td></tr><tr><td><code>.gcloudignore</code> / <code>.gitignore</code></td><td>각각 소스를 클라우드로 올릴 때, Git에 커밋할 때 뺄 파일 목록</td></tr><tr><td><code>PORT</code> 환경변수</td><td>Cloud Run이 컨테이너에 알려 주는 요청 포트 번호(기본 8080)</td></tr><tr><td>리비전(revision)</td><td>Cloud Run에서 이미지와 환경변수 같은 설정을 묶은 배포 버전</td></tr><tr><td><code>--clear-base-image</code></td><td>Dockerfile 이미지에서 쓸 수 없는 자동 베이스 이미지 업데이트를 끄는 배포 옵션</td></tr><tr><td>digest</td><td>이미지 내용으로 계산한 고유한 값. 태그와 달리 내용이 바뀌면 달라진다</td></tr><tr><td>해시</td><td>결과 전체를 요약한 짧은 값. 같은 입력의 결과가 같은지 비교할 때 쓴다</td></tr><tr><td>이미지 ID</td><td>이미지 내용으로 계산한 값. 같은 Dockerfile로 따로 빌드하면 달라진다</td></tr><tr><td>승격(promotion)</td><td>검증한 이미지를 다시 빌드하지 않고 다음 환경에 그대로 보내는 것(이번에는 하지 않음)</td></tr></tbody></table></div>
+<p class="footer-note">N050 · Dockerfile로 실행 환경을 정하는 법 — 방법론 실전적용 문서</p>
+
+</main>
+</body>
+</html>

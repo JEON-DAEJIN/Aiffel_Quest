@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N050 실습과제 제출보고서 부록 상세기록</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>[부록] N050 「Dockerfile로 실행환경 정하기」 실습 과제 — 상세 수행 기록</h1>
+<div class="callout summary"><p><span class="label">📌 요약</span> — 이 문서는 N050 제출보고서(노션 정리 양식)의 <strong>부록</strong>이다. 본문(<code>N050_실습과제_제출보고서</code>)은 한눈에 읽는 요약이고, 이 부록은 명령·로그·수치·비교표를 있는 그대로 남긴 상세 기록이다(2026-10-26). 시각은 KST(UTC+9)이고 UTC는 괄호로 병기했다. 프로젝트 ID · 서비스 계정 · 이메일 · 키 값 · 서비스 주소는 싣지 않았고 서비스는 <code>friend-agent</code>(production), <code>friend-agent-staging</code>(staging)으로만 부른다.</p></div>
+<p><strong>수신</strong>: N050 강의 강사님 · <strong>발신</strong>: 수강생 전대진(DJ)</p>
+<p><strong>실습일</strong>: 2026-10-26</p>
+<p><strong>과제 대상</strong>: AI 친구 에이전트 서비스(<code>friend-agent</code>)의 사진·PDF 글자 읽기(OCR) 기능을 서버에서 되게 만들기 위해 Dockerfile로 실행 환경을 정하는 실습(단계 1~7), 과제 1(컨테이너 들여다보기), 과제 2(같은 Dockerfile 두 번 빌드), 과제 3 도전(PDF 읽기)</p>
+<hr>
+<h2 id="1-한-장-요약">1. 한 장 요약</h2>
+<div class="table-scroll"><table><thead><tr><th>단계</th><th>한 일</th><th>확인한 핵심</th></tr></thead><tbody><tr><td>1</td><td>시작 상태 확인(읽기 전용)</td><td>서비스 둘·변수 4개·워크플로 3개 정상. 두 서비스 모두 <code>OCR_ENABLED</code> 없음. 로컬 tesseract는 eng·osd만, Docker 미설치</td></tr><tr><td>2</td><td>로컬에서 OCR 켜기</td><td>kor 데이터를 설치하고 <code>schedule.png</code>가 200 · 153글자 · <code>e61b2db05f</code></td></tr><tr><td>3</td><td>staging에 OCR 켜고 실패 재현</td><td>같은 사진이 500, 로그에 tesseract 없음</td></tr><tr><td>4</td><td>이미지·컨테이너 실험(교안 3장)</td><td>컨테이너를 새로 만들면 파일이 없다. 포트 충돌 확인. 이미지는 남기고 컨테이너 4개 삭제</td></tr><tr><td>5</td><td>Dockerfile·로컬 빌드</td><td>460MB 이미지에서 OCR 200. 이미지 안 .pyc 17개 발견 → 수정</td></tr><tr><td>6</td><td>PR #20: Dockerfile을 staging에</td><td><code>--clear-base-image</code> 한 단어 추가. Cloud Build가 Dockerfile 단계 실행, staging 200</td></tr><tr><td>7</td><td>PR #21: production 배포</td><td>승인 후 빌드, OCR 켜기 전 404 → 켠 뒤 200. 세 곳 결과 같음, 이미지 ID는 다름</td></tr><tr><td>과제 1</td><td>컨테이너 들여다보기</td><td>지우고 다시 띄우면 메시지 4개 → 0개, 이미지 ID 불변</td></tr><tr><td>과제 2</td><td><code>--no-cache</code> 두 번 빌드</td><td>패키지 같고 이미지 ID 다름</td></tr><tr><td>과제 3</td><td>PDF 읽기(poppler)</td><td>로컬 컨테이너에서 poppler 없이 처음 실패 → 줄 추가 → 네 곳 같은 결과</td></tr></tbody></table></div>
+<div class="diagram-wrap"><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>단계 1 시작 상태</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>단계 2 로컬 OCR</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>단계 3 staging 실패 재현</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>단계 4 이미지·컨테이너</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>단계 5 Dockerfile·로컬 빌드</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>단계 6 PR #20 staging</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>단계 7 PR #21 production</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>과제 1</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>과제 2</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>과제 3 PDF</strong></div></div></div>
+<hr>
+<h2 id="2-실습-환경-시작-시점">2. 실습 환경 (시작 시점)</h2>
+<div class="table-scroll"><table><thead><tr><th>항목</th><th>사실</th></tr></thead><tbody><tr><td>PC</td><td>Windows 11, WSL 2 Ubuntu 있음, 가상화 켜짐</td></tr><tr><td>저장소</td><td><code>friend-agent</code>(GitHub PUBLIC, <code>main</code>·<code>staging</code> 브랜치 보호, production 환경 승인자 지정) — N049에서 이어 사용</td></tr><tr><td>서비스</td><td>Cloud Run <code>friend-agent</code>(production), <code>friend-agent-staging</code>(staging), 리전 us-central1</td></tr><tr><td>시작 상태 점검</td><td>서비스 주소 둘 다 나옴. 저장소 변수 4개(교재는 5개, <code>BUILD_SA</code>를 쓰지 않는 템플릿이며 N049에서 이미 확인). 워크플로 3개(<code>ci.yml</code> · <code>deploy.yml</code> · <code>hello.yml</code>). GitHub 환경 <code>production</code> · <code>staging</code>. <code>staging</code> 브랜치 있음. 두 서비스 모두 <code>OCR_ENABLED</code> 없음</td></tr><tr><td>로컬 tesseract(시작 시)</td><td>5.4 설치됨, 영어(eng)·osd만, 한국어(kor) 없음, Path에도 없음</td></tr><tr><td>Docker</td><td>미설치였음 → Docker Desktop 설치(v4.96.3, Docker 29.9.2, 리눅스 컨테이너·WSL 2, Personal 로그인)</td></tr><tr><td>LLM</td><td>staging·production은 gpt-4o-mini(수업 키 공유, N049에서 확인), 로컬 시험은 <code>LLM_PROVIDER=fake</code>(키 없음)</td></tr></tbody></table></div>
+<hr>
+<h2 id="3-타임라인-2026-10-26-kst">3. 타임라인 (2026-10-26, KST)</h2>
+<div class="table-scroll"><table><thead><tr><th>시각</th><th>사건</th></tr></thead><tbody><tr><td>오전</td><td>강의노트(학습서 32쪽 · 해설서 54쪽) 정리 후 실습 시작</td></tr><tr><td>11:28</td><td>한국어 데이터 <code>kor.traineddata</code>(1.6MB, tessdata_fast)를 받음. 사용자가 관리자 PowerShell로 복사하고 사용자 Path에 Tesseract 폴더 등록</td></tr><tr><td>11:34~11:35</td><td>staging에 <code>OCR_ENABLED=true</code> 추가(리비전 <code>friend-agent-staging-00006-dst</code>), 같은 사진이 500(로그 11:35:05)</td></tr><tr><td>11:28~12:10 사이(정확한 시각은 기록 없음)</td><td>Docker Desktop 설치 파일 다운로드(첫 시도는 11:28에 시작했으나 너무 느려 사용자가 네트워크를 다시 연결한 뒤 재다운로드, 641,758,128바이트, 약 612MB, 서명 Docker Inc 유효) 후 설치·로그인, 단계 4(컨테이너 실험)·단계 5(빌드). PR #20 머지(12:12) 전에 끝남</td></tr><tr><td>12:12</td><td>PR #20 머지 후 staging 배포 빌드 <code>615ce1d8</code>(Dockerfile)</td></tr><tr><td>13:45</td><td>production 배포 빌드 <code>4718e203</code>(PR #21 머지 후 사용자 승인)</td></tr><tr><td>13:54~13:55</td><td>과제 2: <code>--no-cache</code> 빌드 2회</td></tr><tr><td>14:14</td><td>PDF 읽기 staging 빌드 <code>aa4d5d58</code>(PR #22)</td></tr><tr><td>14:27</td><td>PR #23 머지(production에 PDF 읽기 반영). 사용자 승인 후 14:32~14:36 배포</td></tr><tr><td>14:37</td><td>production에서 PDF 시험 — 네 곳 모두 같은 결과</td></tr></tbody></table></div>
+<hr>
+<h2 id="4-단계별-수행-내용">4. 단계별 수행 내용</h2>
+<h3 id="4-1-단계-1--시작-상태-확인-읽기-전용">4-1. 단계 1 — 시작 상태 확인 (읽기 전용)</h3>
+<p>2번 표와 같다. 바꾼 것은 없다.</p>
+<h3 id="4-2-단계-2--로컬에서-ocr-켜기">4-2. 단계 2 — 로컬에서 OCR 켜기</h3>
+<ul><li>tesseract: kor 데이터 복사 후 <code>tesseract --list-langs</code> 결과는 <code>eng</code> · <code>kor</code> · <code>osd</code>. Path 등록 후 새 환경에서 <code>tesseract --version</code>은 5.4.0.20240606</li><li>서버 실행: <code>.env</code>는 접근 규칙에 막혀 만들 수 없어 <strong>환경변수로 직접 넘겼다</strong></li></ul>
+<pre><code>LLM_PROVIDER=fake  OCR_ENABLED=true  ENV=local  STORAGE=memory  AUTH=none</code></pre>
+<ul><li><code>schedule.png</code>(산책 동아리 10월 일정 사진, 1200×826)를 <code>/api/ocr</code>에 보내 <strong>HTTP 200, 153글자, 결과 해시 <code>e61b2db05f</code></strong></li><li>읽힌 글: 산책 동아리 10월 일정 / 10월 넷째 주 공지 / 10월 21일 수요일 19:00 정기 모임(학생회관 302호) / 10월 23일 금요일 18:30 회비 납부 마감 / 10월 25일 일요일 10:00 북한산 산책(정문 앞 집합) / 문의: 동아리 운영진</li></ul>
+<h3 id="4-3-단계-3--staging에서-ocr-켜고-실패-재현">4-3. 단계 3 — staging에서 OCR 켜고 실패 재현</h3>
+<pre><code>gcloud run services update friend-agent-staging --region us-central1 --update-env-vars OCR_ENABLED=true</code></pre>
+<ul><li>새 리비전 <code>friend-agent-staging-00006-dst</code>, 트래픽 100%. 환경변수 이름은 ENV · LLM_API_KEY · COMMIT_SHA · OCR_ENABLED(기존 값 유지). production은 건드리지 않았다</li><li>staging 루트 200, <code>/version</code> 정상(커밋 <code>44230b1</code>). 같은 사진을 보내자 <strong>HTTP 500</strong> <code>{"detail":"사진에서 글자를 읽는 프로그램이 서버에 없습니다."}</code></li><li>Cloud Run 로그(2026-10-26 11:35:05 KST = 02:35:05 UTC, 리비전 00006-dst)</li></ul>
+<pre><code>SEVERITY  REQUEST_METHOD  STATUS  REQUEST_URL  TEXT_PAYLOAD
+ERROR                                          tesseract 프로그램을 찾을 수 없습니다. 실행 환경에 tesseract 가 설치되어 있지 않습니다.
+ERROR     POST            500     ocr</code></pre>
+<ul><li>로그 안 <code>POST /api/ocr</code> 500: 응답 182 B, 219 ms, 요청 주체 curl 8.21.0</li><li>해석: 서비스는 정상 시작했고 사진 요청이 들어온 순간 프로그램을 부르다 실패했다. 배포는 성공이고 대화 기능은 정상이다</li><li>증거: <code>03a_staging_ocr_before_500_log.txt</code>, <code>08a_cloudrun_staging_error_log_00006.png</code></li></ul>
+<h3 id="4-4-단계-4--교안-3장이미지컨테이너-실험">4-4. 단계 4 — 교안 3장(이미지·컨테이너) 실험</h3>
+<p><strong>공식 이미지 <code>python:3.13-slim-bookworm</code></strong></p>
+<table><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>Python</td><td>3.13.17</td></tr><tr><td>tesseract</td><td>없음</td></tr><tr><td>디스크</td><td>183MB(압축 내용 46.8MB)</td></tr><tr><td>이미지 ID</td><td><code>e32be0e55814</code></td></tr><tr><td>digest</td><td><code>sha256:e32be0e55814…</code></td></tr></tbody></table>
+<p><strong>컨테이너는 새로 시작한다</strong>: <code>note-a</code> 컨테이너의 <code>/tmp/note.txt</code>에 "메모"를 적고, 같은 이미지의 새 컨테이너에서 확인하자 <strong>파일이 없었다</strong>. <code>docker ps -a</code>에 note-a가 <code>Exited (0)</code>으로 남았고 <code>--rm</code> 컨테이너는 없었다. Docker Desktop의 Images에는 1줄, Containers에는 컨테이너가 따로 표시됐다.</p>
+<p><strong>포트</strong></p>
+<table><thead><tr><th>컨테이너</th><th>매핑</th><th>결과</th></tr></thead><tbody><tr><td><code>web-a</code></td><td>9000→8000</td><td>200</td></tr><tr><td><code>web-b</code></td><td>9001→8000</td><td>200</td></tr><tr><td>(호스트)</td><td><code>localhost:8000</code></td><td>연결 실패</td></tr><tr><td><code>web-c</code></td><td>9000</td><td><code>port is already allocated</code>(종료 코드 125, 의도한 실패)</td></tr></tbody></table>
+<p>정리: 컨테이너 4개를 <code>docker rm -f</code>로 지우고 이미지는 남겼다. 교재는 브라우저로 9000/9001을 열라고 했으나 <code>curl</code>로 200을 확인했다. 증거: <code>06a</code>~<code>06d</code>(Docker Desktop 화면, 사용자 캡처).</p>
+<h3 id="4-5-단계-5--dockerfile--로컬-빌드">4-5. 단계 5 — Dockerfile · 로컬 빌드</h3>
+<ul><li><code>staging</code>에서 <code>add-dockerfile</code> 브랜치를 만들고 <code>starter/Dockerfile</code>과 <code>starter/dockerignore</code>를 복사했다. <code>.gcloudignore</code>는 이미 있었고 <code>.env</code>를 빼며 Dockerfile은 빼지 않는다</li><li><strong>5기준 검토 5개 모두 통과</strong>: 베이스 고정(<code>python:3.13-slim-bookworm</code>), <code>tesseract-ocr</code>+<code>tesseract-ocr-kor</code> 설치, <code>.dockerignore</code>에 <code>.env</code>, <code>${PORT:-8080}</code>, <code>USER appuser</code>. <code>Procfile</code>·<code>.python-version</code>(3.13)과 <code>FROM</code> 버전이 일치했다</li></ul>
+<p>Cloud Build 로그의 Step 1~9에서 복원한 Dockerfile 명령(주석과 빈 줄은 로그에 없어 뺐다)</p>
+<pre><code>FROM python:3.13-slim-bookworm
+RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-kor &amp;&amp; rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+RUN useradd --create-home appuser
+USER appuser
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]</code></pre>
+<p><strong>첫 빌드</strong>: 이미지 <code>friend-agent:local</code> <strong>460MB</strong>(content 108MB)</p>
+<div class="table-scroll"><table><thead><tr><th>레이어(Dockerfile 줄)</th><th>교재 그림</th><th>이번 실측: 첫 빌드</th><th><code>.dockerignore</code> 수정 후(05a)</th></tr></thead><tbody><tr><td>베이스 이미지(<code>FROM</code>)</td><td>약 225MB</td><td>공식 이미지 단독 실측 183MB(단계 4)</td><td>(같은 베이스)</td></tr><tr><td>tesseract(apt)</td><td>약 95MB</td><td>94.9MB</td><td>94.9MB</td></tr><tr><td>라이브러리(requirements 복사+pip)</td><td>약 89MB</td><td>120MB</td><td>120MB</td></tr><tr><td>코드 복사(<code>COPY . .</code>)</td><td>약 0.2MB</td><td>442kB(.pyc 17개 포함 상태)</td><td>266kB</td></tr><tr><td>useradd</td><td>거의 0</td><td>69.6kB</td><td>69.6kB</td></tr><tr><td><code>CMD</code></td><td>0</td><td>0B</td><td>0B</td></tr></tbody></table></div>
+<ul><li>교재 그림의 레이어 대응은 교재 원문 그림을 직접 열어 확인한 것이다</li><li>pip 레이어가 교재(약 89MB)보다 120MB로 컸다. 원인은 설치된 패키지 버전 차이로 <strong>추정</strong>한다</li><li>코드 복사 레이어가 442kB에서 266kB로 줄어든 것은 .pyc 제거와 맞아 보이나 인과를 직접 측정하지는 않은 <strong>추정</strong>이다</li><li>레이어별 실측을 더한 값과 이미지 전체 460MB의 관계는 장부에 설명이 없어 합계를 계산해 쓰지 않았다</li><li>컨테이너 실행(<code>-p 8080:8080</code>, 환경변수는 <code>-e</code>)으로 같은 사진을 보내 200 · 153글자 · <code>e61b2db05f</code>(로컬과 같음). 이미지 안의 tesseract가 읽었다</li></ul>
+<p><strong>이미지 점검</strong> (<code>docker run --rm friend-agent:local …</code>)</p>
+<pre><code>ls -a /app       → .dockerignore .env.example .gcloudignore .github .gitignore .python-version AGENTS.md CLAUDE.md
+                   Dockerfile Procfile README.md app data pytest.ini requirements-dev.txt requirements.txt static
+.env / tests / docs → 모두 없음(정상)
+whoami           → appuser
+tesseract --list-langs → eng, kor, osd</code></pre>
+<p><strong>함정</strong>: 템플릿 <code>.dockerignore</code>의 <code>__pycache__/</code>와 <code>*.pyc</code>가 맨 위 폴더에만 적용돼 <code>/app/app/__pycache__</code>에 <strong>.pyc 17개(모두 cpython-314, 내 PC의 .venv가 만든 것)</strong>가 이미지에 들어갔다.</p>
+<p>수정: 두 줄을 아래처럼 바꿨다.</p>
+<pre><code>**/__pycache__/
+**/*.pyc</code></pre>
+<p>재빌드 결과: 이미지 안 <code>__pycache__</code> 0개 · <code>.pyc</code> 0개. 재빌드 단계에서 apt · WORKDIR · requirements 복사 · pip는 <strong>CACHED</strong>였고 <code>COPY . .</code>와 useradd만 새로 실행돼 전체 약 0.5초였다. 크기는 460MB 그대로이고 새 이미지로 OCR 200을 다시 확인했다.</p>
+<p>도구 사정: Git Bash가 <code>/app</code> 인자를 윈도 경로로 바꿔 <code>ls -a /app</code>이 한 번 실패했고 <code>MSYS_NO_PATHCONV=1</code>로 해결했다(Docker 문제가 아님). 증거: <code>05a_local_image_inspect.txt</code>.</p>
+<h3 id="4-6-단계-6--pr-20-dockerfile--staging">4-6. 단계 6 — PR #20 (Dockerfile → staging)</h3>
+<ul><li><code>deploy.yml</code> 43행 <code>flags:</code> 끝에 <code>--clear-base-image</code> <strong>한 단어만</strong> 추가했다(diff +1/−1). <strong>이 옵션 없이 배포해 <code>Missing required argument [--clear-base-image]</code> 오류를 직접 본 것은 아니다</strong>(교재 안내대로 처음부터 추가)</li><li>커밋 <code>d9d863d</code> = 3파일(<code>Dockerfile</code>, <code>.dockerignore</code>, <code>deploy.yml</code>, +41 −1), <code>.env</code> 없음 확인</li><li>PR #20: CI <code>test</code> 통과(19초), <code>hello</code> 통과(4초), 상태 CLEAN. 사용자가 머지를 승인해 머지 커밋 <code>c92135c</code>(2026-10-26 12:12:15 KST = 03:12:15 UTC)</li><li>배포 워크플로 성공(deploy 2분 0초, 전체 2분 22초)</li></ul>
+<p><strong>Cloud Build <code>615ce1d8</code></strong> — SUCCESS, 12:12:53~12:14:07 KST(03:12:53~03:14:07 UTC, 약 1분 14초)</p>
+<pre><code>29:  inflating: /workspace/Dockerfile
+57:Step 1/11 : FROM python:3.13-slim-bookworm
+77:Step 2/11 : RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-kor &amp;&amp; rm -rf /var/lib/apt/lists/*
+376:Setting up tesseract-ocr-kor (1:4.1.0-2) ...
+442:Setting up tesseract-ocr (5.3.0-2) ...
+446:Step 3/11 : WORKDIR /app
+450:Step 4/11 : COPY requirements.txt .
+452:Step 5/11 : RUN pip install --no-cache-dir -r requirements.txt
+553:Step 6/11 : COPY . .
+555:Step 7/11 : RUN useradd --create-home appuser
+559:Step 8/11 : USER appuser
+563:Step 9/11 : CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
+567:Step 10/11 : LABEL google.build_id=615ce1d8-…
+571:Step 11/11 : LABEL google.source=…
+575:Successfully built a31820f7a6bf
+576:Successfully tagged …/cloud-run-source-deploy/friend-agent-staging:latest</code></pre>
+<ul><li>1~9단계는 Dockerfile 줄과 일치하고 10~11단계는 Cloud Build가 붙이는 LABEL이다. <strong>buildpacks 언급은 0줄</strong>이다. 이미지 ID는 <code>a31820f7a6bf</code></li><li>staging 새 리비전 <code>friend-agent-staging-00007-94j</code> 100%, <code>/version</code> 커밋 <code>c92135c</code>. 같은 사진이 <strong>200</strong>이고 로그에 ERROR가 없었다(<code>POST /api/ocr</code> 200). <code>OCR_ENABLED=true</code>는 배포 후에도 유지됐다</li><li>증거: <code>01a</code> · <code>01b</code> · <code>02a</code> · <code>02b</code> · <code>03b</code> · <code>04a</code> · <code>07a</code> · <code>08b</code> · <code>08c</code> · <code>08d</code> · <code>09a</code>(📷 버튼) · <code>09b</code>(입력창에 일정 세 줄)</li></ul>
+<h3 id="4-7-단계-7--production-배포-pr-21">4-7. 단계 7 — production 배포 (PR #21)</h3>
+<ul><li>staging→main PR #21: 순변경 4파일(Dockerfile 관련 3 + N049의 E08 테스트 <code>tests/test_no_reminder_without_request.py</code>; 보내기 버튼 #17과 Revert #18은 상쇄). CI 통과, 머지 커밋 <code>23b49b1</code>(12:40:23 KST = 03:40:23 UTC)</li><li>배포(실행 <code>40265225239</code>)가 <strong>승인 대기</strong>로 멈췄고 사용자가 직접 승인했다(승인 화면 <code>10b</code>: "The deployments have been approved"). 머지(12:40)부터 빌드 시작(13:45)까지 대기가 약 1시간이었고 이유는 기록이 없다</li><li><strong>Cloud Build <code>4718e203</code></strong> SUCCESS(13:45:31 KST = 04:45:31 UTC), 같은 Dockerfile 단계, buildpacks 0줄, 이미지 <code>a3c0f9af949f</code></li><li>production 새 리비전 <code>friend-agent-00018-klq</code> 100%, <code>/version</code> 커밋 <code>23b49b1</code>(<code>23b49b11063670df7b1b0bb5256064a785c1cb18</code>)</li><li>production OCR: 켜기 전 <code>/api/ocr</code>은 <strong>404</strong> <code>{"detail":"사진 글자 읽기가 꺼져 있습니다"}</code></li></ul>
+<pre><code>gcloud run services update friend-agent --region us-central1 --update-env-vars OCR_ENABLED=true</code></pre>
+<ul><li>켠 뒤 리비전 <code>friend-agent-00019-nlc</code> 100%, 환경변수 이름 LLM_PROVIDER · LLM_API_KEY · COMMIT_SHA · ENV · OCR_ENABLED(기존 4개 유지)</li></ul>
+<p><strong>같은 사진(<code>schedule.png</code>)을 세 곳에 보낸 결과(10c)</strong></p>
+<div class="table-scroll"><table><thead><tr><th>환경</th><th>HTTP</th><th>글자수</th><th>결과 해시(sha1 앞 10자)</th></tr></thead><tbody><tr><td>로컬 컨테이너(friend-agent:local)</td><td>200</td><td>153</td><td>e61b2db05f</td></tr><tr><td>staging(리비전 00007)</td><td>200</td><td>153</td><td>e61b2db05f</td></tr><tr><td>production(리비전 00019)</td><td>200</td><td>153</td><td>e61b2db05f</td></tr></tbody></table></div>
+<p><strong>staging 빌드 vs production 빌드(10d)</strong></p>
+<div class="table-scroll"><table><thead><tr><th>항목</th><th>staging <code>615ce1d8</code></th><th>production <code>4718e203</code></th><th>같은가</th></tr></thead><tbody><tr><td>베이스 이미지 digest</td><td>sha256:e32be0e55814…</td><td>sha256:e32be0e55814…</td><td>같음</td></tr><tr><td>pip 설치 패키지(30개)</td><td>버전 동일</td><td>버전 동일</td><td>같음</td></tr><tr><td>apt 설치 패키지(62개)</td><td>버전 동일(tesseract-ocr 5.3.0-2, kor 1:4.1.0-2)</td><td>버전 동일</td><td>같음</td></tr><tr><td>빌드된 이미지 ID</td><td>a31820f7a6bf</td><td>a3c0f9af949f</td><td><strong>다름</strong></td></tr><tr><td>LABEL google.build_id</td><td>615ce1d8</td><td>4718e203</td><td>다름</td></tr></tbody></table></div>
+<p>두 빌드의 간격은 약 1시간 33분이다. 증거: <code>04b</code> · <code>10b</code> · <code>10c</code> · <code>10d</code>.</p>
+<h3 id="4-8-과제-1--실행-중인-컨테이너-들여다보기">4-8. 과제 1 — 실행 중인 컨테이너 들여다보기</h3>
+<pre><code>docker run -d --name friend-agent-test -p 8080:8080 -e LLM_PROVIDER=fake -e OCR_ENABLED=true -e ENV=local -e STORAGE=memory -e AUTH=none friend-agent:local
+docker exec friend-agent-test whoami   → appuser
+docker exec friend-agent-test pwd      → /app
+docker exec friend-agent-test ls       → AGENTS.md CLAUDE.md Dockerfile Procfile README.md app data pytest.ini requirements-dev.txt requirements.txt static</code></pre>
+<p><code>.env</code> · <code>tests</code> · <code>docs</code>는 없었다.</p>
+<ul><li>대화 두 턴("안녕, 오늘 산책 갈 거야", "내 이름은 (이름)이야, 기억해 줘"(실제로는 사용자 이름을 넣었다))을 보낸 뒤 <code>GET /api/messages</code>는 <strong>4개</strong>(내 발언 2 + 가짜 응답 2)였다(컨테이너 ID <code>e6f131713f90</code>)</li><li><code>docker rm -f friend-agent-test</code> 후 같은 이미지로 다시 띄웠다(새 컨테이너 ID <code>8ed3418b358a</code>). <code>GET /api/messages</code>는 <strong>0개</strong>였고 이미지 ID는 삭제 전후 모두 <code>90cbc2725f5f</code></li><li>결론: 컨테이너는 실행할 때마다 이미지에서 새로 시작하고 대화·기억은 컨테이너 메모리에 있어 함께 사라진다. 같은 이유로 Cloud Run에서도 새 리비전이 뜨면 메모리 저장소(<code>STORAGE=memory</code>)의 대화가 사라질 것으로 본다(증거 11a의 해석이며 Cloud Run에서는 시험하지 않은 추정)</li><li><strong>중간 사고</strong>: Git Bash의 <code>curl -d</code>로 한글 JSON을 보내자 HTTP 400(<code>There was an error parsing the body</code>)이 나왔다. 인코딩 문제였고 서버는 정상이었다. 파이썬으로 UTF-8 JSON을 보내 해결했다</li><li>교안은 브라우저에서 직접 대화하라고 하나 <strong>API로 같은 효과를 확인했다</strong>(화면 캡처 없음)</li><li>증거: <code>11a_task1_exec_and_container_memory.txt</code></li></ul>
+<h3 id="4-9-과제-2--같은-dockerfile-두-번-빌드">4-9. 과제 2 — 같은 Dockerfile 두 번 빌드</h3>
+<pre><code>docker build --no-cache -t friend-agent:try-a .   (13:54:28~13:54:59, 약 31초)
+docker build --no-cache -t friend-agent:try-b .   (13:55:03~13:55:33, 약 30초)</code></pre>
+<table><thead><tr><th>비교</th><th>결과</th></tr></thead><tbody><tr><td>이미지 ID</td><td>try-a <code>8d665740853b…</code>, try-b <code>3a23685075fb…</code> → <strong>다름</strong></td></tr><tr><td>크기</td><td>둘 다 460MB</td></tr><tr><td><code>pip freeze</code>(30줄)</td><td>같음</td></tr><tr><td><code>dpkg -l</code>(deb 159개)</td><td>같음</td></tr></tbody></table>
+<p>레이어 10개(<code>docker image inspect</code>의 <code>.RootFS.Layers</code>) 비교</p>
+<table><thead><tr><th>번호</th><th>내용</th><th>결과</th></tr></thead><tbody><tr><td>1~4</td><td>베이스 이미지(<code>python:3.13-slim-bookworm</code>)</td><td>같음</td></tr><tr><td>5</td><td>apt-get install tesseract</td><td>다름</td></tr><tr><td>6</td><td>WORKDIR /app</td><td>다름</td></tr><tr><td>7</td><td>COPY requirements.txt</td><td>다름</td></tr><tr><td>8</td><td>pip install</td><td>다름</td></tr><tr><td>9</td><td>COPY . .</td><td>같음</td></tr><tr><td>10</td><td>useradd appuser</td><td>다름</td></tr></tbody></table>
+<ul><li>레이어와 Dockerfile 줄의 대응은 <code>docker history</code> 줄 수와 레이어 수가 같다는 점에서 <strong>추정</strong>한 것이고, 달라진 정확한 원인 파일은 확인하지 않았다</li><li>교안은 "몇 분씩"이라 했으나 이 PC에서는 30초대였다</li><li>정리: try-a·try-b 이미지를 삭제했다(<code>friend-agent:local</code>은 남김). 증거: <code>12a_task2_nocache_build_compare.txt</code></li></ul>
+<h3 id="4-10-과제-3도전--pdf-공지문-읽기poppler">4-10. 과제 3(도전) — PDF 공지문 읽기(poppler)</h3>
+<p><strong>후보 비교와 선택</strong>: PDF(poppler)를 선택했다. QR/zbar는 2순위, HEIC · ffmpeg는 비추천이었다. HEIC는 <code>pillow-heif</code> 휠이 libheif를 포함해 시스템 패키지가 필요 없을 수 있다(미확인), ffmpeg는 음성 인식 API까지 얽혀 난이도가 높다고 보았다.</p>
+<p><strong>로컬 준비</strong>: <code>winget install oschwartz10612.Poppler</code>(portable zip <code>Release-25.07.0-0.zip</code> 약 16.0MB, MIT, <strong>비공식 빌드</strong>, SHA256 <code>435e6265738470b7ae6498b8a298a4025bacb9349656207ef54d0f069687ce57</code>, winget이 <code>pdftoppm</code> 등 별칭을 만들어 Path 별도 등록 불필요). <code>pdf2image</code> 1.17.0을 <code>.venv</code>에 설치했다.</p>
+<p><strong>변경(브랜치 <code>add-pdf-ocr</code>, origin/staging <code>c92135c</code>에서 5파일)</strong></p>
+<div class="table-scroll"><table><thead><tr><th>파일</th><th>변경</th></tr></thead><tbody><tr><td><code>requirements.txt</code></td><td><code>pdf2image</code> 추가</td></tr><tr><td><code>app/ocr.py</code></td><td>PDF 판별(<code>%PDF</code>), 앞 3쪽 · 200dpi · 시간 제한 30초. poppler가 없으면 로그 ERROR "poppler 프로그램을 찾을 수 없습니다…"와 안내 "PDF를 읽는 프로그램이 서버에 없습니다.", 깨진 PDF는 "PDF 파일을 읽을 수 없습니다."</td></tr><tr><td><code>static/index.html</code></td><td>accept에 PDF 추가, 버튼 안내 "사진·PDF에서 글자 읽기"</td></tr><tr><td><code>tests/test_ocr_pdf.py</code></td><td>새 테스트 3개</td></tr><tr><td><code>Dockerfile</code></td><td>apt 줄에 <code>poppler-utils</code> 추가</td></tr></tbody></table></div>
+<p>입력창 문장("사진에서 읽은 글이야…")은 그대로 두었다.</p>
+<p><strong>시험 입력</strong>: <code>schedule.png</code>를 Pillow로 만든 PDF(1쪽, 576×396.48pt), 4쪽 PDF, 깨진 PDF(<code>%PDF-1.4 not a real pdf</code>). 샘플 PDF는 저장소에 커밋하지 않았다(임시 폴더).</p>
+<p><strong>로컬(Windows, tesseract 5.4 + poppler 25.07.0)</strong></p>
+<table><thead><tr><th>입력</th><th>결과</th></tr></thead><tbody><tr><td>사진(PNG)</td><td>200, 153글자, e61b2db05f(기존 동작 그대로)</td></tr><tr><td>PDF 1쪽</td><td>200, 153글자, e61b2db05f(사진과 같음)</td></tr><tr><td>PDF 4쪽</td><td>200, 461글자 = 153×3+줄바꿈 2, 4ba6dbbc32(앞 3쪽만)</td></tr><tr><td>깨진 PDF</td><td>500 <code>{"detail":"PDF 파일을 읽을 수 없습니다."}</code></td></tr></tbody></table>
+<p><strong>테스트</strong>: 기존 12 + 새 3 = <strong>15 passed</strong>(CI와 같게 poppler·tesseract가 없는 셸, <code>TZ=UTC</code>). 3쪽 제한을 99로 일부러 깨뜨리면 <code>assert 99 == 3</code>으로 실패하고 되돌리면 15 passed. 한계: 새 테스트는 변환 함수를 가짜로 바꾸므로 poppler가 서버에 실제로 있는지는 검증하지 못한다(N049의 CI 한계와 같은 구멍).</p>
+<p><strong>로컬 컨테이너 — Dockerfile에 poppler 줄이 없을 때</strong>(이미지 <code>friend-agent:pdf-nopoppler</code>, 460MB)</p>
+<pre><code>컨테이너 안: pdftoppm 없음, tesseract는 /usr/bin/tesseract
+사진(PNG):  200, e61b2db05f
+PDF 1쪽:    500 {"detail":"PDF를 읽는 프로그램이 서버에 없습니다."}
+로그:       {"severity": "ERROR", "message": "poppler 프로그램을 찾을 수 없습니다. 실행 환경에 poppler 가 설치되어 있지 않습니다."}  /  POST /api/ocr 500</code></pre>
+<p>로컬에서는 되던 PDF 읽기가 <strong>로컬 컨테이너에서 처음 실패</strong>했다.</p>
+<p><strong>줄 추가 후</strong>(<code>apt-get install … tesseract-ocr tesseract-ocr-kor poppler-utils</code>): <code>friend-agent:local</code> <strong>473MB(+13MB)</strong>, 컨테이너 안 <code>/usr/bin/pdftoppm</code>(22.12.0), <code>whoami</code>=<code>appuser</code>. 사진 200/<code>e61b2db05f</code>, PDF 1쪽 200/153/<code>e61b2db05f</code>, PDF 4쪽 200/461/<code>4ba6dbbc32</code>(로컬과 같음), 깨진 PDF 500 안내. <code>.env</code> · <code>tests</code> · <code>docs</code> 없음, <code>__pycache__</code> 0개. 로컬 poppler 25.07.0(Windows)과 컨테이너 22.12.0(Debian)은 버전이 달라도 결과가 같았다.</p>
+<p><strong>staging 반영(PR #22)</strong></p>
+<ul><li>커밋 <code>13d9536</code>, PR #22(CI test 22초 · hello 6초 통과, CLEAN). 사용자 확인 후 머지 <code>9c0a5b3</code>(14:13:45 KST = 05:13:45 UTC)</li><li>배포 워크플로 <code>40273092848</code> 성공. <strong>Cloud Build <code>aa4d5d58</code></strong> SUCCESS(14:14:26 KST = 05:14:26 UTC)</li></ul>
+<pre><code>86:Step 2/11 : RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-kor poppler-utils &amp;&amp; rm -rf /var/lib/apt/lists/*
+474:Setting up poppler-utils (22.12.0-2+deb12u3) ...
+477:Setting up tesseract-ocr (5.3.0-2) ...
+613:Successfully built 7cd90c50e99a</code></pre>
+<ul><li>buildpacks 0줄. staging 새 리비전 <code>friend-agent-staging-00008-lhs</code> 100%, <code>/version</code> 커밋 <code>9c0a5b3</code>(<code>9c0a5b3c89af644f47a5eed5d3e095000295d76d</code>)</li><li>staging 로그(14:17 KST = 05:17 UTC, 리비전 00008): <code>POST /api/ocr</code> 200 ×3 · 500 ×1(깨진 PDF, 의도한 입력), poppler 오류 없음</li></ul>
+<p><strong>production 반영(PR #23)</strong></p>
+<ul><li>PR #23 머지 커밋 <code>21ee625</code>(14:27:06 KST = 05:27:06 UTC). 배포 실행 <code>40274280828</code>: test 통과(14:27:11~14:27:27 KST = 05:27:11~05:27:27 UTC), deploy는 <strong>승인 대기</strong> 후 사용자가 직접 승인해 14:32:37~14:36:16 KST(05:32:37~05:36:16 UTC, 약 3분 39초) 성공. 이 두 번째 production 배포의 승인 화면은 캡처하지 않았다(10b는 첫 production 배포)</li><li><strong>Cloud Build <code>057dbfd2</code></strong> SUCCESS(14:32:53 KST = 05:32:53 UTC). <code>Step 1/11 FROM python:3.13-slim-bookworm</code>, <code>Step 2/11</code>에 <code>poppler-utils</code>, <code>Setting up poppler-utils (22.12.0-2+deb12u3)</code>, buildpacks 0줄, 이미지 <code>cb253b448e50</code></li><li>production 새 리비전 <code>friend-agent-00020-clm</code>(14:33:48 KST = 05:33:48 UTC, 100%), <code>/version</code> 커밋 <code>21ee625dacc48abb78f1eb96613cc72fe554fabb</code>. 환경변수 이름 LLM_PROVIDER · LLM_API_KEY · COMMIT_SHA · ENV · OCR_ENABLED. <strong><code>OCR_ENABLED</code>는 00019에서 넣은 값이 새 리비전에도 그대로 유지</strong>돼 production에서 다시 켤 필요가 없었다</li><li>production 결과: 사진 200/153/<code>e61b2db05f</code>, PDF 1쪽 200/153/<code>e61b2db05f</code>, PDF 4쪽 200/461/<code>4ba6dbbc32</code>, 깨진 PDF 500 "PDF 파일을 읽을 수 없습니다." 로그(14:37 KST = 05:37 UTC, 리비전 00020): <code>POST /api/ocr</code> 200 ×3 · 500 ×1, poppler 오류 없음</li></ul>
+<p><strong>완료 기준</strong>: 같은 입력이 로컬 · 로컬 컨테이너 · staging · production에서 같은 결과였다. Dockerfile에서 바뀐 줄이 필요한 이유 한 문장: "PDF를 이미지로 바꾸는 <code>pdftoppm</code>이 운영체제 프로그램이라 <code>pip</code>로는 설치되지 않기 때문이다." 줄이 없었다면 <strong>로컬 컨테이너에서 처음 문제가 드러났고</strong>, 이번에는 staging 전에 컨테이너에서 잡았다.</p>
+<p><strong>staging 빌드 <code>aa4d5d58</code> vs production 빌드 <code>057dbfd2</code>(14a)</strong></p>
+<div class="table-scroll"><table><thead><tr><th>항목</th><th>staging</th><th>production</th><th>같은가</th></tr></thead><tbody><tr><td>베이스 이미지 digest</td><td>sha256:e32be0e55814…</td><td>같음</td><td>같음</td></tr><tr><td>pip 설치 패키지(31개)</td><td>버전 동일</td><td>버전 동일</td><td>같음</td></tr><tr><td>apt 설치 패키지(67개)</td><td>동일</td><td>동일</td><td>같음</td></tr><tr><td>빌드된 이미지 ID</td><td>7cd90c50e99a</td><td>cb253b448e50</td><td><strong>다름</strong></td></tr><tr><td>LABEL google.build_id</td><td>aa4d5d58</td><td>057dbfd2</td><td>다름</td></tr></tbody></table></div>
+<p>두 빌드의 간격은 약 18분이다. 앞의 PR #20/#21 비교(간격 약 1.5시간)도 같은 모양의 결과였다. 증거: <code>04c</code> · <code>04d</code> · <code>13a</code> · <code>13b</code> · <code>14a</code>.</p>
+<h3 id="4-11-실습-저장소-정리">4-11. 실습 저장소 정리</h3>
+<ul><li>로컬 브랜치는 <code>main</code>·<code>staging</code>만 남겼다(<code>main</code>=<code>21ee625</code>, <code>staging</code>은 원격과 같음). 병합 완료 브랜치 9개를 지웠고 <code>add-pdf-ocr</code>는 production 반영 후 삭제했다. <code>main</code>·<code>staging</code>은 <code>git pull --ff-only</code>로 원격과 맞췄다</li><li>원격 <code>origin/add-dockerfile</code>과 <code>origin/add-pdf-ocr</code>는 삭제하지 않고 남겼다</li></ul>
+<hr>
+<h2 id="5-비교표-모음">5. 비교표 모음</h2>
+<h3 id="5-1-같은-입력-네-곳글자수--해시-앞-10자">5-1. 같은 입력, 네 곳(글자수 / 해시 앞 10자)</h3>
+<div class="table-scroll"><table><thead><tr><th>입력</th><th>로컬(Windows)</th><th>로컬 컨테이너</th><th>staging</th><th>production</th></tr></thead><tbody><tr><td>사진(PNG)</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td></tr><tr><td>PDF 1쪽</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td><td>200, 153, e61b2db05f</td></tr><tr><td>PDF 4쪽(앞 3쪽)</td><td>200, 461, 4ba6dbbc32</td><td>200, 461, 4ba6dbbc32</td><td>200, 461, 4ba6dbbc32</td><td>200, 461, 4ba6dbbc32</td></tr><tr><td>깨진 PDF</td><td>500 PDF 파일을 읽을 수 없습니다</td><td>500 (같음)</td><td>500 (같음)</td><td>500 (같음)</td></tr></tbody></table></div>
+<p>production의 사진 OCR은 4-7에서도 200/153/<code>e61b2db05f</code>로 확인했다(PDF가 올라가기 전의 production). 이 표의 production 열은 PDF 반영 후 리비전 00020에서 잰 값이다.</p>
+<h3 id="5-2-이미지-id">5-2. 이미지 ID</h3>
+<div class="table-scroll"><table><thead><tr><th>이미지</th><th>ID</th><th>비고</th></tr></thead><tbody><tr><td>staging 빌드 615ce1d8</td><td>a31820f7a6bf</td><td>PR #20</td></tr><tr><td>production 빌드 4718e203</td><td>a3c0f9af949f</td><td>PR #21, 패키지는 staging과 같음</td></tr><tr><td>staging 빌드 aa4d5d58</td><td>7cd90c50e99a</td><td>PR #22 PDF 읽기(poppler-utils 추가)</td></tr><tr><td>production 빌드 057dbfd2</td><td>cb253b448e50</td><td>PR #23, staging aa4d5d58과 패키지(pip 31 · apt 67 · 베이스 digest) 같고 ID 다름</td></tr><tr><td>로컬 try-a</td><td>8d665740853b</td><td><code>--no-cache</code></td></tr><tr><td>로컬 try-b</td><td>3a23685075fb</td><td><code>--no-cache</code>, try-a와 pip·apt 목록 같고 ID 다름</td></tr></tbody></table></div>
+<h3 id="5-3-리비전">5-3. 리비전</h3>
+<div class="table-scroll"><table><thead><tr><th>서비스</th><th>리비전</th><th>시점(KST)</th><th>의미</th></tr></thead><tbody><tr><td>staging</td><td>00006-dst</td><td>11:34</td><td>OCR_ENABLED 추가(buildpacks 이미지, 실패)</td></tr><tr><td>staging</td><td>00007-94j</td><td>12:14</td><td>Dockerfile 빌드(PR #20), OCR 성공</td></tr><tr><td>staging</td><td>00008-lhs</td><td>14:15</td><td>PDF 읽기(PR #22)</td></tr><tr><td>production</td><td>00017-ckh</td><td>10-23</td><td>이전(buildpacks)</td></tr><tr><td>production</td><td>00018-klq</td><td>13:46</td><td>Dockerfile 빌드(PR #21)</td></tr><tr><td>production</td><td>00019-nlc</td><td>13:48</td><td>OCR_ENABLED 추가</td></tr><tr><td>production</td><td>00020-clm</td><td>14:33</td><td>PDF 읽기(PR #23), OCR_ENABLED 유지</td></tr></tbody></table></div>
+<h3 id="5-4-pr">5-4. PR</h3>
+<div class="table-scroll"><table><thead><tr><th>PR</th><th>내용</th><th>대상</th><th>머지(KST, UTC 병기)</th></tr></thead><tbody><tr><td>#20</td><td>Dockerfile 추가(3파일)</td><td>staging</td><td>12:12:15(03:12:15 UTC)</td></tr><tr><td>#21</td><td>Dockerfile production 승격(순변경 4파일: Dockerfile 관련 3 + N049 E08 테스트)</td><td>main</td><td>12:40:23(03:40:23 UTC). 배포는 승인 대기 후 사용자가 직접 승인, 빌드는 13:45:31(04:45:31 UTC)에 시작. 대기가 약 1시간이었고 이유는 기록 없음</td></tr><tr><td>#22</td><td>PDF 공지문 읽기(5파일)</td><td>staging</td><td>14:13:45(05:13:45 UTC)</td></tr><tr><td>#23</td><td>PDF 읽기 production 반영(5파일)</td><td>main</td><td>14:27:06(05:27:06 UTC), 머지 커밋 21ee625, 승인 후 14:32~14:36 배포</td></tr></tbody></table></div>
+<hr>
+<h2 id="6-교재원문해설서와-다르게-한-것--달라진-것-12가지">6. 교재(원문·해설서)와 다르게 한 것 · 달라진 것 12가지</h2>
+<div class="table-scroll"><table><thead><tr><th>번호</th><th>항목</th><th>교재</th><th>이번 실제</th></tr></thead><tbody><tr><td>1</td><td>빌드 시간</td><td>"몇 분 걸린다"</td><td>과제 2의 <code>--no-cache</code> 빌드가 이 PC에서 약 30초대(단계 5 첫 빌드 자체의 시간은 기록 없음)</td></tr><tr><td>2</td><td>레이어 크기</td><td>베이스 약 225MB · tesseract(apt) 약 95MB · 라이브러리(pip) 약 89MB · 코드 복사 약 0.2MB</td><td>베이스는 단독 실측 183MB, tesseract 94.9MB, pip 120MB, 코드 442kB(첫 빌드, .pyc 포함)에서 266kB(수정 후). 이미지 전체는 460MB</td></tr><tr><td>3</td><td>이미지 크기</td><td>400MB대</td><td>460MB, poppler 추가 후 473MB</td></tr><tr><td>4</td><td><code>--env-file .env</code></td><td>로컬 <code>.env</code>로 키 전달</td><td><code>.env</code>가 접근 규칙에 막혀 <code>-e</code> 환경변수로 직접 전달(키를 이미지에 넣지 않는 원칙은 같고 키는 가짜 LLM이라 없음)</td></tr><tr><td>5</td><td>로컬 tesseract 한국어</td><td>로컬에 kor가 없어도 컨테이너는 읽힌다고 허용</td><td>kor를 설치해 "로컬이 한국어까지 되는 정상 환경"에서 시작</td></tr><tr><td>6</td><td>컨테이너 대화 확인</td><td>브라우저에서 직접 대화</td><td>API로 대화·확인(화면 캡처 없음)</td></tr><tr><td>7</td><td>저장소 변수</td><td>5개</td><td>4개(템플릿에 <code>BUILD_SA</code> 없음, N049에서 확인)</td></tr><tr><td>8</td><td>포트 시연</td><td>브라우저로 9000/9001 열기</td><td><code>curl</code>로 200 확인</td></tr><tr><td>9</td><td>사진→입력창 화면</td><td>교안 최종 성공 화면</td><td>사용자가 직접 📷로 <code>schedule.png</code>를 골라 캡처(09b)</td></tr><tr><td>10</td><td><code>--clear-base-image</code></td><td>없으면 배포가 <code>Missing required argument [--clear-base-image]</code>로 멈춤</td><td>처음부터 추가해 <strong>그 오류를 직접 본 적은 없음</strong></td></tr><tr><td>11</td><td>이미지 안 <code>__pycache__</code></td><td>"보이면 하위 폴더까지 적용되는 패턴(앞에 별표 두 개와 슬래시를 붙이는 방식)으로"</td><td>실제로 나옴(.pyc 17개) → 수정</td></tr><tr><td>12</td><td>이미지 ID 비교 과제</td><td>몇 분 간격이면 패키지 목록 같을 가능성</td><td>같았음(pip 30, apt 159), ID는 다름. 며칠 간격은 재현하지 않음</td></tr></tbody></table></div>
+<hr>
+<h2 id="7-사고문제-표-상세">7. 사고·문제 표 (상세)</h2>
+<div class="table-scroll"><table><thead><tr><th>번호</th><th>변경·상황</th><th>결과</th><th>사용자에게 보였을 것</th><th>원인을 찾은 곳</th><th>처리</th></tr></thead><tbody><tr><td>1</td><td>staging에서 OCR 켜기(로컬에선 됨)</td><td>500</td><td>"사진에서 글자를 읽지 못했어요: 사진에서 글자를 읽는 프로그램이 서버에 없습니다."</td><td>Cloud Run 로그(ERROR "tesseract 프로그램을 찾을 수 없습니다…", POST /api/ocr 500)</td><td>Dockerfile에 tesseract·kor 설치 줄 → staging 200</td></tr><tr><td>2</td><td><code>COPY . .</code>가 하위 <code>__pycache__</code>까지 복사</td><td>이미지에 .pyc 17개(cpython-314)</td><td>사용자에게는 안 보임, 이미지 점검에서 발견</td><td><code>ls</code>/<code>find</code>로 이미지 안을 열어 봄</td><td><code>.dockerignore</code>를 모든 하위 폴더 패턴으로 수정, 재빌드 0개</td></tr><tr><td>3</td><td>Dockerfile에 poppler 줄 없이 PDF 읽기 시험(컨테이너)</td><td>PDF만 500</td><td>"PDF를 읽는 프로그램이 서버에 없습니다."</td><td>컨테이너 로그(ERROR poppler 없음)와 <code>command -v pdftoppm</code> 없음</td><td>Dockerfile에 <code>poppler-utils</code> 추가</td></tr><tr><td>4</td><td>Git Bash <code>curl -d</code>로 한글 JSON 전송</td><td>HTTP 400</td><td>없음</td><td>컨테이너 로그(400)와 응답 본문(<code>error parsing the body</code>)</td><td>파이썬으로 UTF-8 전송</td></tr><tr><td>5</td><td>컨테이너를 지우고 다시 띄움</td><td>대화 4개 → 0개</td><td>대화가 사라짐</td><td>이미지 ID 불변과 메시지 수 비교</td><td>의도한 실험. 컨테이너 메모리는 영속 저장소가 아니다</td></tr><tr><td>6</td><td>같은 Dockerfile로 staging·production을 따로 빌드</td><td>이미지 ID 다름(패키지는 같음)</td><td>없음</td><td>Cloud Build 로그 비교</td><td>남은 숙제로 기록</td></tr><tr><td>7</td><td>로컬 컨테이너를 8080으로 띄우려는데 로컬 uvicorn이 8080 점유</td><td>포트 충돌 우려</td><td>없음</td><td>8080 점유 프로세스 확인(내가 띄운 uvicorn)</td><td>종료. Windows venv 실행기가 자식 python을 따로 띄워 부모 PID만 죽이면 포트가 안 비워져 실제 점유 PID를 다시 찾아 종료</td></tr></tbody></table></div>
+<hr>
+<h2 id="8-하지-않은-것--한계-사실대로">8. 하지 않은 것 · 한계 (사실대로)</h2>
+<ul><li><strong>staging 서비스·수업 키 처리</strong>: 이번에 다루지 않았다(N049 상태 그대로, 수업에서 받은 LLM 키를 staging·production이 공유하며 한도를 분리하지 못했다)</li><li><strong>이미지 태그·digest 관리, 검증한 이미지를 그대로 승격하는 흐름, 저장 공간(400MB대 이미지가 배포마다 쌓임) 관리</strong>: 교안이 "다음 실습"으로 남긴 숙제로 하지 않았다</li><li><strong>며칠 간격 빌드로 패키지 버전이 달라지는 것</strong>: 재현하지 않았다(이번 비교는 모두 몇 시간 이내 → 패키지는 같고 이미지 ID만 다름)</li><li><strong><code>--clear-base-image</code> 누락 오류</strong>: 직접 재현하지 않았다</li><li><strong>원격 브랜치 <code>origin/add-dockerfile</code>·<code>origin/add-pdf-ocr</code></strong>: 삭제하지 않고 남겼다</li><li><strong>과제 1의 브라우저 직접 대화</strong>: API로 대체했다</li><li><strong>QR · HEIC · ffmpeg</strong>: 후보로만 비교하고 구현하지 않았다</li><li><strong>새 PDF 테스트</strong>는 poppler 설치 여부를 검증하지 못한다(변환 함수를 가짜로 바꿈). 실제 확인은 컨테이너·staging 몫이다</li><li><strong>두 번째 production 배포(PR #23)의 승인 화면</strong>은 캡처하지 않았다</li><li><strong>다른 프로젝트에 대한 적용</strong>: 해설서가 제안한 다른 프로젝트 적용은 계획일 뿐 이번에 한 일이 아니다</li></ul>
+<hr>
+<h2 id="9-증거-파일-인덱스">9. 증거 파일 인덱스</h2>
+<p>증거 폴더: <code>강의정리\N050\증거화면\</code>(30개, git 미추적)</p>
+<div class="table-scroll"><table><thead><tr><th>파일</th><th>내용</th><th>비고</th></tr></thead><tbody><tr><td><code>01a_pr20_conversation.png</code></td><td>PR #20 Merged, 체크 2개 통과</td><td>로그아웃 상태 화면</td></tr><tr><td><code>01b_pr20_files.png</code></td><td>변경 3파일(<code>deploy.yml</code> 한 줄 강조)</td><td></td></tr><tr><td><code>02a_staging_screen.png</code></td><td>staging 배너 + 빌드 c92135c</td><td></td></tr><tr><td><code>02b_staging_version.png</code></td><td><code>/version</code> JSON</td><td></td></tr><tr><td><code>03a_staging_ocr_before_500_log.txt</code></td><td>단계 3 실패: 응답과 로그(텍스트)</td><td></td></tr><tr><td><code>03b_staging_ocr_after_200.txt</code></td><td>단계 7 성공: <code>/version</code>, <code>/api/config</code>, <code>/api/ocr</code> 200, 로그</td><td>서비스 주소가 보임</td></tr><tr><td><code>04a</code>·<code>04b</code>·<code>04c</code>·<code>04d</code> Cloud Build 로그 텍스트</td><td>빌드 로그 발췌 4개(staging PR #20 / production PR #21 / staging PR #22 / production PR #23)</td><td>소스·이미지 저장소 주소에 프로젝트 ID가 보임</td></tr><tr><td><code>05a_local_image_inspect.txt</code></td><td>로컬 이미지 점검</td><td></td></tr><tr><td><code>06a</code>~<code>06d</code> Docker Desktop 화면</td><td>설치 · 로그인 · Engine running · 컨테이너 4개</td><td>사용자 캡처</td></tr><tr><td><code>07a_actions_deploy_run_success.png</code></td><td>배포 실행 #14 성공</td><td></td></tr><tr><td><code>08a_cloudrun_staging_error_log_00006.png</code></td><td>콘솔 로그: 11:35:05 JST POST 500 + tesseract 오류</td><td>사용자 캡처</td></tr><tr><td><code>08b_cloudbuild_615ce1d8_summary_step1.png</code>, <code>08c_cloudbuild_step2_apt_install_tesseract.png</code></td><td>콘솔 빌드 로그: Step 1 FROM, Step 2 apt-get install tesseract</td><td>사용자 캡처, 프로젝트 ID가 소스 주소에 보임</td></tr><tr><td><code>08d_cloudrun_revisions_00007_100pct.png</code></td><td>콘솔 리비전: 00007-94j 100%</td><td>사용자 캡처, 서비스 계정·프로젝트 ID 보임</td></tr><tr><td><code>09a_staging_chat_photo_button.png</code></td><td>대화 화면 📷 버튼</td><td>사용자 캡처</td></tr><tr><td><code>09b_staging_ocr_result.png</code></td><td>사진 업로드 후 입력창에 일정 세 줄</td><td>사용자 캡처</td></tr><tr><td><code>10b_production_deploy_approved_running.png</code></td><td>production 배포 승인 완료·진행 화면</td><td>사용자 캡처</td></tr><tr><td><code>10c_production_ocr_three_way_compare.txt</code></td><td>production 배포·OCR 켜기·세 곳 비교</td><td></td></tr><tr><td><code>10d_staging_vs_production_image_compare.txt</code></td><td>staging·production 이미지 비교</td><td></td></tr><tr><td><code>11a_task1_exec_and_container_memory.txt</code></td><td>과제 1</td><td></td></tr><tr><td><code>12a_task2_nocache_build_compare.txt</code></td><td>과제 2</td><td></td></tr><tr><td><code>13a_task3_pdf_ocr_local_and_container.txt</code></td><td>과제 3 로컬·컨테이너(실패→성공)</td><td></td></tr><tr><td><code>13b_task3_pdf_ocr_staging_compare.txt</code></td><td>과제 3 staging와 세 곳 비교</td><td></td></tr><tr><td><code>14a_task3_pdf_ocr_production_compare.txt</code></td><td>production PDF 결과, 네 곳 비교, staging·production 빌드 비교</td><td></td></tr></tbody></table></div>
+<p>개인정보 주의: <strong>08b · 08c · 08d에는 프로젝트 ID·서비스 계정이 보인다.</strong> 공개 문서나 노션에 올리기 전에 가릴지 정한다. 이 부록에는 그 값을 옮겨 적지 않았다.</p>
+<details><summary>작성 규칙 메모 (이 부록에서 값을 싣지 않은 것)</summary><p>프로젝트 ID, 서비스 계정 이메일, 사용자 이메일, API 키·토큰 값, 서비스 주소의 해시 부분은 쓰지 않았다. 로그 발췌에서 소스·이미지 저장소 주소는 <code>…</code>로 줄였다. 수치는 사실 장부와 증거 텍스트 그대로이고, 추정한 것은 "추정"이라고 표시했다.</p></details>
+<p>*이 문서에는 API 키 값, 서비스 주소, 프로젝트 ID, 계정 이메일이 없습니다.*</p>
+<p class="footer-note">N050 · 실습과제 제출보고서 부록 — 상세 수행 기록</p>
+
+</main>
+</body>
+</html>

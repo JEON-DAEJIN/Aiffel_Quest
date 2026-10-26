@@ -1,6 +1,6 @@
 # N050 · Dockerfile로 실행 환경 정하기
 
-> 버전 1.0 · 2026-10-26 (학습서 + 해설서 통합)
+> 버전 1.1 · 2026-10-26 (학습서 + 해설서 통합, 실습 결과 반영)
 
 ## 목차
 
@@ -29,6 +29,8 @@
 이번 강의는 N049에서 만든 품질 게이트(CI·staging·브랜치 보호·배포 승인)가 붙은 AI 친구 에이전트 서비스(`friend-agent`, 줄여서 에이전트 서비스)에 새 기능 하나를 붙이면서 시작한다. 동아리 공지나 수업 일정표 **사진을 보내면 글자를 읽어 입력창에 넣어 주고**, 거기 적힌 일정을 약속으로 저장하게 하는 기능(OCR)이다. 이 기능의 코드는 이미 PR로 들어와 CI를 통과했고 staging과 production에 자동 배포돼 있다. 그런데 staging에서 켜 보면 사진을 읽지 못한다. 이 한 장면에서 출발해, 원인을 로그로 찾고, 이미지와 컨테이너를 구분하고, Dockerfile을 쓰고 검토하고, 로컬에서 빌드해 실행하고, 자동 배포에 올려 빌드 기록으로 확인한 뒤, 마지막에 "아직 남은 숙제"까지 짚는다.
 
 > 💡 **팁** — 문서에서 "원문"은 학습서(32쪽), "해설서"는 해설서(54쪽)를 가리킨다. 두 책은 같은 강의의 두 버전이며 챕터 01~08이 1:1로 대응한다. 해설서의 쉬운 비유(식당 주방·붕어빵·밀키트)를 우선 살렸고, 원문의 명령·프롬프트·수치는 그대로 옮겼다. `[보충 비유]`라고 표시한 것만 이 노트에서 덧붙인 설명이다.
+
+> 💡 **팁** — 버전 1.1은 v1.0(교안 정리)에 같은 날 friend-agent 저장소에서 실제로 해 본 결과를 `[실습 결과]` 표시로 덧붙인 판이다. 교안 수치(빌드 시간·레이어 크기·이미지 크기)는 지우지 않고 옆에 실측을 병기했다. 시각은 모두 KST(한국 시각)이고, 실습에서 하지 않은 것(예: `--clear-base-image` 누락 오류 재현, 며칠 간격 빌드 비교)은 하지 않았다고 적었다.
 
 ---
 
@@ -108,6 +110,10 @@ Dockerfile(만드는 방법) → 이미지(묶어 둔 패키지) → 컨테이�
 ```
 
 > 📌 **요약** — Dockerfile은 AI 서비스의 코드뿐 아니라 **실행에 필요한 환경까지 명시**해, 내 컴퓨터에서 작동하던 서비스를 서버에서도 일관되게 실행하도록 돕는 설계도다.
+
+> 🧪 **예제** — [실습 결과] 실습 시작 시점의 상태를 읽기 전용으로 확인했다. Cloud Run 서비스 `friend-agent`(production)와 `friend-agent-staging`(staging)의 주소가 모두 나왔고(리전 us-central1), GitHub 저장소 변수는 교재의 5개가 아니라 **4개**였다(이 템플릿은 `BUILD_SA`를 쓰지 않으며 N049에서 이미 확인한 사실이다). 워크플로는 `ci.yml`·`deploy.yml`·`hello.yml` 3개, 환경은 `production`·`staging`, `staging` 브랜치가 있었고, **두 서비스 모두 `OCR_ENABLED`가 없는 상태**였다. 바꾼 것은 없다.
+
+> 🧪 **예제** — [실습 결과] 실습 PC(Windows 11)에는 tesseract 5.4가 이미 설치돼 있었지만 **영어(eng)와 osd만 있고 한국어(kor)는 없었으며 Path에도 등록돼 있지 않았다.** Docker는 설치돼 있지 않았다. 1장의 시작 질문에서 "다를 수 있는 것" 다섯 가지 가운데 이 실습에서 가장 크게 걸린 것은 **운영체제 시스템 패키지**였다(Python 버전 차이 가능성은 8-4절 참고). 8장에서 이 답을 다시 비교한다.
 
 ---
 
@@ -222,6 +228,16 @@ CI가 통과했다는 것은 **테스트에서 확인한 조건이 충족됐다*
 2. 테스트가 도는 **GitHub 러너와 staging 이미지는 서로 다른 실행 환경**이다. 러너에서 통과했다고 staging 이미지에 tesseract가 있다는 뜻이 되지 않는다.
 
 이 문제를 풀려면 실행 환경을 만드는 방법 자체를 적어 저장소에 넣어야 하고, 그 파일이 **Dockerfile**이다.
+
+### 2-8. 실습 결과 — 로컬 성공, staging 500
+
+> 🧪 **예제** — [실습 결과] **로컬 준비**: 한국어 데이터 `kor.traineddata`(1.6MB, tessdata_fast 버전)를 11:28경 받고, 이어서 사용자가 관리자 PowerShell로 tesseract 폴더에 복사하고 사용자 Path에 Tesseract 폴더를 등록했다(복사·Path 등록 시각은 기록하지 않았다). 새 터미널에서 `tesseract --list-langs`가 `eng`, `kor`, `osd`를 보여 주었고 `tesseract --version`은 5.4.0.20240606이었다. 교재는 로컬에 kor가 없어도 넘어가도록 허용했지만, 이번에는 "로컬이 한국어까지 되는 정상 환경"에서 시작하려고 설치했다.
+
+> 🧪 **예제** — [실습 결과] **로컬 OCR**: `.env`를 코딩 에이전트의 접근 규칙이 막아 만들 수 없어서 `.env` 대신 환경변수(`LLM_PROVIDER=fake`, `OCR_ENABLED=true`, `ENV=local`, `STORAGE=memory`, `AUTH=none`)를 직접 넘겨 서버를 실행했다. LLM은 가짜(fake)라 키가 필요 없었다. `schedule.png`(1200×826)를 `/api/ocr`에 보내자 **HTTP 200, 153글자**가 돌아왔고 일정 세 줄이 모두 읽혔다. 결과 문자열의 sha1 앞 10자 `e61b2db05f`를 이후 비교의 기준값으로 삼았다.
+
+> 🧪 **예제** — [실습 결과] **staging 실패 재현**: 11:34~11:35에 `gcloud run services update friend-agent-staging --region us-central1 --update-env-vars OCR_ENABLED=true`를 실행하자 새 리비전 `friend-agent-staging-00006-dst`가 트래픽 100%를 받았다. 환경변수 이름은 `ENV`, `LLM_API_KEY`, `COMMIT_SHA`, `OCR_ENABLED`로, 기존 값이 그대로 유지됐다. production은 건드리지 않았다. 루트 화면(200)과 `/version`은 정상이었는데 같은 사진을 보내자 **HTTP 500** `{"detail":"사진에서 글자를 읽는 프로그램이 서버에 없습니다."}`가 돌아왔다.
+
+> 🧪 **예제** — [실습 결과] **로그에서 원인 찾기**: Cloud Run 로그의 **11:35:05(KST, UTC로는 02:35:05)**에 리비전 00006에서 ERROR 줄 "tesseract 프로그램을 찾을 수 없습니다. 실행 환경에 tesseract 가 설치되어 있지 않습니다."와 `POST /api/ocr` 500(응답 182 B, 소요 219 ms, 요청 주체 curl)이 남아 있었다. 2-5절의 세 가지 핵심 기록(오류 메시지·요청 기록·상태 코드)이 그대로 확인된 셈이다. 서비스는 정상으로 시작했고 사진 요청이 들어온 순간에야 실패했으므로 배포는 성공, 대화 기능은 정상이었다. (증거: 증거화면 폴더의 `03a`, `08a`)
 
 <details>
 <summary>객관식 퀴즈 — staging에서 OCR이 실패했는데 배포는 성공했고 다른 대화 기능도 정상이었습니다. 이유로 가장 알맞은 것은?</summary>
@@ -349,6 +365,16 @@ Cloud Run은 이 연결을 대신 해 준다. 요청을 보낼 컨테이너 안�
 2. **데이터의 지속성**: 컨테이너의 메모리나 임시 파일에만 데이터를 보관하면 재시작이나 교체 시 사라질 수 있다.
 3. **서비스 접근성**: 포트 연결을 이해해야 로컬에서 컨테이너 안의 웹 서비스에 접속할 수 있다.
 
+### 3-8. 실습 결과 — Docker 설치와 세 가지 실험
+
+> 🧪 **예제** — [실습 결과] **Docker Desktop 설치**: 실습 PC에는 Docker가 없어서 새로 설치했다. 설치 파일은 641,758,128바이트(약 612MB)였고 서명이 Docker Inc로 유효한 것을 확인한 뒤 설치했다. 설치 후 Docker Desktop 4.96.3, Docker 29.9.2(리눅스 컨테이너, WSL 2)가 동작했고 Personal 계정으로 로그인했다(WSL 2 Ubuntu와 가상화는 이미 켜져 있었다).
+
+> 🧪 **예제** — [실습 결과] **공식 이미지**: `python:3.13-slim-bookworm`은 Python 3.13.17이었고 **tesseract는 없었다**(교안 3-3절과 같은 결과). 이 이미지는 디스크에서 183MB(압축 내용 46.8MB)였고 이미지 ID는 `e32be0e55814`였다. 이 이미지 ID와 digest(`sha256:e32be0e55814…`)는 뒤의 6장에서 staging·production 빌드의 베이스가 같은 이미지였는지 확인할 때 다시 쓰였다.
+
+> 🧪 **예제** — [실습 결과] **컨테이너끼리 나누지 않는다**: `note-a`에서 `/tmp/note.txt`에 "메모"를 쓰고 읽은 뒤, 같은 이미지의 새 컨테이너에서 읽자 **"파일 없음"**이 나왔다. `docker ps -a`에는 `note-a`가 `Exited (0)`로 남아 있었고 `--rm`으로 실행한 컨테이너는 없었다. Docker Desktop에서는 Images 화면에 이미지 한 줄, Containers 화면에 컨테이너가 따로 보였다.
+
+> 🧪 **예제** — [실습 결과] **포트**: `web-a`(9000→8000)와 `web-b`(9001→8000) 둘 다 HTTP 200이었고 `localhost:8000`은 연결에 실패했다. 이 실습은 브라우저 대신 curl로 상태 코드를 확인했다. 세 번째 컨테이너 `web-c`를 9000번으로 띄우자 `port is already allocated` 오류와 함께 종료 코드 125로 실패했다(의도한 실패). 정리는 `docker rm -f`로 했고 이미지는 남겼다.
+
 > 📌 **요약** — Docker 이미지는 실행 환경을 담은 패키지이고 컨테이너는 그 패키지를 실행한 독립적인 인스턴스다. 둘의 차이를 이해해야 데이터·네트워크·배포를 올바르게 관리할 수 있다.
 
 ---
@@ -397,14 +423,16 @@ root로 앱을 실행하면 보안 문제가 생겼을 때 공격자가 할 수 
 
 이미지는 Dockerfile의 줄을 따라 쌓이는데, 줄 하나가 만든 파일 변경을 묶은 단위를 **레이어(layer)**라고 한다. 원문의 그림은 레이어마다 크기를 이렇게 보여 준다(2026년 10월 로컬 빌드 기준).
 
-| Dockerfile 줄 | 의미 | 레이어 크기 |
-|---|---|---|
-| `FROM python:3.13-slim-bookworm` | 베이스 이미지 | 약 225MB |
-| `RUN apt-get install … tesseract-ocr tesseract-ocr-kor` | 시스템 패키지 | 약 95MB |
-| `COPY requirements.txt .` + `RUN pip install -r requirements.txt` | 라이브러리 | 약 89MB |
-| `COPY . .` | 에이전트 서비스 코드 | 약 0.2MB |
-| `RUN useradd … / USER appuser` | non-root 사용자 | 거의 0 |
-| `CMD … --port ${PORT:-8080}` | 시작 명령 | 0 |
+| Dockerfile 줄 | 의미 | 레이어 크기(교안) | 레이어 크기(실측, 이번 실습) |
+|---|---|---|---|
+| `FROM python:3.13-slim-bookworm` | 베이스 이미지 | 약 225MB | 공식 이미지 단독으로 디스크 183MB(3장 실측. 이미지 디스크 사용량이라 레이어 값과 단위가 다를 수 있음) |
+| `RUN apt-get install … tesseract-ocr tesseract-ocr-kor` | 시스템 패키지 | 약 95MB | 94.9MB |
+| `COPY requirements.txt .` + `RUN pip install -r requirements.txt` | 라이브러리 | 약 89MB | **120MB** |
+| `COPY . .` | 에이전트 서비스 코드 | 약 0.2MB | 442kB(첫 빌드 기준. `.dockerignore` 수정 후 재빌드는 266kB) |
+| `RUN useradd … / USER appuser` | non-root 사용자 | 거의 0 | 69.6kB |
+| `CMD … --port ${PORT:-8080}` | 시작 명령 | 0 | 재지 않음 |
+
+> 🧪 **예제** — [실습 결과] 위 실측 열을 더해 이미지 크기(460MB)와 맞추는 계산은 하지 않는다. `docker image ls`의 이미지 크기와 `docker history`의 레이어 크기를 더한 값은 이번에 일치하지 않았고(PDF 읽기까지 반영한 이미지 기준 레이어 합 약 361MB, 이미지 크기 473MB), **차이의 원인은 확인하지 못했다.** 442kB는 `.pyc` 17개가 들어 있던 첫 빌드 값이고 수정 후 재빌드는 266kB였는데, 줄어든 크기가 `.pyc` 제거와 맞아 보이나 직접 측정하지 않은 **추정**이다. `poppler-utils`를 더한 뒤 apt 레이어는 94.9MB에서 104MB로 늘었다.
 
 ```mermaid
 flowchart TB
@@ -461,11 +489,17 @@ flowchart TB
 
 > 💡 **팁** — 해설서의 마지막 단서: 코딩 에이전트에게 Dockerfile 작성을 맡길 수는 있지만, 어떤 Python 버전을 고정할지, 어떤 권한으로 실행할지, 어떤 파일을 제외할지에 대한 **판단은 여전히 사람의 몫**이다.
 
+### 4-6. 실습 결과 — 다섯 기준 검토와 __pycache__ 함정
+
+> 🧪 **예제** — [실습 결과] `staging`에서 `add-dockerfile` 브랜치를 만들고 템플릿의 `starter/Dockerfile`·`starter/dockerignore`를 복사한 뒤 다섯 기준으로 검토했다. 다섯 항목이 모두 통과했다. 베이스 이미지는 `python:3.13-slim-bookworm`으로 고정돼 있었고, `tesseract-ocr`와 `tesseract-ocr-kor` 설치 줄이 있었으며, `.dockerignore`에 `.env`가 있었고, `CMD`는 `${PORT:-8080}`을 썼고, `USER appuser`로 실행했다. `Procfile`과 `.python-version`(3.13)은 `FROM` 줄의 버전과 같았다. `.gcloudignore`는 이미 있었고 `.env`를 빼면서 Dockerfile은 빼지 않았다.
+
+> 🧪 **예제** — [실습 결과] **교안이 미리 경고한 함정이 실제로 나왔다.** 이미지를 열어 보니 템플릿 `.dockerignore`의 `__pycache__/`와 `*.pyc` 줄이 저장소 맨 위 폴더에만 적용돼, `/app/app/__pycache__`에 **`.pyc` 파일 17개**가 이미지에 들어가 있었다. 모두 `cpython-314`로, 실습 PC의 `.venv`가 만든 캐시였다. 두 줄을 `**/__pycache__/`와 `**/*.pyc`로 고쳐 다시 빌드하자 이미지 안 `__pycache__`와 `.pyc`가 0개가 됐다. 사용자에게는 보이지 않는 문제라서 이미지 안을 `ls`와 `find`로 열어 보았을 때에야 발견했다. (증거: `05a`)
+
 ---
 
 ## 5. 이미지 빌드와 실행
 
-서버에 올리기 전에 로컬 환경에서 Dockerfile로 이미지를 만들고 컨테이너로 실행해 본다. 이번에는 로컬에 설치한 tesseract가 아니라 **이미지 안에 설치된 tesseract**가 사진을 읽는다. 첫 빌드는 베이스 이미지와 시스템 패키지를 내려받느라 몇 분 걸린다.
+서버에 올리기 전에 로컬 환경에서 Dockerfile로 이미지를 만들고 컨테이너로 실행해 본다. 이번에는 로컬에 설치한 tesseract가 아니라 **이미지 안에 설치된 tesseract**가 사진을 읽는다. 첫 빌드는 베이스 이미지와 시스템 패키지를 내려받느라 몇 분 걸린다(교안 수치. 실습 PC의 실측은 5-6절에 병기했다).
 
 > 🧪 **예제** — [해설서 비유] **Dockerfile은 요리법, 이미지는 미리 준비한 밀키트, 컨테이너는 밀키트로 실제 요리를 만드는 과정**이다. 이번 장은 밀키트를 직접 만들고, 실제로 요리해 본 다음, 재료와 조리 도구가 제대로 들어 있는지 검사하는 시간이다.
 
@@ -518,7 +552,7 @@ docker run --rm -p 8080:8080 --env-file .env -e OCR_ENABLED=true friend-agent:lo
 | `ls -a /app` | `app`, `static`, `requirements.txt`는 있고 **`.env`, `tests`, `docs`는 없어야 함** | `.env`가 보이면 `.dockerignore`를 고치고 다시 빌드한 뒤 **그 이미지는 다른 곳에 올리지 말고 지움**. 실제 키가 들어갔다면 키 교체도 검토(해설서) |
 | `app` 안 `__pycache__` | 없어야 함 | `.dockerignore`의 캐시 줄이 저장소 맨 위 폴더에만 적용된 것. `.dockerignore`는 `.gitignore`와 달리 하위 폴더까지 저절로 보지 않아 `**/__pycache__/`처럼 앞에 `**/`를 붙임 |
 | `whoami` | `appuser` (root가 아님) | `USER appuser` 줄 확인 |
-| `docker image ls` | 약 **400MB대** | 대부분은 베이스 이미지·tesseract·라이브러리 용량. 이미지가 크면 다운로드·배포가 느려지지만 크기만 무조건 줄이기보다 기능·보안·안정성을 함께 고려 |
+| `docker image ls` | 약 **400MB대**(교안 수치. 이번 실측은 460MB, 5-6절) | 대부분은 베이스 이미지·tesseract·라이브러리 용량. 이미지가 크면 다운로드·배포가 느려지지만 크기만 무조건 줄이기보다 기능·보안·안정성을 함께 고려 |
 
 ### 5-4. 레이어 캐시를 직접 확인하기
 
@@ -526,9 +560,9 @@ docker run --rm -p 8080:8080 --env-file .env -e OCR_ENABLED=true friend-agent:lo
 
 | 빌드 | 결과 |
 |---|---|
-| 첫 번째 빌드 | 이미지와 패키지를 내려받고 설치 — 몇 분 |
-| 아무것도 바꾸지 않고 다시 빌드 | 단계마다 `CACHED`가 붙고 **몇 초** 만에 끝남 |
-| `README.md`에 빈 줄 하나 추가 후 빌드 | `apt-get`과 `pip install` 단계는 `CACHED`, **`COPY . .`부터 아래 단계만** 새로 실행 |
+| 첫 번째 빌드 | 이미지와 패키지를 내려받고 설치 — 몇 분(교안 수치. 실습 PC에서 첫 빌드 시간은 기록하지 않았고, 베이스 이미지를 받아 둔 뒤의 `--no-cache` 재빌드는 약 30초대였다. 7-2절) |
+| 아무것도 바꾸지 않고 다시 빌드 | 단계마다 `CACHED`가 붙고 **몇 초** 만에 끝남(이 시험은 따로 기록하지 않음) |
+| `README.md`에 빈 줄 하나 추가 후 빌드 | `apt-get`과 `pip install` 단계는 `CACHED`, **`COPY . .`부터 아래 단계만** 새로 실행(README 방식은 쓰지 않았고, `.dockerignore` 수정 뒤 재빌드에서 같은 모양을 확인함 — 5-6절) |
 
 확인이 끝나면 README 변경은 되돌린다.
 
@@ -540,6 +574,16 @@ docker run --rm -p 8080:8080 --env-file .env -e OCR_ENABLED=true friend-agent:lo
 - **재현성과 추적 가능성**: 로컬에서 만든 이미지는 누가 언제 어떤 코드로 만들었는지 기록이 남지 않는다. 서버 배포 과정에서 코드·설정·빌드 과정을 관리하면 어떤 버전이 배포됐는지 확인하기 쉽다.
 
 확인이 끝나면 컨테이너를 실행한 터미널에서 `Ctrl+C`로 멈춘다. `--rm`으로 실행했으므로 컨테이너도 함께 지워지지만 **이미지까지 자동으로 삭제되지는 않는다.**
+
+### 5-6. 실습 결과 — 빌드·실행·이미지 점검
+
+> 🧪 **예제** — [실습 결과] **첫 빌드와 크기**: `friend-agent:local` 이미지가 성공적으로 만들어졌고 크기는 **460MB**(content 108MB)였다. 5-3절의 "400MB대" 범위 안이지만 구체적인 수치는 460MB다. 레이어는 tesseract(apt) 94.9MB, 라이브러리(pip) 120MB, 코드 복사 442kB(첫 빌드 기준, `.dockerignore` 수정 후 재빌드는 266kB), useradd 69.6kB였다. 이 값들을 더해 460MB와 맞추는 계산은 하지 않는다(4-2절 참고). 교안 그림의 pip 레이어 89MB보다 크게 나왔는데, 패키지 버전 차이로 **추정**한다(원인 확인은 하지 않았다). 5장 도입부의 "몇 분"과 비교하면, 실습 PC에서 첫 빌드 시간은 기록하지 않았고 베이스 이미지를 받아 둔 뒤의 `--no-cache` 재빌드가 약 30초대였다(7-2절). 두 조건이 완전히 같지는 않다.
+
+> 🧪 **예제** — [실습 결과] **컨테이너 실행**: `docker run -p 8080:8080`으로 띄우되 `--env-file .env` 대신 `-e`로 환경변수를 직접 건넸다. `.env`를 만들 수 없었고 LLM이 가짜라 키가 없었기 때문이며, 키를 이미지에 넣지 않는다는 원칙은 같다. 같은 사진이 **HTTP 200, 153글자, 해시 `e61b2db05f`**로, 로컬에서 직접 돌린 결과와 같았다. 이번에는 이미지 안의 tesseract가 읽은 것이다. 실행 전에 8080을 쓰던 실습 PC의 로컬 uvicorn을 끄는 일이 필요했는데, Windows의 가상환경 실행기는 자식 python을 따로 띄워서 부모 프로세스만 끝내면 포트가 비지 않았다. 실제로 포트를 점유한 프로세스를 다시 찾아 종료했다(부록 B).
+
+> 🧪 **예제** — [실습 결과] **이미지 점검**: `/app`에 `app`, `static`, `requirements.txt`가 있고 `.env`·`tests`·`docs`는 없었으며, `whoami`는 `appuser`, 컨테이너 안 tesseract 언어는 `eng`·`kor`·`osd`였다. 앞의 4-6절 `__pycache__` 17개를 여기서 발견했다. 도구 사정으로 Git Bash가 `/app` 인자를 윈도 경로로 바꿔 `ls -a /app`이 한 번 실패했고, `MSYS_NO_PATHCONV=1`을 붙여 해결했다(Docker 문제가 아니다).
+
+> 🧪 **예제** — [실습 결과] **재빌드의 레이어 캐시**: `.dockerignore`를 고친 뒤 다시 빌드하자 apt·WORKDIR·requirements 복사·pip 단계는 `CACHED`였고 `COPY . .`와 `useradd`만 새로 실행돼 전체가 약 0.5초였다. 크기는 460MB 그대로였고 새 이미지로 OCR 200을 다시 확인했다. 교안의 "바뀐 줄부터 아래만 새로 만든다"는 규칙이 그대로 확인된 것이다.
 
 > 📌 **요약** — Dockerfile은 설계도, 이미지는 실행 패키지, 컨테이너는 실제 실행 환경이다. 이미지에 tesseract와 한국어 데이터를 넣으면 내 컴퓨터의 설치 상태에 대한 의존을 줄일 수 있다. 단 로컬 이미지가 실행된다고 운영 서버에서도 반드시 성공하는 것은 아니므로 서버 환경과 배포 과정을 따로 검증해야 한다.
 
@@ -636,6 +680,27 @@ PR → CI 테스트 → 빌드①(Dockerfile로 이미지 생성) → staging �
 
 > 💡 **팁** — [보충 비유] 신제품을 시제품으로 검수(staging)하고 통과했는데, 납품(production)할 때 공장에서 같은 설계도로 **다시 양산**하는 것과 같다. 설계도(Dockerfile)는 같아도 그사이 원자재(패키지) 로트가 바뀌었다면, 검수한 제품과 납품한 제품이 같다고 말할 수 없다. 검수한 바로 그 제품을 납품하려면 "한 번 만든 것을 두 곳에 보낸다"는 구조가 필요하다.
 
+### 6-7. 실습 결과 — PR #20, staging 빌드 기록, production 배포
+
+> 🧪 **예제** — [실습 결과] **PR #20(staging)**: `deploy.yml`의 `flags:` 줄 끝에 `--clear-base-image` **한 단어만** 더했다(diff +1/−1). 커밋 `d9d863d`는 `Dockerfile`, `.dockerignore`, `deploy.yml` 세 파일(+41/−1)이었고 `.env`는 없는 것을 확인했다. CI `test`는 19초, `hello`는 4초에 통과해 상태가 CLEAN이었고 사용자가 머지를 승인해 머지 커밋 `c92135c`가 만들어졌다. 한계: 이 옵션 없이 배포해 `Missing required argument [--clear-base-image]` 오류를 **직접 본 것은 아니다**(교재 안내대로 처음부터 추가했다).
+
+> 🧪 **예제** — [실습 결과] **빌드 기록으로 Dockerfile 확인**: 배포 워크플로는 성공했다(deploy 2분 0초, 전체 2분 22초). Cloud Build `615ce1d8`은 SUCCESS였고 약 1분 14초가 걸렸다. 로그에는 `inflating: /workspace/Dockerfile`, `Step 1/11 FROM python:3.13-slim-bookworm`, `Step 2/11`의 `apt-get install … tesseract-ocr tesseract-ocr-kor`, `Setting up tesseract-ocr (5.3.0-2)`와 `tesseract-ocr-kor (1:4.1.0-2)`가 있었고 **buildpacks 언급은 0줄**이었다. 1~9단계는 Dockerfile 줄과 일치했고 10~11단계는 Cloud Build가 붙이는 LABEL이었다. 새 리비전 `friend-agent-staging-00007-94j`가 100%를 받았고 `/version`의 커밋이 `c92135c`로 바뀌었다. (증거: `04a`, `08b`~`08d`)
+
+> 🧪 **예제** — [실습 결과] **staging 결과**: 같은 사진이 이번에는 **HTTP 200**이었고 로그에 ERROR가 없었다(`POST /api/ocr` 200). `OCR_ENABLED=true`는 배포 뒤에도 유지돼 다시 켤 필요가 없었다. 화면에서는 입력창 왼쪽에 사진 버튼(📷)이 생겼고 사용자가 직접 `schedule.png`를 골라 일정 세 줄이 입력창에 들어오는 것을 캡처했다. (증거: `03b`, `09a`, `09b`)
+
+> 🧪 **예제** — [실습 결과] **production(PR #21)**: staging에서 main으로 보낸 PR #21의 순변경은 4파일(Dockerfile 관련 3개와 N049에서 만든 E08 테스트 1개)이었고 CI를 통과해 머지됐다. 배포는 **승인 대기**에서 멈췄고 사용자가 직접 승인했다. 13:45(KST)에 Cloud Build `4718e203`이 같은 Dockerfile 단계로 성공했고 buildpacks 언급은 역시 0줄이었다. 새 리비전 `friend-agent-00018-klq`가 100%를 받았다. production에서 OCR을 켜기 전 `/api/ocr`은 **404** `{"detail":"사진 글자 읽기가 꺼져 있습니다"}`였다. `gcloud run services update friend-agent --region us-central1 --update-env-vars OCR_ENABLED=true`로 리비전 `friend-agent-00019-nlc`가 만들어졌고 기존 환경변수 4개는 유지됐다. (증거: `04b`, `10b`, `10c`)
+
+> 🧪 **예제** — [실습 결과] **세 곳 비교**: 같은 `schedule.png`가 로컬 컨테이너·staging·production에서 모두 HTTP 200, 153글자, 해시 `e61b2db05f`였다. 6-5절의 완료 기준("같은 사진이 같은 결과")이 충족됐다.
+
+> 🧪 **예제** — [실습 결과] **staging 빌드와 production 빌드는 같은 이미지가 아니었다.** 두 빌드의 베이스 이미지 digest, pip 설치 패키지 30개의 버전, apt 설치 패키지 62개(tesseract-ocr 5.3.0-2와 kor 1:4.1.0-2 포함)는 모두 같았지만 **이미지 ID는 달랐고**(`a31820f7a6bf`와 `a3c0f9af949f`) LABEL의 `google.build_id`도 달랐다(`615ce1d8`과 `4718e203`). 두 빌드의 간격은 약 1시간 33분이었다. 6-6절에서 말한 "같은 Dockerfile이어도 이미지는 따로 만들어진다"가 실제로 확인된 것이다. 다만 패키지 버전까지 달라지는 장면은 간격이 짧아서 재현되지 않았다.
+
+| 서비스 | 리비전 | 시점(KST) | 의미 |
+|---|---|---|---|
+| staging | 00006-dst | 11:34 | `OCR_ENABLED` 추가(buildpacks 이미지, 실패) |
+| staging | 00007-94j | 12:14 | Dockerfile 빌드(PR #20), OCR 성공 |
+| production | 00018-klq | 13:46 | Dockerfile 빌드(PR #21) |
+| production | 00019-nlc | 13:48 | `OCR_ENABLED` 추가 |
+
 <details>
 <summary>객관식 퀴즈 — Dockerfile을 커밋했는데 staging 빌드 로그에 tesseract 설치 단계가 보이지 않고 OCR도 여전히 실패합니다. 가장 먼저 확인할 곳은?</summary>
 
@@ -680,6 +745,10 @@ PR → CI 테스트 → 빌드①(Dockerfile로 이미지 생성) → staging �
 
 > 📌 **요약** — 컨테이너는 실행 환경을 분리하지만 **데이터의 영속성을 자동으로 보장하지 않는다.** 사용자의 글과 인터뷰 기록을 보존해야 하는 서비스(예: MSM)는 Supabase 같은 외부 데이터베이스에 저장하고, 새 컨테이너가 시작될 때 필요한 정보를 다시 읽도록 설계해야 한다.
 
+> 🧪 **예제** — [실습 결과] **과제 1**: `docker run -d --name friend-agent-test -p 8080:8080 …`(가짜 LLM)로 띄운 뒤 `docker exec`를 실행하자 `whoami`는 `appuser`, `pwd`는 `/app`이었고 `ls`는 `AGENTS.md CLAUDE.md Dockerfile Procfile README.md app data pytest.ini requirements-dev.txt requirements.txt static`을 보여 주었다(`.env`·`tests`·`docs`는 없음). 두 턴("안녕, 오늘 산책 갈 거야", "내 이름은 (이름)이야, 기억해 줘")을 보내자(실제로는 사용자 이름을 넣었다) `/api/messages`에 메시지가 **4개**(내 발언 2 + 가짜 응답 2) 쌓였다. 컨테이너를 지우고 같은 이미지로 다시 띄우자 컨테이너 ID는 `e6f131713f90`에서 `8ed3418b358a`로 바뀌었고 이미지 ID `90cbc2725f5f`는 그대로였으며 메시지는 **4개에서 0개**가 됐다. 교안은 브라우저에서 직접 대화하라고 하지만 이 실습은 API로 같은 효과를 확인했다(화면 캡처는 없다). (증거: `11a`)
+
+> 🧪 **예제** — [실습 결과] **과제 1의 중간 사고**: Git Bash에서 `curl -d`로 한글이 든 JSON을 보내자 HTTP 400("There was an error parsing the body")이 나왔다. 컨테이너 로그에 400이 찍혔고 응답 본문에 파싱 오류가 있었으며, 인코딩 문제일 뿐 서버는 정상이었다. 파이썬으로 UTF-8 JSON을 보내 해결했다.
+
 ### 7-2. 과제 2 — 같은 Dockerfile로 두 번 빌드하기
 
 Dockerfile 하나로 이미지를 만들면 언제 어디서 만들어도 같은 이미지가 나올까? 캐시를 쓰지 않고(`--no-cache`) 같은 Dockerfile로 이미지를 두 번 만든 뒤 두 이미지의 ID와 이미지 안에 설치된 Python 패키지 목록(`pip freeze`)을 비교한다. 이미지 ID는 이미지 내용으로 계산한 값이라 내용이 조금이라도 다르면 달라진다.
@@ -695,6 +764,10 @@ Dockerfile 하나로 이미지를 만들면 언제 어디서 만들어도 같은
 > ⚠️ **주의** — 비교 명령의 `diff <(...)` 형식은 macOS·Linux의 Bash 계열 터미널에서 쓸 수 있다. **Windows의 일반 PowerShell에서는 그대로 작동하지 않을 수 있으므로** Git Bash 같은 Bash 환경을 쓰는 것이 편하다. `--no-cache`도 모든 외부 입력을 고정하지는 않아서, 빌드 중 최신 패키지를 내려받으면 시점에 따라 결과가 달라질 수 있다. 실험이 끝나면 `docker rmi friend-agent:try-a friend-agent:try-b`로 실습용 이미지를 지운다.
 
 운영 서비스에서는 단순히 Dockerfile만 공유하는 것보다 ① 베이스 이미지와 의존성 버전 고정 ② 빌드 결과 기록과 이미지 다이제스트 관리 ③ staging에서 검증한 이미지를 production으로 그대로 승격하는 방법을 고려할 수 있다(해설서).
+
+> 🧪 **예제** — [실습 결과] **과제 2**: `docker build --no-cache -t friend-agent:try-a .`는 13:54:28~13:54:59(약 31초), `try-b`는 13:55:03~13:55:33(약 30초)이 걸렸다. 교안의 "몇 분씩"과 비교하면 30초대였다. 단 이 두 빌드는 베이스 이미지를 이미 받아 둔 뒤의 `--no-cache` 재빌드라 교안의 첫 빌드와 조건이 완전히 같지는 않다. 이미지 ID는 try-a `8d665740853b…`, try-b `3a23685075fb…`로 **달랐고** 크기는 둘 다 460MB였다. 그런데 `pip freeze`(30줄)와 `dpkg -l`(deb 159개)은 **같았다.** 7-2절 표의 두 번째 줄("이미지 ID 다름 + `pip freeze` 같음")에 해당한다. `docker image inspect`로 본 레이어 10개 중 베이스 4개와 `COPY . .`는 같고 apt·WORKDIR·`COPY requirements.txt`·pip·useradd 5개가 달랐다. 레이어와 Dockerfile 줄의 대응은 `docker history`의 줄 수가 레이어 수와 같다는 점에서 **추정**한 것이고, 달라진 정확한 원인 파일은 확인하지 않았다. 실험 뒤 try-a·try-b 이미지를 삭제했다(`friend-agent:local`은 남김). (증거: `12a`)
+
+> 🧪 **예제** — [실습 결과] 며칠 간격을 둔 빌드로 패키지 버전이 달라지는 장면은 **재현하지 않았다.** 이번 비교는 모두 몇 시간 이내여서 패키지는 같고 이미지 ID만 달랐다. staging과 production 빌드를 비교한 6-7절의 결과도 같은 모양이다.
 
 ### 7-3. 과제 3 — 시스템 프로그램이 필요한 기능 하나 더 붙이기
 
@@ -743,6 +816,40 @@ OCR은 Python 라이브러리만으로는 동작하지 않고 운영체제에 te
 | 줄이 없을 때 예상 문제 | 로컬에 FFmpeg가 있으면 로컬에서는 작동하지만 이미지 안에는 없어 **로컬 컨테이너에서 처음 실패** |
 | 검증 방법 | 같은 음성 파일을 로컬 환경·로컬 컨테이너·staging에 각각 넣어 변환 결과 비교 |
 
+### 7-6. 과제 3 후보 비교 — 무엇을 고를까
+
+> 🧪 **예제** — [실습 결과] 원문의 예시 네 가지를 비교하고 **PDF 공지문 읽기(poppler)를 골랐다.** 나머지 셋은 후보로만 비교했고 구현하지 않았다. 아래 표의 난이도·추천은 실습 당시의 상대적인 판단이며 수치로 잰 것이 아니다.
+
+| 후보 기능 | 필요한 시스템 프로그램 | 난이도·특징 | 이번 선택 |
+|---|---|---|---|
+| PDF 공지문 읽기 | poppler(`pdftoppm`) | 이번에 고른 기능(고른 이유는 기록하지 않음) | **선택(1순위)** |
+| 사진 속 QR 코드 읽기 | zbar | PDF 다음 2순위 | 구현하지 않음 |
+| 아이폰 사진(HEIC) 받기 | libheif | `pillow-heif` 휠이 libheif를 포함해 시스템 패키지가 필요 없을 수 있음(**미확인**) | 비추천, 구현하지 않음 |
+| 음성 메모를 글로 옮기기 전 소리 변환 | ffmpeg | 음성 변환(STT) API까지 얽혀 난이도가 높음(일반 지식, 미확인) | 비추천, 구현하지 않음 |
+
+> 💡 **팁** — HEIC처럼 "시스템 프로그램이 필요할 것 같다"는 예상이 틀릴 수 있다. 어떤 라이브러리 배포판이 필요한 프로그램을 안에 담고 있으면 Dockerfile에 줄을 더하지 않아도 된다. 그래서 먼저 코딩 에이전트에게 의존성을 묻되, 확실하지 않다는 답은 **컨테이너에서 직접 돌려 확인**하는 것이 안전하다(이번 실습에서 HEIC는 이 확인까지 하지 않았다).
+
+### 7-7. 과제 3 실습 결과 — PDF 공지문 읽기(poppler)
+
+> 🧪 **예제** — [실습 결과] **로컬 준비**: `winget install oschwartz10612.Poppler`로 poppler를 설치했다(포터블 zip `Release-25.07.0-0.zip` 약 16.0MB, MIT 라이선스, **비공식 빌드**). winget이 `pdftoppm` 등의 별칭을 만들어 주어 Path를 따로 등록하지 않아도 됐다. Python 쪽은 `pdf2image` 1.17.0을 `.venv`에 설치했다. `pdf2image`는 래퍼이고 실제 변환은 poppler의 `pdftoppm`이 한다는 점에서 `pytesseract`·`tesseract`와 같은 관계다.
+
+> 🧪 **예제** — [실습 결과] **변경 범위**: `origin/staging`(`c92135c`)에서 `add-pdf-ocr` 브랜치를 만들어 5파일을 바꿨다. `requirements.txt`(`pdf2image` 추가), `app/ocr.py`(`%PDF`로 PDF 판별, 앞 3쪽만, 200dpi, 시간 제한 30초, poppler가 없으면 로그에 ERROR "poppler 프로그램을 찾을 수 없습니다…"를 남기고 화면에는 "PDF를 읽는 프로그램이 서버에 없습니다."를, 깨진 PDF에는 "PDF 파일을 읽을 수 없습니다."를 안내), `static/index.html`(파일 선택에 PDF 허용, 버튼 안내를 "사진·PDF에서 글자 읽기"로), `tests/test_ocr_pdf.py`(새 테스트 3개), `Dockerfile`(apt 줄에 `poppler-utils` 추가). 입력창에 들어가는 문장("사진에서 읽은 글이야…")은 그대로 두었다. 시험용 PDF는 `schedule.png`를 Pillow로 만든 1쪽 PDF, 4쪽 PDF, 깨진 PDF(`%PDF-1.4 not a real pdf`)이며 **저장소에 커밋하지 않고** 임시 폴더에 두었다.
+
+> 🧪 **예제** — [실습 결과] **로컬 환경과 테스트**: PDF 1쪽은 사진과 같은 **200, 153글자, `e61b2db05f`**였고 4쪽 PDF는 200, 461글자(`4ba6dbbc32`)로 **앞 3쪽만** 읽었다(153×3 + 줄바꿈 2). 깨진 PDF는 500 "PDF 파일을 읽을 수 없습니다."였다. 테스트는 기존 12개에 새 3개를 더해 **15 passed**였다(CI와 같게 poppler·tesseract가 없는 셸에서 실행). 3쪽 제한 값을 일부러 99로 깨뜨리면 `assert 99 == 3`으로 실패했고 되돌리면 다시 15 passed였다. **한계**: 새 테스트는 변환 함수를 가짜로 바꿔 쓰므로 poppler가 서버에 실제로 있는지는 검증하지 못한다. N049에서 본 CI의 한계와 같은 구멍이다.
+
+> 🧪 **예제** — [실습 결과] **Dockerfile에 poppler 줄이 없을 때 — 로컬 컨테이너에서 처음 실패했다.** 줄을 더하기 전 이미지(460MB)에서 컨테이너 안에 `pdftoppm`이 없었고(tesseract는 있음) 사진은 200(`e61b2db05f`)인데 **PDF 1쪽만 500** "PDF를 읽는 프로그램이 서버에 없습니다."였다. 로그에는 ERROR "poppler 프로그램을 찾을 수 없습니다. 실행 환경에 poppler 가 설치되어 있지 않습니다."가 남았다. 로컬에서는 되던 PDF가 **로컬 컨테이너에서 처음** 실패한 것이다. 이 실습에서는 staging에 올리기 전에 컨테이너에서 잡았다. apt 줄을 `tesseract-ocr tesseract-ocr-kor poppler-utils`로 고친 뒤 이미지는 **473MB(+13MB)**가 됐고 컨테이너 안에 `/usr/bin/pdftoppm`(22.12.0)이 있었다. 사진·PDF 1쪽은 200/`e61b2db05f`, PDF 4쪽은 200/461/`4ba6dbbc32`로 로컬과 같았고 깨진 PDF는 500 안내였다. 로컬 poppler는 25.07.0(Windows), 컨테이너는 22.12.0(Debian)으로 버전이 달라도 결과는 같았다. (증거: `13a`)
+
+> 🧪 **예제** — [실습 결과] **staging과 production**: 커밋 `13d9536`으로 PR #22를 올리자 CI `test` 22초·`hello` 6초에 통과했고(CLEAN) 사용자 확인 뒤 머지 커밋 `9c0a5b3`이 만들어졌다. Cloud Build `aa4d5d58`의 `Step 2/11`에 `poppler-utils`가 들어 있었고 `Setting up poppler-utils (22.12.0-2+deb12u3)`, buildpacks 언급 0줄이었다. staging 새 리비전 `friend-agent-staging-00008-lhs`에서 사진·PDF 1쪽·PDF 4쪽·깨진 PDF의 결과가 로컬과 같았고 로그에 poppler 오류는 없었다(`POST /api/ocr` 200×3, 500×1은 의도한 깨진 PDF). 이어 PR #23(머지 커밋 `21ee625`, 14:27)을 머지하고 사용자가 배포를 승인한 뒤 14:32~14:36에 production에 배포했고(Cloud Build `057dbfd2`, 새 리비전 `friend-agent-00020-clm` 100%) `OCR_ENABLED`는 00019에서 넣은 값이 새 리비전에도 **그대로 유지**돼 다시 켤 필요가 없었다. 이 두 번째 production 배포의 승인 화면은 캡처하지 않았다. (증거: `04c`, `04d`, `13b`, `14a`)
+
+| 입력 | 로컬(Windows) | 로컬 컨테이너 | staging | production |
+|---|---|---|---|---|
+| 사진(PNG) | 200, 153글자, e61b2db05f | 같음 | 같음 | 같음 |
+| PDF 1쪽 | 200, 153글자, e61b2db05f | 같음 | 같음 | 같음 |
+| PDF 4쪽(앞 3쪽) | 200, 461글자, 4ba6dbbc32 | 같음 | 같음 | 같음 |
+| 깨진 PDF | 500 "PDF 파일을 읽을 수 없습니다" | 같음 | 같음 | 같음 |
+
+> 🧪 **예제** — [실습 결과] **완료 기준 확인**: 같은 입력이 로컬·로컬 컨테이너·staging 세 곳(production까지 네 곳)에서 같은 결과를 냈다. Dockerfile에서 바뀐 줄이 필요한 이유 한 문장은 이렇다. "PDF를 이미지로 바꾸는 `pdftoppm`이 운영체제 프로그램이라 `pip`로는 설치되지 않기 때문이다." 정리로 로컬 브랜치는 `main`·`staging`만 남기고 `add-pdf-ocr`을 지웠으며 원격의 `add-dockerfile`·`add-pdf-ocr`는 남겼다. staging 서비스·수업 키 처리와 QR·HEIC·ffmpeg 구현은 이번에 하지 않았다.
+
 ---
 
 ## 8. 오늘 배운 것 (회고)
@@ -775,7 +882,7 @@ OCR은 Python 라이브러리만으로는 동작하지 않고 운영체제에 te
 |---|---|---|
 | ① 이미지 추적 | 서버용 이미지는 배포할 때마다 Cloud Build가 새로 만들고 이름이 자동으로 붙어, 지금 production에서 도는 이미지가 **어느 커밋으로 만든 것인지** 이름만 보고는 알기 어렵다 | 태그와 digest 관리 |
 | ② 이미지 일관성 | staging에서 확인한 이미지와 production에 올라간 이미지는 같은 Dockerfile로 **따로 만든 별개의 이미지**다. 확인한 것과 나간 것이 같다고 말하려면 이미지를 **한 번만 만들어 두 환경에 보내야** 한다 | 검증한 이미지를 그대로 승격하는 빌드·배포 흐름 |
-| ③ 저장 공간 | 이미지 크기가 400MB대여서 배포할 때마다 쌓이는 저장 공간을 아직 관리하지 않았다 | 불필요한 이미지·레이어 정리 |
+| ③ 저장 공간 | 이미지 크기가 400MB대(교안 수치, 실측 460MB·PDF 추가 후 473MB)여서 배포할 때마다 쌓이는 저장 공간을 아직 관리하지 않았다 | 불필요한 이미지·레이어 정리 |
 
 특히 해설서는 이미지 크기를 줄이는 것만큼 중요한 것이 **검증한 결과물을 그대로 운영 환경에 배포하는 것**이며, 크기 최적화와 배포 추적은 별개의 과제로 나누어 접근하라고 권한다.
 
@@ -785,6 +892,25 @@ OCR은 Python 라이브러리만으로는 동작하지 않고 운영체제에 te
 | digest | 이미지 내용을 식별하는 고유한 해시값. digest를 기준으로 하면 특정 이미지 내용을 더 정확히 지정할 수 있음 |
 
 오늘 이 부족한 점들을 **이미지, 레이어, 빌드 기록, 태그** 같은 이름으로 짚을 수 있게 됐으니 무엇을 정리해야 하는지도 구체적으로 정할 수 있다.
+
+### 8-4. 실습 결과 — 회고 질문과 남은 숙제를 실측으로 확인하기
+
+> 🧪 **예제** — [실습 결과] **1장의 시작 질문에 다시 답하기**: 실습 전에 떠올린 "다를 수 있는 것" 다섯 가지(Python 버전, 설치된 라이브러리, 운영체제 시스템 패키지, 환경변수·API 키, 포트·실행 권한) 가운데 가장 크게 달랐던 것은 **운영체제 시스템 패키지**(tesseract와 kor, 두 번째로는 PDF의 poppler)였다. `.python-version`과 `FROM` 줄은 3.13으로 같았다. 다만 이미지 안에서 발견한 `.pyc`가 `cpython-314`였으므로 실습 PC의 `.venv`는 3.14로 추정되고(직접 확인하지 않음), 로컬과 서버의 Python 버전은 이번에도 달랐을 가능성이 있다. 포트는 다섯 기준 검토를 통과했다. 환경변수는 `OCR_ENABLED`처럼 **기능을 켜는 값**이 서비스마다 따로 있다는 점이 눈에 띄었다(production은 켜기 전 404, staging은 켠 뒤 500). 두 번째 사례인 PDF에서는 로컬 컨테이너에서 재현한 뒤 컨테이너 로그의 ERROR 줄과 `command -v pdftoppm` 결과로 원인을 확인했다.
+
+> 🧪 **예제** — [실습 결과] **숙제 ① 이미지 추적**: Cloud Build가 만든 이미지의 이름은 `…/cloud-run-source-deploy/friend-agent-staging:latest`처럼 자동으로 붙었고, 이름만으로는 어느 커밋에서 만든 이미지인지 알 수 없었다. 이미지 LABEL의 `google.build_id`는 빌드마다 달랐고 서비스의 `/version`은 커밋을 보여 주었으므로 단서가 될 만한 값은 있었지만, 이것들을 엮어 추적하는 일은 이번에 해 보지 않았다. 태그와 digest를 관리하는 일도 **하지 않았다**(다음 실습으로 남음).
+
+> 🧪 **예제** — [실습 결과] **숙제 ② 이미지 일관성**: 같은 Dockerfile로 만든 이미지의 ID가 세 번 모두 달랐다. staging 빌드 대 production 빌드(PR #20·#21, 간격 약 1시간 33분), PDF 빌드의 staging 대 production(PR #22·#23, 간격 약 18분), 로컬 `--no-cache` 두 번(try-a·try-b)이다. 세 쌍 모두 pip·apt 패키지 목록은 같았다. 아래 표가 이미지 ID를 모은 것이다. 검증한 이미지를 그대로 승격하는 흐름은 **하지 않았다.**
+
+| 이미지 | 이미지 ID | 비고 |
+|---|---|---|
+| staging 빌드 `615ce1d8` | a31820f7a6bf | PR #20 |
+| production 빌드 `4718e203` | a3c0f9af949f | PR #21, 패키지는 staging과 같음 |
+| staging 빌드 `aa4d5d58` | 7cd90c50e99a | PR #22 PDF 읽기(`poppler-utils` 추가) |
+| production 빌드 `057dbfd2` | cb253b448e50 | PR #23, staging `aa4d5d58`과 패키지(pip 31·apt 67·베이스 digest) 같음, ID 다름 |
+| 로컬 try-a | 8d665740853b | `--no-cache` |
+| 로컬 try-b | 3a23685075fb | `--no-cache`, try-a와 pip·apt 목록 같고 ID 다름 |
+
+> 🧪 **예제** — [실습 결과] **숙제 ③ 저장 공간**: 이미지는 460MB에서 `poppler-utils`를 더해 473MB(+13MB)가 됐다. 배포마다 쌓이는 이미지를 관리하거나 줄이는 일은 **하지 않았다.** 기능을 하나 더하면 이미지가 커진다는 것 정도만 숫자로 확인했다.
 
 ---
 
@@ -798,6 +924,8 @@ OCR은 Python 라이브러리만으로는 동작하지 않고 운영체제에 te
 2. **Travel Creator**: 여행 일정표·이미지·문서를 처리하는 기능을 서버에 배포할 때 필요한 시스템 의존성을 점검한다.
 3. **뉴스레터 에이전트**: 로컬에서 성공한 자동화가 서버에서도 같은 조건으로 실행되도록 실행 환경을 같게 유지하고 배포 결과를 추적한다.
 4. **AI 컨설팅**: 코드 문제·환경 문제·배포 문제를 구분해 진단하고, 개발자가 쓰거나 코딩 에이전트가 쓴 Dockerfile을 검토해 **실행 환경 누락·보안 위험·배포 설정 문제**를 찾는다.
+
+> ⚠️ **주의** — 위 네 항목은 해설서가 제안한 적용 방향이며 **실제로 한 일이 아니라 적용 계획**이다. 이번 실습에서 실제로 한 일은 friend-agent에서 OCR 실행 환경을 Dockerfile로 정하고 PDF 읽기 기능을 같은 방식으로 더한 것까지다. 네 항목은 아직 해당 서비스에서 실행하지 않았다.
 
 > 💡 **팁** — 컨설턴트가 모든 오류를 직접 고칠 필요는 없다. 로그를 읽고 문제의 원인을 논리적으로 구분할 수 있으면 개발자와 훨씬 효과적으로 협업할 수 있다. 질문도 "코드가 맞는가?"에서 "**실행 환경이 제대로 구성됐는가?**"로 한 걸음 넓어진다.
 
@@ -1016,6 +1144,8 @@ diff <(docker run --rm --entrypoint pip friend-agent:try-a freeze) <(docker run 
 docker rmi friend-agent:try-a friend-agent:try-b
 ```
 
+실습 PC에서는 첫 빌드 시간을 기록하지 않았고, 베이스 이미지를 받아 둔 뒤의 `--no-cache` 재빌드가 각각 약 30초대였다(7-2절).
+
 ### A-17. 과제 3 — 시스템 프로그램을 설치하는 줄의 모양 (해설서의 ffmpeg 예시)
 
 ```dockerfile
@@ -1025,6 +1155,105 @@ RUN apt-get update \
 ```
 
 > 💡 **팁** — OCR의 `tesseract-ocr tesseract-ocr-kor` 줄과 모양이 같다. 바뀌는 것은 패키지 이름뿐이다. 이름을 모르면 코딩 에이전트에게 "이 기능에 필요한 apt 패키지 이름이 뭐야?"를 먼저 묻고, 추가한 이유를 한 문장으로 적는다.
+
+> 💡 **팁** — A-18부터는 원문 명령이 아니라 **이번 실습에서 한 작업을 바탕으로 정리한 명령**(v1.1에서 추가)이다. 정확한 문구와 옵션(`--rm` 등)은 실습 기록과 다를 수 있으니 이름과 경로를 포함해 내 환경에 맞게 확인한 뒤 쓴다.
+
+### A-18. .env 없이 환경변수로 직접 넘겨 컨테이너 실행 (실습에서 --env-file 대신 쓴 방식)
+
+```bash
+# .env 를 만들 수 없을 때(접근 규칙 등). 가짜 LLM이라 키가 필요 없다
+docker run --rm -p 8080:8080 \
+  -e LLM_PROVIDER=fake -e OCR_ENABLED=true -e ENV=local -e STORAGE=memory -e AUTH=none \
+  friend-agent:local
+```
+
+실습에서는 이 방식으로 환경변수를 직접 넘겼다. 키를 이미지에 넣지 않고 실행할 때 건넨다는 원칙은 `--env-file`과 같다.
+
+### A-19. Windows에서 Git Bash로 컨테이너 안 경로를 줄 때
+
+```bash
+# Git Bash 가 /app 을 윈도 경로로 바꿔 버려 실패할 때 (Docker 문제가 아니다)
+MSYS_NO_PATHCONV=1 docker run --rm friend-agent:local ls -a /app
+# 이미지 안에 .pyc 가 몇 개 있는지 세어 보기
+docker run --rm friend-agent:local sh -c "find /app -name '*.pyc' | wc -l"
+```
+
+두 번째 명령은 `__pycache__` 함정(4-6절)을 확인하는 방식의 예시이며 실습에서 쓴 정확한 명령 문구는 아니다. 이미지 안을 `ls`와 `find`로 열어 보았다는 사실만 확인된다.
+
+### A-20. 과제 2 보충 — 이미지 안 패키지 목록·레이어 비교
+
+```bash
+# 이미지 안 Python 패키지 목록(30줄)과 deb 패키지 목록(159개)은 같았다
+docker run --rm --entrypoint pip friend-agent:try-a freeze
+docker run --rm --entrypoint dpkg friend-agent:try-a -l
+# 레이어 목록. 줄 수가 레이어 수와 같다는 점을 근거로 레이어와 Dockerfile 줄을 대응시켰다(추정)
+docker history friend-agent:try-a
+```
+
+### A-21. 과제 3 — PDF 읽기: 로컬 준비 (Windows)
+
+```bash
+# poppler 설치(비공식 빌드). pdftoppm 등의 별칭이 만들어져 Path 를 따로 등록하지 않아도 된다
+winget install oschwartz10612.Poppler
+# 새 터미널을 연 뒤, 저장소의 .venv 안에 Python 쪽 래퍼 설치(requirements.txt 에도 추가)
+pip install pdf2image
+```
+
+### A-22. 과제 3 — Dockerfile apt 줄 한 줄 변경
+
+```dockerfile
+# 변경 전
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-kor \
+    && rm -rf /var/lib/apt/lists/*
+
+# 변경 후: 패키지 이름 poppler-utils 하나만 추가 (이미지 460MB → 473MB)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-kor poppler-utils \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+줄을 더하기 전과 후에 컨테이너 안에서 같은 확인을 한다.
+
+```bash
+docker run --rm friend-agent:local sh -c "command -v pdftoppm || echo 'pdftoppm 없음'"
+```
+
+### A-23. 과제 3 — PDF 읽기 변경 요약 (app/ocr.py 동작 개요)
+
+```text
+(app/ocr.py의 PDF 처리 흐름을 말로 옮긴 개요이며 실제 코드가 아니다)
+1. 올라온 파일이 `%PDF`로 시작하는지 본다.
+   - 아니면 기존 사진 경로 그대로 OCR
+   - 맞으면 PDF 경로로 간다
+2. PDF 경로: pdf2image로 앞 3쪽만, 200dpi, 시간 제한 30초로 이미지로 바꾼다
+   (이 변환을 운영체제의 poppler(pdftoppm)가 한다)
+3. 바뀐 이미지를 쪽마다 기존 OCR로 읽어 줄바꿈으로 잇는다
+   (4쪽 PDF에서 461글자 = 153 x 3 + 줄바꿈 2)
+4. poppler가 없으면 로그에 ERROR "poppler 프로그램을 찾을 수 없습니다…"를 남기고
+   화면에는 "PDF를 읽는 프로그램이 서버에 없습니다."를 보낸다
+5. 깨진 PDF이면 "PDF 파일을 읽을 수 없습니다."를 보낸다
+(입력창에 들어가는 문장 "사진에서 읽은 글이야…"는 그대로 둔다)
+```
+
+### A-24. 과제 3 — 테스트 실행
+
+```bash
+# 저장소 루트에서. 기존 12개 + 새 3개 = 15 passed (CI처럼 poppler·tesseract 없는 셸에서)
+pytest -q
+```
+
+> ⚠️ **주의** — 이 테스트는 변환 함수를 가짜로 바꿔 쓰므로 통과해도 **poppler가 서버에 있다는 뜻은 아니다.** 실제 확인은 컨테이너와 staging의 몫이다.
+
+### A-25. 같은 입력으로 여러 곳 비교하기 (실습의 비교 방식)
+
+```text
+같은 샘플(schedule.png, PDF 1쪽, PDF 4쪽, 깨진 PDF)을 /api/ocr 에 보내
+상태 코드 / 글자 수 / 결과 해시 앞 10자 를 표로 비교한다.
+로컬 / 로컬 컨테이너 / staging / production 네 곳이 같으면 "실행 환경이 같다"는 근거가 된다.
+```
+
+실제 전송 명령(curl 필드 이름 등)은 서비스 코드에 따라 다르므로 여기에 옮기지 않는다. 한글 JSON을 Git Bash의 `curl -d`로 보내면 400이 날 수 있으니 파이썬 등으로 UTF-8로 보낸다(부록 B).
 
 [↑ 목차로](#목차)
 
@@ -1058,6 +1287,17 @@ RUN apt-get update \
 | `Procfile`·`.python-version`과 Dockerfile의 Python 버전이 달라 헷갈림 | Dockerfile 도입 후에는 `FROM`·`CMD`가 버전·시작 명령을 정함 | 지우지 않아도 되지만 같은 버전인지 한 번 확인 |
 | 서비스가 시작하자마자 실패(`PORT` 관련) | `CMD`가 고정 포트(예: 8000)를 리슨, Cloud Run은 `PORT`로 요청을 보냄 | `${PORT:-8080}`을 쓰도록 수정 |
 | 같은 Dockerfile인데 staging과 production 이미지 내용이 다름 | 두 번 따로 빌드하면서 그사이 패키지 버전이 달라짐 | 베이스·패키지 버전 고정, 검증한 이미지 그대로 승격(다음 실습) |
+| (실습) 빌드 시간이 교안의 "몇 분"과 다르게 나옴 | 교안 수치는 베이스 이미지 다운로드까지 포함한 처음 빌드 기준이고, 실습 PC의 30초대는 베이스 이미지를 받아 둔 뒤의 `--no-cache` 재빌드 값임(첫 빌드 시간은 기록하지 않음) | 이상이 아님. 빌드 시간은 환경과 캐시·다운로드 상태에 따라 달라짐(5-6·7-2절) |
+| (실습) 같은 Dockerfile로 빌드한 두 이미지의 ID가 다른데 `pip freeze`·`dpkg -l`은 같음 | 이미지 ID는 내용 전체로 계산한 값이라 빌드 때 만들어지는 파일·시각이 다르면 달라짐. 이번 실측은 모두 몇 시간 이내라 패키지는 같았음 | 이상이 아니므로 정상. "같은 이미지"가 필요하면 한 번만 빌드해 두 환경에 보냄(다음 실습) |
+| (실습) 로컬에서 되던 PDF가 로컬 컨테이너에서 500 "PDF를 읽는 프로그램이 서버에 없습니다." | Dockerfile에 `poppler-utils`가 없어 컨테이너 안에 `pdftoppm`이 없음. `pdf2image`는 래퍼일 뿐 실제 변환은 OS 프로그램이 함 | 컨테이너 로그의 ERROR "poppler 프로그램을 찾을 수 없습니다…"와 `command -v pdftoppm` 결과로 확인 → apt 줄에 `poppler-utils` 추가 |
+| (실습) 이미지 안 `app/__pycache__`에 `.pyc` 17개(`cpython-314`) | 템플릿 `.dockerignore`의 `__pycache__/`·`*.pyc`가 맨 위 폴더에만 적용되어 실습 PC `.venv`의 캐시가 `COPY . .`로 들어감 | `**/__pycache__/`·`**/*.pyc`로 고치고 재빌드 → 0개 |
+| (실습) Git Bash에서 `curl -d`로 한글 JSON을 보내니 HTTP 400 "There was an error parsing the body" | 한글 인코딩 문제. 서버는 정상(컨테이너 로그에 400, 응답 본문에 파싱 오류) | 파이썬 등으로 UTF-8 JSON 전송 |
+| (실습) Git Bash에서 `docker run … ls -a /app`이 실패 | Git Bash가 `/app` 인자를 윈도 경로로 바꿈(Docker 문제 아님) | 앞에 `MSYS_NO_PATHCONV=1`을 붙임 |
+| (실습) 8080 포트 점유 프로세스를 죽였는데도 포트가 안 비워짐 | Windows의 가상환경 실행기가 자식 python을 따로 띄워서, 부모 프로세스만 종료하면 자식이 포트를 계속 잡음 | 실제로 포트를 점유한 프로세스를 다시 찾아 종료 |
+| (실습) `.env`를 만들 수 없어 `--env-file`을 쓸 수 없음 | 코딩 에이전트의 접근 규칙이 `.env` 접근을 막음 | `-e`로 환경변수를 직접 넘김(이번엔 가짜 LLM이라 키가 필요 없었음) |
+| (실습) 로컬 `tesseract --list-langs`에 `kor`가 없음(`eng`·`osd`만, Path에도 없음) | 한국어 데이터가 설치돼 있지 않았음 | `kor.traineddata`(tessdata_fast, 1.6MB)를 받아 tesseract 언어 데이터 폴더에 복사(관리자 PowerShell)하고 사용자 Path에 Tesseract 폴더 등록 후 새 터미널에서 확인 |
+| (실습) 새 PDF 테스트가 15개 모두 통과했는데 서버에는 poppler가 없을 수 있음 | 새 테스트는 변환 함수를 가짜로 바꿔 poppler 설치 여부를 검증하지 못함(N049 CI의 한계와 같은 구멍) | 로컬 컨테이너와 staging에서 실제 PDF로 확인 |
+| (실습) 같은 사진이 production에서만 404 `{"detail":"사진 글자 읽기가 꺼져 있습니다"}` | 코드는 배포됐지만 production에 `OCR_ENABLED`가 아직 없음 | 배포가 끝난 뒤 `--update-env-vars OCR_ENABLED=true`(새 리비전 00019). 이후 배포(00020)에서도 값이 유지됨 |
 
 [↑ 목차로](#목차)
 
@@ -1239,6 +1479,52 @@ staging 에 배포된 이미지와 production 에 배포된 이미지의 이름(
 다르다면 각각 어느 커밋으로 빌드됐는지 알 수 있는 단서를 같이 찾아 줘. 아직 아무것도 바꾸지 마.
 ```
 
+### 실습 결과 반영 — 실습에서 한 작업을 요청문으로 옮긴 것
+
+> 💡 **팁** — 아래 문구는 실습 중 쓴 말을 그대로 옮긴 것이 아니라, 실제로 한 작업을 다음에 다시 시킬 수 있도록 요청문 형태로 정리한 것이다. 위의 ⑰ 과제 3 지시문과 "새 기능의 시스템 의존성 묻기"는 이미 실습의 핵심 요청이라 다시 적지 않았다.
+
+**로컬 컨테이너에서 새 기능 확인하고 원인 찾기**
+
+```text
+friend-agent:local 이미지로 컨테이너를 띄우고 같은 PDF를 /api/ocr 에 보내 줘. 실패하면 컨테이너 로그의 ERROR 줄과
+컨테이너 안 `command -v pdftoppm` 결과를 근거로 원인을 설명해 줘. 아직 Dockerfile 은 고치지 마.
+```
+
+**Dockerfile 변경 범위를 한 줄로 제한하기**
+
+```text
+Dockerfile 의 apt-get install 줄에 poppler-utils 하나만 더해 줘. 다른 줄은 바꾸지 마.
+고친 뒤 이미지를 다시 빌드하고, 컨테이너 안에 pdftoppm 이 생겼는지와 이미지 크기가 얼마나 늘었는지 알려 줘.
+```
+
+**여러 곳에서 같은 결과가 나오는지 표로 비교하기**
+
+```text
+같은 샘플(사진, PDF 1쪽, PDF 4쪽, 깨진 PDF)을 로컬, 로컬 컨테이너, staging 에 각각 보내서
+상태 코드, 글자 수, 결과 문자열 해시 앞 10자를 표로 비교해 줘. 샘플 파일은 저장소에 커밋하지 마.
+```
+
+**테스트의 약점 묻기**
+
+```text
+새로 만든 테스트가 poppler 가 서버에 실제로 설치돼 있는지까지 검증하는지, 아니면 변환 함수를 가짜로 바꿔서
+통과하는지 알려 줘. 통과해도 확인하지 못하는 것이 무엇인지 정리해 줘.
+```
+
+**이미지 안에 의도하지 않은 파일이 들어갔는지 세어 보기**
+
+```text
+friend-agent:local 이미지 안의 app 폴더에 __pycache__ 나 .pyc 파일이 있는지 개수까지 세어 줘.
+있다면 .dockerignore 의 어느 줄이 왜 적용되지 않았는지 설명해 줘. 아직 아무것도 고치지 마.
+```
+
+**staging 빌드와 production 빌드 비교**
+
+```text
+staging 과 production 의 해당 Cloud Build 로그에서 베이스 이미지 digest, pip 로 설치된 패키지 버전, apt 로 설치된 패키지 버전,
+이미지 ID, LABEL 의 build_id 를 각각 찾아 표로 비교해 줘. 같은 것과 다른 것을 나눠서 알려 줘.
+```
+
 [↑ 목차로](#목차)
 
 ---
@@ -1251,6 +1537,7 @@ staging 에 배포된 이미지와 production 에 배포된 이미지의 이름(
 |---|---|
 | apt / apt-get | 리눅스(Debian 계열)에서 시스템 패키지를 설치하는 도구 |
 | base image (베이스 이미지) | Dockerfile이 출발점으로 삼는 이미지. 예: `python:3.13-slim-bookworm` |
+| build_id (`google.build_id`) | Cloud Build가 이미지에 붙이는 LABEL의 빌드 번호. 같은 Dockerfile이어도 빌드마다 다름 |
 | buildpacks | 소스 코드를 보고 실행 환경과 이미지를 자동으로 만들어 주는 도구 |
 | CACHED | 빌드 로그에서 이전 레이어를 다시 썼다는 표시 |
 | CI (Continuous Integration) | 코드를 합칠 때마다 정해 둔 테스트를 자동으로 돌리는 방식 |
@@ -1264,17 +1551,28 @@ staging 에 배포된 이미지와 production 에 배포된 이미지의 이름(
 | Dockerfile | 이미지를 만드는 방법(베이스·패키지·코드·실행 사용자·시작 명령)을 적은 파일 |
 | `.dockerignore` | 이미지 빌드 때 복사하지 않을 파일을 적는 파일 |
 | `docker exec` | 실행 중인 컨테이너 안에서 추가 명령을 실행 |
+| `docker history` | 이미지가 어떤 레이어로 쌓였는지 줄마다 보여 주는 명령 |
+| dpi | 이미지 해상도 단위. 이번 실습에서 PDF를 200dpi 이미지로 바꿔 OCR에 넘김 |
+| `dpkg -l` | 설치된 deb 패키지 목록을 보는 명령(과제 2에서 159개로 같았음) |
 | `--env-file` | 파일에 적힌 값을 컨테이너 환경변수로 넘기는 `docker run` 옵션 |
 | FROM | 베이스 이미지를 지정하는 Dockerfile 줄 |
 | `.gcloudignore` | 소스 배포로 코드를 올릴 때 뺄 파일을 적는 파일 |
 | image (이미지) | 실행에 필요한 것을 모두 묶어 둔, 바뀌지 않는 파일 |
+| image ID (이미지 ID) | 이미지 내용으로 계산한 고유 값(예: `a31820f7a6bf`). 내용이 조금이라도 다르면 달라지며, 같은 Dockerfile로 따로 빌드해도 보통 달라짐 |
 | instance (인스턴스) | Cloud Run에서 리비전으로 실행 중인 컨테이너 |
 | kor | tesseract의 한국어 언어 데이터 |
+| `kor.traineddata` | kor 언어 데이터 파일. 이번 실습에서 tessdata_fast 버전(1.6MB)을 받아 로컬 tesseract 폴더에 복사함 |
 | layer (레이어) | Dockerfile 줄 하나가 만든 파일 변경을 묶은 단위 |
 | layer cache (레이어 캐시) | 내용이 바뀌지 않은 줄의 이전 빌드 레이어를 다시 쓰는 것 |
 | listen (리슨) | 포트를 열고 요청이 들어오기를 기다리는 것 |
+| `MSYS_NO_PATHCONV=1` | Git Bash가 `/app` 같은 인자를 윈도 경로로 바꾸는 것을 막는 환경변수 |
+| `--no-cache` | 이전 레이어를 쓰지 않고 처음부터 새로 빌드하는 `docker build` 옵션 |
 | non-root user | root 권한이 없는 일반 사용자 |
 | OCR | 광학 문자 인식. 이미지 속 글자를 텍스트로 바꾸는 기술 |
+| pdf2image | PDF를 이미지로 바꿔 주는 Python 라이브러리(래퍼). 실제 변환은 poppler의 `pdftoppm`이 함 |
+| `pdftoppm` | poppler에 들어 있는 프로그램. PDF의 쪽을 이미지로 바꿈. 운영체제 프로그램이라 `pip`로는 설치되지 않음 |
+| `pip freeze` | 설치된 Python 패키지와 버전 목록을 출력(과제 2에서 30줄로 같았음) |
+| poppler / `poppler-utils` | PDF 처리 도구 모음 / 그 Debian(apt) 패키지 이름 |
 | port (포트) | 한 컴퓨터에서 들어온 연결을 어느 프로그램에 줄지 정하는 번호 |
 | `PORT` | Cloud Run이 컨테이너 안에서 기다릴 포트를 알려 주는 환경변수(기본 8080) |
 | `-p 9000:8000` | 내 컴퓨터 9000번 포트를 컨테이너 8000번 포트에 연결 |
@@ -1288,6 +1586,7 @@ staging 에 배포된 이미지와 production 에 배포된 이미지의 이름(
 | tag (태그) | `friend-agent:v1.0`처럼 사람이 알아보기 쉬운 이미지 이름표 |
 | tesseract | 이미지에서 글자를 읽는 실제 OCR 프로그램 |
 | USER | 이후 명령과 앱을 실행할 사용자를 지정하는 Dockerfile 줄 |
+| winget | Windows의 패키지 설치 도구. 이번 실습에서 `winget install oschwartz10612.Poppler`로 poppler를 설치함 |
 | WORKDIR | 이후 명령을 실행하고 파일을 둘 작업 폴더를 지정하는 Dockerfile 줄 |
 | wrapper (래퍼) | 다른 프로그램을 대신 불러 주는 얇은 라이브러리 |
 | WSL 2 | Windows 안에서 리눅스를 실행하는 기능(Docker Desktop이 사용) |
@@ -1310,6 +1609,7 @@ staging 에 배포된 이미지와 production 에 배포된 이미지의 이름(
 | 시크릿 | API 키처럼 밖에 드러나면 안 되는 값 |
 | 영속 저장소 | 컨테이너가 끝나도 데이터를 보존하는 DB·파일 저장소 |
 | 이미지 | 실행에 필요한 것을 묶어 둔, 바뀌지 않는 파일 |
+| 이미지 ID | 이미지 내용으로 계산한 고유 값. 같은 Dockerfile로 따로 빌드하면 보통 달라짐 |
 | 인스턴스 | 리비전으로 실행 중인 컨테이너 |
 | 컨테이너 | 이미지를 실행한 것 |
 | 태그 | 사람이 알아보기 쉬운 이미지 이름표 |
@@ -1397,6 +1697,65 @@ staging 에 배포된 이미지와 production 에 배포된 이미지의 이름(
 | 환경 문제 | 필요한 프로그램·라이브러리·설정이 빠졌나 | **tesseract 누락** |
 | 배포 문제 | 테스트한 이미지와 실제 운영 이미지가 같은가 | 같은 Dockerfile로 두 번 따로 빌드 → 다음 숙제 |
 
+### E-9. pdf2image vs pdftoppm vs poppler-utils (실습 결과 반영)
+
+| 구분 | `pdf2image` | `pdftoppm` | `poppler-utils` |
+|---|---|---|---|
+| 정체 | Python 라이브러리(래퍼) | poppler에 들어 있는, PDF 쪽을 이미지로 바꾸는 프로그램 | `pdftoppm`이 들어 있는 Debian(apt) 패키지 이름 |
+| 설치 방법 | `requirements.txt` → pip | 시스템 패키지(로컬은 winget, 컨테이너는 apt) | Dockerfile의 `apt-get install` 줄 |
+| 빠지면 | 라이브러리 임포트 실패(일반적인 경우, 이번에 시험하지 않음) | PDF만 500 "PDF를 읽는 프로그램이 서버에 없습니다."(로그 ERROR "poppler 프로그램을 찾을 수 없습니다…") | 컨테이너 안에 `pdftoppm`이 없음 |
+| 이번 실습 | 1.17.0 | 로컬 25.07.0(Windows), 컨테이너 22.12.0(Debian) | 이미지 460MB → 473MB(+13MB) |
+
+`pytesseract`·`tesseract`·`kor`(E-3)와 같은 구조다. Python 라이브러리 하나가 운영체제 프로그램을 불러 쓰는 래퍼이면 Dockerfile에 그 프로그램을 설치하는 줄이 있어야 한다.
+
+### E-10. 과제 3 후보 비교표 (실습 결과 반영)
+
+| 후보 기능 | 필요한 시스템 프로그램 | 난이도·특징 | 추천 |
+|---|---|---|---|
+| PDF 공지문 읽기 | poppler(`pdftoppm`, apt 패키지 `poppler-utils`) | 이번에 고른 기능(고른 이유는 기록하지 않음) | 1순위 — 이번에 실제로 함 |
+| 사진 속 QR 코드 읽기 | zbar | PDF 다음 2순위 | 구현하지 않음 |
+| 아이폰 사진(HEIC) 받기 | libheif | `pillow-heif` 휠이 libheif를 포함해 시스템 패키지가 필요 없을 수 있음(미확인) | 비추천, 구현하지 않음 |
+| 소리 파일 변환 후 음성 메모 글로 옮기기 | ffmpeg | 음성 변환(STT) API까지 얽혀 난이도가 높음(일반 지식, 미확인) | 비추천, 구현하지 않음 |
+
+### E-11. 교재와 이번 실측 비교 (실습 결과 반영)
+
+| 항목 | 교재(원문·해설서) | 이번 실측 |
+|---|---|---|
+| 첫 빌드 시간 | "몇 분 걸린다" | 첫 빌드 시간은 기록하지 않음. 베이스 이미지를 받아 둔 뒤의 `--no-cache` 재빌드는 약 30초대 |
+| 레이어 크기 | 225 / 95 / 89 / 0.2MB | tesseract 94.9MB, pip 120MB, 코드 442kB(첫 빌드 기준, 수정 후 266kB). 이미지 크기 460MB와 레이어 합이 맞지 않는 이유는 미확인이라 합계는 계산하지 않음 |
+| 이미지 크기 | 400MB대 | 460MB, poppler 추가 후 473MB |
+| `--env-file .env` | 로컬 `.env`로 키 전달 | `.env`를 만들 수 없어 `-e`로 직접 전달(가짜 LLM이라 키 없음) |
+| 로컬 tesseract 한국어 | 없어도 컨테이너는 읽힌다고 허용 | kor를 설치해 로컬이 한국어까지 되는 환경에서 시작 |
+| 컨테이너 대화 확인 | 브라우저에서 직접 대화 | API로 대화·확인(화면 캡처 없음) |
+| 저장소 변수 | 5개 | 4개(템플릿에 `BUILD_SA` 없음) |
+| 포트 시연 | 브라우저로 9000/9001 열기 | curl로 200 확인 |
+| 사진 → 입력창 화면 | 교안의 최종 성공 화면 | 사용자가 직접 📷로 `schedule.png`를 골라 캡처 |
+| `--clear-base-image` | 없으면 배포가 `Missing required argument [--clear-base-image]`로 멈춤 | 처음부터 추가해서 그 오류를 직접 본 적은 없음 |
+| 이미지 안 `__pycache__` | "보이면 `**/` 패턴으로" | 실제로 나옴(17개) → 수정 후 0개 |
+| 이미지 ID 비교 과제 | 몇 분 간격이면 패키지 목록이 같을 가능성 | 같았음(pip 30, apt 159), ID는 다름. 며칠 간격은 재현하지 않음 |
+
+### E-12. 같은 입력, 네 곳 비교 — 이미지 안에 줄이 없으면 어디서 처음 실패하나
+
+| 구분 | 로컬(Windows) | 로컬 컨테이너(poppler 줄 없음) | 로컬 컨테이너(줄 추가) | staging | production |
+|---|---|---|---|---|---|
+| 사진 | 200 | 200 | 200 | 200 | 200 |
+| PDF 1쪽 | 200 | **500** | 200 | 200 | 200 |
+| PDF 4쪽 | 200(461글자) | 시험 기록 없음 | 200(461글자) | 200(461글자) | 200(461글자) |
+| 깨진 PDF | 500 | 시험 기록 없음 | 500 | 500 | 500 |
+
+OCR 때는 staging에서 처음 실패했고(buildpacks에 tesseract가 없었음), PDF 때는 로컬 컨테이너에서 처음 실패했다. 컨테이너에서 먼저 시험했기 때문에 이번에는 staging 전에 잡혔다.
+
+### E-13. 같은 Dockerfile, 다른 이미지 ID
+
+| 이미지 | 이미지 ID | 같은 것 | 다른 것 |
+|---|---|---|---|
+| staging 빌드 `615ce1d8` | a31820f7a6bf | 베이스 digest, pip 30개, apt 62개 | 이미지 ID, `google.build_id` |
+| production 빌드 `4718e203` | a3c0f9af949f | (위와 같음, 간격 약 1시간 33분) | (위와 같음) |
+| staging 빌드 `aa4d5d58` | 7cd90c50e99a | 베이스 digest, pip 31개, apt 67개 | 이미지 ID, `google.build_id` |
+| production 빌드 `057dbfd2` | cb253b448e50 | (위와 같음, 간격 약 18분) | (위와 같음) |
+| 로컬 try-a | 8d665740853b | pip 30줄, deb 159개 | 이미지 ID, 레이어 10개 중 5개 |
+| 로컬 try-b | 3a23685075fb | (위와 같음) | (위와 같음) |
+
 [↑ 목차로](#목차)
 
 ---
@@ -1414,6 +1773,11 @@ staging 에 배포된 이미지와 production 에 배포된 이미지의 이름(
 - API 키를 이미지에 넣지 않고 `--env-file`로 실행할 때 건네는 이유를 설명할 수 있다.
 - 기존 자동 배포에 `--clear-base-image` 하나만 더해 Dockerfile 빌드로 전환하고, Cloud Build 기록에서 Dockerfile이 쓰였는지 확인할 수 있다.
 - 시스템 프로그램이 필요한 새 기능을 로컬 → 로컬 컨테이너 → staging 순서로 검증하고, Dockerfile에 더한 줄의 이유를 한 문장으로 설명할 수 있다.
+- (실습으로 확인) **새 기능의 시스템 의존성을 로컬 컨테이너에서 먼저 잡을 수 있다.** PDF 읽기는 로컬에서 되었지만 poppler 줄이 없는 이미지의 컨테이너에서 처음 실패했고, 그 원인을 컨테이너 로그와 `command -v pdftoppm`으로 확인했다.
+- (실습으로 확인) 같은 입력을 로컬·로컬 컨테이너·staging·production에 보내 상태 코드·글자 수·해시로 결과를 표로 비교하고 "실행 환경이 같다"는 근거로 쓸 수 있다.
+- (실습으로 확인) 빌드 로그에서 `FROM`·apt 설치 단계·`buildpacks` 언급 0줄을 확인해 Dockerfile 빌드였다는 증거를 댈 수 있다.
+- (실습으로 확인) 같은 Dockerfile로 빌드해도 이미지 ID는 달라지며, 그때 `pip freeze`·`dpkg -l`·베이스 digest·LABEL을 비교해 무엇이 같고 무엇이 다른지 가릴 수 있다.
+- (실습으로 확인) 이미지 안을 열어 보아 `.dockerignore`가 하위 폴더에 적용되지 않는 함정(`__pycache__` 17개)을 발견하고 `**/` 패턴으로 고칠 수 있다.
 
 ### 다음에 배우면 좋을 것
 
@@ -1425,7 +1789,10 @@ staging 에 배포된 이미지와 production 에 배포된 이미지의 이름(
 | 베이스 이미지·패키지 버전 고정 | 같은 Dockerfile이어도 빌드 시점에 따라 달라지는 결과를 줄이기 위해 |
 | 볼륨·외부 데이터베이스(Supabase) | 컨테이너가 교체돼도 대화·기억을 유지하기 위해 |
 | Secret Manager 활용 | 운영에서 키를 안전하게 전달하기 위해 |
-| 내 서비스(MSM, Travel Creator 등)에 Dockerfile 적용 | 문서 변환·이미지 처리 등 시스템 의존성 점검 |
+| 내 서비스(MSM, Travel Creator 등)에 Dockerfile 적용 | 문서 변환·이미지 처리 등 시스템 의존성 점검(적용 계획이며 아직 하지 않음) |
+| 시스템 프로그램까지 검증하는 CI | 이번 PDF 테스트는 변환 함수를 가짜로 바꿔 poppler 설치 여부를 못 봤다(N049 CI의 한계와 같은 구멍) |
+| 며칠 간격 빌드의 패키지 버전 차이 | 이번 비교는 모두 몇 시간 이내라 패키지는 같고 이미지 ID만 달랐다. 버전이 달라지는 장면은 재현하지 않았다 |
+| 후보로만 비교한 기능(QR·HEIC·ffmpeg) | 구현하지 않았고, HEIC의 시스템 패키지 필요 여부는 미확인 |
 
 [↑ 목차로](#목차)
 
@@ -1521,6 +1888,36 @@ staging 에 배포된 이미지와 production 에 배포된 이미지의 이름(
 (주관식) 모범 답안(작성 방법 예시): 선택한 기능 — 음성 메모 변환, 필요한 시스템 프로그램 — FFmpeg, 추가한 줄 — `apt-get install -y --no-install-recommends ffmpeg`, 추가한 이유 — Python 코드가 FFmpeg 실행 프로그램을 호출하므로 컨테이너 안에도 설치돼야 함, 줄이 없을 때 — 로컬에 FFmpeg가 있으면 로컬에서는 되지만 이미지 안에는 없어 **로컬 컨테이너에서 처음 실패**. 실제 과제에서는 직접 고른 기능과 검증 결과를 적는다.
 </details>
 
+<details>
+<summary>Q14. (실습 결과) PDF 읽기를 붙였는데 Dockerfile에 poppler 줄이 없습니다. 로컬 환경에서는 PDF가 읽힙니다. 로컬·로컬 컨테이너·staging 가운데 어디에서 처음 실패하나요?</summary>
+
+(주관식) 모범 답안: **로컬 컨테이너**다. 로컬에는 poppler(winget으로 설치)가 있어 통과하지만, 이미지 안에는 `pdftoppm`이 없어 컨테이너에서 PDF만 500 "PDF를 읽는 프로그램이 서버에 없습니다."가 난다. 로그에는 ERROR "poppler 프로그램을 찾을 수 없습니다…"가 남고 사진 OCR은 그대로 200이다. 해결은 apt 줄에 `poppler-utils`를 더하는 것이며, 이번 실습에서는 이 순서로 staging에 올리기 전에 컨테이너에서 잡았다.
+</details>
+
+<details>
+<summary>Q15. (실습 결과) 같은 Dockerfile로 `--no-cache` 빌드를 두 번 했더니 이미지 ID가 서로 달랐습니다. 이미지 안에 설치된 패키지도 다르다고 볼 수 있나요?</summary>
+
+① 달라진 것이 맞다 ② 아니다. `pip freeze`(30줄)와 `dpkg -l`(deb 159개)은 같았고 ID만 달랐다 ③ ID가 다르면 빌드가 실패한 것이다 ④ `--no-cache`는 이미지 ID를 고정한다
+
+**정답: ②** 이미지 ID는 이미지 내용 전체로 계산해 빌드 때 만들어지는 파일이나 시각이 다르면 달라진다. 이번에는 두 빌드가 1분도 안 되는 간격이어서 패키지 목록은 같았다. 며칠 간격으로 빌드하면 패키지 버전까지 달라질 수 있지만 이번에는 재현하지 않았다.
+</details>
+
+<details>
+<summary>Q16. (실습 결과) 새 PDF 테스트 3개가 모두 통과해 15 passed였습니다. 이것으로 서버 이미지에 poppler가 있다고 믿어도 되나요?</summary>
+
+(주관식) 모범 답안: 아니다. 새 테스트는 PDF 변환 함수를 가짜로 바꿔 쓰기 때문에 poppler가 실제로 설치돼 있는지는 검증하지 못한다. poppler도 tesseract도 없는 셸(CI와 같은 조건)에서도 통과한다는 점이 그 증거다. 실제 확인은 로컬 컨테이너와 staging에서 진짜 PDF를 보내는 몫이다(N049에서 본 CI의 한계와 같은 구멍).
+</details>
+
+<details>
+<summary>Q17. (실습 결과) production에 `OCR_ENABLED=true`를 켠 뒤 PDF 읽기 변경을 새로 배포했습니다(리비전 00019 → 00020). 배포 뒤 환경변수를 다시 켜야 하나요?</summary>
+
+① 다시 켜야 한다 ② 다시 켤 필요가 없다. 00019에서 추가한 `OCR_ENABLED`가 새 리비전에도 그대로 유지됐다 ③ 배포하면 모든 환경변수가 지워진다 ④ `--set-env-vars`로 다시 지정해야 한다
+
+**정답: ②** 교안 설명대로 자동 배포가 기존 환경변수를 지우지 않고 합치는 방식이라 값이 유지된 것으로 보인다(저장소 `deploy.yml`의 `env_vars` 설정 때문으로 보이나 이번에 직접 확인하지는 않았다). production은 이전 배포에서 한 번만 `--update-env-vars OCR_ENABLED=true`를 실행했으면 된다. ④처럼 `--set-env-vars`를 쓰면 `ENV` 같은 기존 변수가 사라질 수 있어 피한다.
+</details>
+
 ---
+
+> 📌 **요약** — v1.1 실습 반영: OCR은 staging에서 500(로그 11:35:05)이었다가 Dockerfile 빌드 뒤 200이 되었고, PDF 읽기는 poppler 줄이 없을 때 **로컬 컨테이너에서 처음 실패**했다. 같은 입력이 로컬·로컬 컨테이너·staging·production에서 같은 결과를 냈지만, 같은 Dockerfile로 따로 빌드한 이미지는 ID가 달랐다. 이미지 점검에서 `__pycache__` 17개 함정을 찾았다. 하지 않은 것: `--clear-base-image` 누락 오류 재현, 며칠 간격 빌드, 태그·digest 관리, 이미지 한 번 빌드해 승격, QR·HEIC·ffmpeg 구현.
 
 > 📌 **요약** — 이번 강의의 핵심: ① 코드가 같아도 실행 환경이 다르면 실패하고, 원인은 화면이 아니라 로그에서 찾는다 ② 이미지는 바뀌지 않는 실행 패키지, 컨테이너는 그 이미지를 실행한 것이며 컨테이너 메모리는 영속 저장소가 아니다 ③ Dockerfile에는 베이스 이미지·시스템 패키지·`.env` 제외·`PORT`·non-root를 적고, 키는 이미지에 넣지 않고 실행할 때 건넨다 ④ 기존 자동 배포는 `--clear-base-image` 한 단어만 더해 Dockerfile 빌드로 바뀌고, 빌드 기록으로 확인한다 ⑤ 남은 숙제는 이미지 추적(태그·digest)·staging과 production의 동일 이미지·저장 공간 관리다.

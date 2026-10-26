@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N050 Dockerfile로 실행 환경 정하기 정리 노트</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>N050 · Dockerfile로 실행 환경 정하기</h1>
+<p class="footer-note" style="text-align:left;margin:0 0 24px">버전 1.0 · 2026-10-26 (학습서 + 해설서 통합)</p>
+<nav class="toc" id="목차"><h2>목차</h2><ol><li><a href="#핵심-한-문장-요약">핵심 한 문장 요약</a></li><li><a href="#1-같은-코드인데-서버에서만-안-된다--dockerfile이-필요한-이유">1. 같은 코드인데 서버에서만 안 된다 — Dockerfile이 필요한 이유</a></li><li><a href="#2-시작-상태-맞추기--ocr을-켜고-staging에서-실패-재현하기">2. 시작 상태 맞추기 — OCR을 켜고 staging에서 실패 재현하기</a></li><li><a href="#3-이미지와-컨테이너의-차이">3. 이미지와 컨테이너의 차이</a></li><li><a href="#4-dockerfile에-적을-것">4. Dockerfile에 적을 것</a></li><li><a href="#5-이미지-빌드와-실행">5. 이미지 빌드와 실행</a></li><li><a href="#6-dockerfile을-기존-자동-배포로-올리기">6. Dockerfile을 기존 자동 배포로 올리기</a></li><li><a href="#7-과제-구성">7. 과제 구성</a></li><li><a href="#8-오늘-배운-것-회고">8. 오늘 배운 것 (회고)</a></li><li><a href="#맺음말">맺음말</a></li><li><a href="#부록-a--실전-코드-모음">부록 A · 실전 코드 모음</a></li><li><a href="#부록-b--트러블슈팅-표">부록 B · 트러블슈팅 표</a></li><li><a href="#부록-c--ai-프롬프트-모음집">부록 C · AI 프롬프트 모음집</a></li><li><a href="#부록-d--용어-사전">부록 D · 용어 사전</a></li><li><a href="#부록-e--개념-비교표-모음">부록 E · 개념 비교표 모음</a></li><li><a href="#부록-f--학습-로드맵">부록 F · 학습 로드맵</a></li><li><a href="#부록-g--복습-퀴즈">부록 G · 복습 퀴즈</a></li></ol></nav>
+<h2 id="핵심-한-문장-요약">핵심 한 문장 요약</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — 코드가 한 글자도 다르지 않은데 "내 컴퓨터에서는 되고 서버에서는 안 되는" 이유는 코드가 아니라 <strong>실행 환경</strong>이 달랐기 때문이다 — 그래서 베이스 이미지·시스템 패키지·시크릿 제외·포트·실행 사용자를 <strong>Dockerfile 한 파일에 적어 저장소에 넣고</strong>, 로컬 컨테이너에서 검증한 뒤 기존 자동 배포(staging → production)에 그대로 태운다.</p></div>
+<p>이번 강의는 N049에서 만든 품질 게이트(CI·staging·브랜치 보호·배포 승인)가 붙은 AI 친구 에이전트 서비스(<code>friend-agent</code>, 줄여서 에이전트 서비스)에 새 기능 하나를 붙이면서 시작한다. 동아리 공지나 수업 일정표 <strong>사진을 보내면 글자를 읽어 입력창에 넣어 주고</strong>, 거기 적힌 일정을 약속으로 저장하게 하는 기능(OCR)이다. 이 기능의 코드는 이미 PR로 들어와 CI를 통과했고 staging과 production에 자동 배포돼 있다. 그런데 staging에서 켜 보면 사진을 읽지 못한다. 이 한 장면에서 출발해, 원인을 로그로 찾고, 이미지와 컨테이너를 구분하고, Dockerfile을 쓰고 검토하고, 로컬에서 빌드해 실행하고, 자동 배포에 올려 빌드 기록으로 확인한 뒤, 마지막에 "아직 남은 숙제"까지 짚는다.</p>
+<div class="callout tip"><p><span class="label">💡 팁</span> — 문서에서 "원문"은 학습서(32쪽), "해설서"는 해설서(54쪽)를 가리킨다. 두 책은 같은 강의의 두 버전이며 챕터 01~08이 1:1로 대응한다. 해설서의 쉬운 비유(식당 주방·붕어빵·밀키트)를 우선 살렸고, 원문의 명령·프롬프트·수치는 그대로 옮겼다. <code>[보충 비유]</code>라고 표시한 것만 이 노트에서 덧붙인 설명이다.</p></div>
+<hr>
+<h2 id="1-같은-코드인데-서버에서만-안-된다--dockerfile이-필요한-이유">1. 같은 코드인데 서버에서만 안 된다 — Dockerfile이 필요한 이유</h2>
+<h3 id="오늘의-사건">오늘의 사건</h3>
+<p>원문이 던지는 장면은 이렇다.</p>
+<table><thead><tr><th>어디서</th><th>결과</th></tr></thead><tbody><tr><td>로컬 환경(내 컴퓨터)에서 OCR 켜기</td><td>사진 속 글자를 잘 읽음</td></tr><tr><td>CI 테스트</td><td>통과</td></tr><tr><td>자동 배포</td><td>staging·production 모두 성공</td></tr><tr><td>staging에서 OCR 켜고 같은 사진 보내기</td><td><strong>"사진을 읽지 못했다"는 안내</strong></td></tr><tr><td>기존 대화 기능</td><td>정상</td></tr></tbody></table>
+<p>코드는 한 글자도 다르지 않다. 기능의 기본값이 꺼짐이라 아직 아무도 쓰지 못했을 뿐, 배포는 이미 끝나 있었다. 이 네 가지 사실(로컬 성공 · 배포 성공 · 대화 기능 정상 · staging OCR만 실패)을 연결해 원인을 찾아가는 것이 이번 강의의 뼈대다.</p>
+<div class="callout example"><p><span class="label">🧪 예제</span> — [해설서 비유] 식당에서 요리한다고 생각해 보자. <strong>내 컴퓨터</strong>는 요리사와 조리 도구, 재료가 모두 준비된 주방이다. <strong>서버</strong>는 똑같은 요리사가 있지만 필요한 조리 도구 하나가 없는 주방이다. <strong>코드</strong>는 요리사가 따라 하는 레시피다. 레시피가 똑같아도 도구가 없으면 요리를 완성할 수 없다.</p></div>
+<h3 id="buildpacks와-dockerfile--자동으로-준비해-주는-서비스-vs-상세-작업-지시서">buildpacks와 Dockerfile — 자동으로 준비해 주는 서비스 vs 상세 작업 지시서</h3>
+<p>지금까지의 배포 방식(소스 배포)에서는 코드를 올리면 Cloud Run이 <strong>buildpacks</strong>(소스 코드를 보고 이미지를 자동으로 만드는 도구)로 실행 환경을 알아서 꾸려 이미지를 만들어 준다. buildpacks는 Python 버전과 라이브러리처럼 <strong>코드에 적혀 있는 것</strong>은 잘 챙긴다. 하지만 운영체제에 따로 설치해야 하는 <strong>시스템 패키지</strong>(apt 패키지처럼 운영체제에 설치하는 프로그램)는 코드만 보고 알 수 없다.</p>
+<table><thead><tr><th>구분</th><th>buildpacks</th><th>Dockerfile</th></tr></thead><tbody><tr><td>방식</td><td>소스 코드를 분석해 필요한 환경을 <strong>자동 구성</strong></td><td>기반 환경·설치할 패키지·실행 명령을 <strong>직접 명시</strong></td></tr><tr><td>비유(해설서)</td><td>필요한 물건을 알아서 준비해 주는 서비스</td><td>준비할 물건과 순서를 직접 적어 놓은 상세 작업 지시서</td></tr><tr><td>약점</td><td>코드로 알 수 없는 운영체제 수준 의존성은 원하는 대로 안 될 수 있음</td><td>무엇을 넣을지 사람이 직접 판단해야 함</td></tr></tbody></table>
+<div class="callout tip"><p><span class="label">💡 팁</span> — [보충 비유] 프랜차이즈 본사가 새 점포를 열 때 "주방 설비 목록 + 표준 조리 순서"를 문서로 내려보내면 어느 지점에서든 같은 맛이 나온다. 점주가 알아서 준비하게 두면 지점마다 빠지는 설비가 생긴다. Dockerfile은 이 설비 목록·표준서에 해당한다.</p></div>
+<h3 id="오늘의-학습-목표-다섯-가지">오늘의 학습 목표 다섯 가지</h3>
+<ol><li>로컬 환경에서는 되는데 서버에서는 안 되는 상황에서 <strong>로그로 원인을 찾고</strong>, buildpacks가 만든 이미지에 무엇이 들어 있고 무엇이 빠지는지 설명한다.</li><li><strong>이미지와 컨테이너의 차이</strong>를 설명하고, Docker Desktop 화면에서 둘을 구분한다.</li><li>Dockerfile을 한 줄씩 읽고 <strong>베이스 이미지</strong>(Dockerfile이 출발점으로 삼는 이미지), <strong>설치할 시스템 패키지</strong>, <strong>시크릿 제외</strong>, <strong>포트</strong>, <strong>실행 사용자</strong>를 기준으로 검토한다.</li><li>로컬에서 이미지를 빌드해 컨테이너로 실행하고, <strong>API 키를 이미지에 넣지 않고 실행할 때 건네는 이유</strong>를 설명한다.</li><li>Dockerfile이 있는 저장소를 환경별 자동 배포로 staging과 production에 올리고, <strong>빌드 기록에서 Dockerfile이 쓰였는지</strong> 확인한다.</li></ol>
+<h3 id="시작-질문과-해설서의-예시-답안">시작 질문과 해설서의 예시 답안</h3>
+<p>원문의 시작 질문은 이것이다. "내 컴퓨터에서는 되는데 서버에서는 안 돼요"라는 말을 들어 본 적이 있는가? 같은 코드가 로컬 환경과 서버에서 다르게 동작한다면 두 곳 사이에 무엇이 다를 수 있을지, 떠오르는 대로 적어 보세요.</p>
+<p>해설서의 예시 답안은 다음 다섯 지점으로 요약된다.</p>
+<table><thead><tr><th>다를 수 있는 것</th><th>예</th></tr></thead><tbody><tr><td>Python 버전</td><td>로컬은 3.13인데 서버는 다른 버전</td></tr><tr><td>설치된 라이브러리</td><td>requirements.txt에 빠진 것</td></tr><tr><td>운영체제 시스템 패키지</td><td>이번 사례의 tesseract</td></tr><tr><td>환경변수·API 키 같은 설정값</td><td>로컬 <code>.env</code>에만 있는 값</td></tr><tr><td>포트 설정·실행 권한</td><td>서버가 정해 준 포트와 다른 포트로 기다림</td></tr></tbody></table>
+<p>그래서 코드만 비교할 것이 아니라 <strong>로그를 확인하고 로컬과 서버의 실행 환경을 비교</strong>해야 한다. 하루가 끝날 때(8장) 이 답을 다시 꺼내 "오늘 실제로 달랐던 것"과 비교해 본다.</p>
+<h3 id="문제를-세-가지로-나눠-보기">문제를 세 가지로 나눠 보기</h3>
+<p>해설서는 AI 서비스를 운영할 때 오류의 성격을 세 가지로 구분하라고 반복해서 강조한다.</p>
+<table><thead><tr><th>구분</th><th>질문</th><th>이번 사례</th></tr></thead><tbody><tr><td>개발(코드) 문제</td><td>코드와 로직이 올바른가?</td><td>로컬에서 잘 돌았으므로 아님</td></tr><tr><td>환경 문제</td><td>필요한 라이브러리·시스템 패키지가 설치돼 있는가?</td><td><strong>tesseract가 서버에 없음</strong></td></tr><tr><td>배포 문제</td><td>staging과 production에 동일한 실행 조건이 적용됐는가?</td><td>테스트한 이미지와 실제 운영 이미지가 같은가(6·8장에서 다시 등장)</td></tr></tbody></table>
+<div class="diagram-wrap"><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>Dockerfile</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">만드는 방법</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>이미지</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">묶어 둔 패키지</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>컨테이너</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">실행 중인 것</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>Cloud Run 서비스</strong></div></div></div>
+<div class="callout summary"><p><span class="label">📌 요약</span> — Dockerfile은 AI 서비스의 코드뿐 아니라 <strong>실행에 필요한 환경까지 명시</strong>해, 내 컴퓨터에서 작동하던 서비스를 서버에서도 일관되게 실행하도록 돕는 설계도다.</p></div>
+<hr>
+<h2 id="2-시작-상태-맞추기--ocr을-켜고-staging에서-실패-재현하기">2. 시작 상태 맞추기 — OCR을 켜고 staging에서 실패 재현하기</h2>
+<h3 id="2-1-시작-상태">2-1. 시작 상태</h3>
+<p>이 교안은 staging과 production이 나뉘어 있고, CI를 통과한 변경이 <code>staging</code> 브랜치에서는 staging에, <code>main</code>에서는 승인 뒤 production에 배포되는 상태에서 시작한다. 데이터베이스(Supabase)는 없어도 된다. 앞 실습(N049)에서 이 상태를 만들었다면 확인 명령만 실행하고 넘어간다. 처음부터 시작한다면 시작 상태 문서의 A~E와 템플릿 <code>docs/wif-setup.md</code>의 0~4단계, 7단계를 먼저 따라 한다. 처음부터 만들면 <strong>1시간 30분 안팎</strong>이 걸리므로 수업 전에 해 두기를 권한다.</p>
+<table><thead><tr><th>필요한 상태</th><th>확인 방법</th><th>없으면</th></tr></thead><tbody><tr><td><code>friend-agent</code> 서비스와 시크릿, 배포 권한 설정</td><td>서비스 주소가 나오고 <code>gh variable list</code>에 변수 5개</td><td>시작 상태 문서 A, B, <code>docs/wif-setup.md</code></td></tr><tr><td><code>.github/workflows/</code>의 <code>ci.yml</code>과 환경별 배포 <code>deploy.yml</code></td><td>두 파일이 있음</td><td>시작 상태 문서 D</td></tr><tr><td>GitHub 환경 <code>staging</code>, <code>production</code>과 <code>staging</code> 브랜치</td><td>아래 명령에 두 환경 이름과 staging 브랜치가 나옴</td><td>시작 상태 문서 D</td></tr><tr><td><code>friend-agent-staging</code> 서비스</td><td>아래 명령에서 staging 주소가 나옴</td><td>시작 상태 문서 E</td></tr></tbody></table>
+<p>확인 명령은 부록 A-1에 있다. staging 주소를 브라우저로 열었을 때 화면 위에 <strong>테스트 환경임을 알리는 배너</strong>가 보이면 준비가 끝난 것이다.</p>
+<h3 id="2-2-ocr이-무엇이고-왜-시스템-패키지가-필요한가">2-2. OCR이 무엇이고 왜 시스템 패키지가 필요한가</h3>
+<p>사진 속 글자를 읽는 기능을 <strong>OCR</strong>(광학 문자 인식, 이미지 속 글자를 텍스트로 바꾸는 기술)이라고 한다. 이 기능의 코드는 템플릿 저장소 <code>app/ocr.py</code>에 이미 들어 있고, 환경변수 <code>OCR_ENABLED</code>로 켜고 끈다. 기본값은 꺼짐이라 켜기 전에는 화면에 사진 버튼(📷)이 보이지 않는다.</p>
+<p>사진을 받으면 <code>pytesseract</code>라는 Python 라이브러리로 글자를 읽는데, 이 라이브러리는 직접 글자를 읽지 않고 운영체제에 설치된 <code>tesseract</code>라는 프로그램을 불러 쓰는 <strong>래퍼(wrapper) 라이브러리</strong>다.</p>
+<div class="callout example"><p><span class="label">🧪 예제</span> — [해설서 비유] <code>pytesseract</code>는 "통역을 요청하는 사람"이고 <code>tesseract</code>는 "실제로 글자를 읽는 도구"다. 통역을 부탁하는 사람만 있고 통역사가 없으면 번역이 안 된다.</p></div>
+<p>그래서 OCR이 돌려면 세 가지가 모두 필요하다.</p>
+<table><thead><tr><th>필요한 것</th><th>설치 방법</th><th>역할</th></tr></thead><tbody><tr><td>① <code>pytesseract</code></td><td><code>requirements.txt</code> → pip</td><td>tesseract를 부르는 Python 라이브러리</td></tr><tr><td>② <code>tesseract</code> 프로그램</td><td><strong>운영체제 시스템 패키지</strong>(apt, brew 등)</td><td>실제로 글자를 읽는 프로그램</td></tr><tr><td>③ <code>kor</code> 언어 데이터</td><td>시스템 패키지(<code>tesseract-ocr-kor</code> 등)</td><td>한국어를 읽기 위한 글자 데이터</td></tr></tbody></table>
+<p><code>requirements.txt</code>로 라이브러리를 설치하는 것만으로는 부족하다. ②와 ③을 운영체제에 따로 설치해야 하고, 이렇게 Python 라이브러리 밖에 있는 프로그램이나 파일을 해설서는 <strong>시스템 의존성</strong>이라고 부른다.</p>
+<h3 id="2-3-로컬-환경에-tesseract-설치하고-ocr-켜기">2-3. 로컬 환경에 tesseract 설치하고 OCR 켜기</h3>
+<p>먼저 내 컴퓨터에 tesseract를 설치한다.</p>
+<ul><li><strong>macOS</strong>: Homebrew로 프로그램과 언어 데이터를 함께 설치한다(<code>brew install tesseract tesseract-lang</code>). 설치 후 <code>tesseract --list-langs</code>에 <code>kor</code>가 있어야 한국어를 읽는다.</li><li><strong>Windows</strong>: tesseract 공식 안내가 권하는 <strong>UB Mannheim 설치 파일</strong>(<code>tesseract-ocr-w64-setup-…exe</code>)을 받아 실행한다. 설치 중 Choose Components 화면에서 Additional language data(download)를 펼쳐 <strong>Korean</strong>에 체크하고, 설치 폴더는 기본값(<code>C:\Program Files\Tesseract-OCR</code>)으로 둔다. 설치가 끝나면 "시스템 환경 변수 편집"에서 사용자 변수 Path에 그 폴더를 추가한 뒤, <strong>열려 있던 터미널과 VS Code를 모두 닫았다가 다시 연다.</strong> 새 터미널에서 <code>tesseract --version</code>과 <code>tesseract --list-langs</code>(<code>kor</code> 확인)로 점검한다.</li></ul>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 코딩 에이전트가 <code>sudo</code>로 root 권한(운영체제 전체를 바꿀 수 있는 최고 권한)을 요구하는 명령을 제안하면, 무엇을 바꾸는지 다시 묻고 판단한다. Homebrew 설치에는 보통 필요하지 않다. 언어 목록에 <code>kor</code>가 없으면 기능은 동작하지만 영어로만 읽고, 서비스 로그에 한국어 데이터가 없다는 경고가 남는다.</p></div>
+<p>이제 <code>.env</code>에 <code>OCR_ENABLED=true</code> 한 줄을 넣고 서비스를 로컬에서 실행한다(부록 A-3). 입력창 왼쪽에 사진 버튼(📷)이 생기면 템플릿의 <code>data/samples/schedule.png</code>(산책 동아리 10월 일정 세 줄이 적힌 사진)를 고른다. 잠시 뒤 입력창에 <strong>"사진에서 읽은 글이야"</strong>로 시작하는 문장과 일정 세 줄이 들어온다. 읽은 글자가 틀렸으면 입력창에서 고친 뒤 보내고, 보내면 에이전트 서비스가 일정 가운데 하나를 약속으로 저장하며 오른쪽 "이번 턴" 패널에 약속 저장 도구가 선택된 것이 보인다.</p>
+<h3 id="2-4-staging에서-같은-기능-켜기----update-env-vars">2-4. staging에서 같은 기능 켜기 — `--update-env-vars`</h3>
+<p>이제 staging에서도 기능을 켠다. 코드는 이미 배포돼 있으므로 <strong>staging 서비스의 환경변수만 하나 추가</strong>하면 된다. 환경변수를 바꾸면 새 리비전이 만들어지고, 자동 배포 워크플로는 기존 환경변수를 지우지 않고 합치는 방식으로 배포하므로 이후 배포에서도 이 값이 유지된다. <strong>production은 아직 건드리지 않는다.</strong></p>
+<p>실행하기 전에 서비스 이름이 <code>friend-agent-staging</code>인지, 옵션이 기존 값을 지우는 <code>--set-env-vars</code>가 아니라 추가하는 <code>--update-env-vars</code>인지 확인한다.</p>
+<table><thead><tr><th>옵션</th><th>동작</th></tr></thead><tbody><tr><td><code>--update-env-vars</code></td><td>지정한 환경변수를 <strong>추가하거나 해당 값만 갱신</strong></td></tr><tr><td><code>--set-env-vars</code></td><td>지정한 환경변수 집합으로 <strong>설정을 교체</strong> — <code>ENV</code> 같은 기존 변수가 사라질 수 있음</td></tr></tbody></table>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 해설서가 짚은 구분: <strong>OCR 기능을 켜는 것</strong>과 <strong>OCR이 실제로 작동하도록 실행 환경을 갖추는 것</strong>은 서로 다른 작업이다. 이번 단계에서는 앞의 것만 했다.</p></div>
+<p>배포가 끝나면 staging 주소를 열어 같은 사진을 보낸다. 이번에는 <strong>"사진에서 글자를 읽지 못했어요: 사진에서 글자를 읽는 프로그램이 서버에 없습니다."</strong>라는 안내가 뜬다.</p>
+<h3 id="2-5-로그에서-원인-찾기">2-5. 로그에서 원인 찾기</h3>
+<p>화면의 안내는 결과만 말해 준다. 화면만 보고 원인을 단정하지 않고, Cloud Run 로그에서 같은 시각에 남은 오류 줄을 찾는다.</p>
+<ol><li>Cloud Run에서 <code>friend-agent-staging</code> 서비스를 열고 로그(Logs) 탭으로 간다.</li><li>심각도를 <strong>오류(Error)</strong>로 거르고, 사진을 보낸 시각 근처의 줄을 연다.</li><li>같은 시각에 <code>POST /api/ocr</code> 요청이 <strong>상태 코드 500</strong>으로 남았는지도 확인한다.</li></ol>
+<p>핵심 기록은 세 가지다.</p>
+<div class="table-scroll"><table><thead><tr><th>기록</th><th>내용</th></tr></thead><tbody><tr><td>오류 메시지</td><td>"tesseract 프로그램을 찾을 수 없습니다. 실행 환경에 tesseract 가 설치되어 있지 않습니다."</td></tr><tr><td>요청 기록</td><td><code>POST /api/ocr</code></td></tr><tr><td>상태 코드</td><td>500</td></tr></tbody></table></div>
+<p>이 기록을 종합하면 <strong>서비스가 시작하지 못한 것이 아니라</strong>, 시작은 정상으로 했고 사진 요청이 들어온 순간 프로그램을 부르다 실패한 것이다. 앱은 시작할 때 tesseract가 있는지 검사하지 않기 때문에 서비스가 정상적으로 시작될 수 있었고, 그래서 <strong>배포는 성공으로 끝났고 다른 기능은 그대로 쓸 수 있었다.</strong> 실제 OCR 요청이 들어온 순간에야 문제가 드러난 것이다.</p>
+<h3 id="2-6-로컬과-buildpacks-이미지에는-무엇이-들어-있나">2-6. 로컬과 buildpacks 이미지에는 무엇이 들어 있나</h3>
+<table><thead><tr><th>항목</th><th>로컬 환경</th><th>staging(buildpacks 이미지)</th></tr></thead><tbody><tr><td>Python 코드</td><td>있음</td><td>있음</td></tr><tr><td>Python 라이브러리</td><td>있음</td><td>있음(<code>requirements.txt</code>를 보고 준비)</td></tr><tr><td>Python 버전</td><td>있음</td><td>있음(<code>.python-version</code>을 보고 준비)</td></tr><tr><td><code>tesseract</code> 프로그램</td><td>오늘 직접 설치함</td><td><strong>설치되지 않음</strong></td></tr><tr><td>한국어 언어 데이터</td><td>설치했다면 있음</td><td><strong>없음</strong></td></tr><tr><td>OCR 기능</td><td>정상 작동</td><td><strong>실패</strong></td></tr></tbody></table>
+<div class="diagram-wrap"><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>로컬</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">코드+라이브러리+tesseract+kor</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>OCR 성공</strong></div></div><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>buildpacks 이미지</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">코드+라이브러리+Python, tesseract 없음</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>OCR 실패</strong></div></div></div>
+<p>로컬에서 tesseract를 설치한 기록은 로컬 환경에만 남았고 저장소로 들어가지 않았다. buildpacks는 저장소에 적힌 것만 보고 이미지를 만들기 때문에 tesseract는 저장소 어디에도 적혀 있지 않아 설치하지 않았다. Google Cloud의 Python buildpacks 문서에도 시스템 패키지를 추가로 설치하는 방법은 안내되어 있지 않다.</p>
+<div class="callout summary"><p><span class="label">📌 요약</span> — <strong>핵심 원칙: 코드가 같다는 사실만으로 실행 환경까지 같다고 볼 수는 없다.</strong> 로컬 컴퓨터에 프로그램을 설치해도 그 설치 기록이 GitHub 저장소에 자동으로 들어가지 않는다.</p></div>
+<h3 id="2-7-왜-ci-테스트는-이-문제를-못-잡았을까">2-7. 왜 CI 테스트는 이 문제를 못 잡았을까</h3>
+<p>CI가 통과했다는 것은 <strong>테스트에서 확인한 조건이 충족됐다</strong>는 뜻이지 모든 운영 환경이 완벽하다는 뜻이 아니다. 이번 사례에는 두 가지 이유가 있다.</p>
+<ol><li>템플릿의 OCR 테스트는 <strong>기능이 꺼져 있을 때 요청을 거절하는지</strong>만 확인한다. 실제로 사진을 읽는 데 필요한 시스템 프로그램까지는 검증하지 않는다.</li><li>테스트가 도는 <strong>GitHub 러너와 staging 이미지는 서로 다른 실행 환경</strong>이다. 러너에서 통과했다고 staging 이미지에 tesseract가 있다는 뜻이 되지 않는다.</li></ol>
+<p>이 문제를 풀려면 실행 환경을 만드는 방법 자체를 적어 저장소에 넣어야 하고, 그 파일이 <strong>Dockerfile</strong>이다.</p>
+<details><summary>객관식 퀴즈 — staging에서 OCR이 실패했는데 배포는 성공했고 다른 대화 기능도 정상이었습니다. 이유로 가장 알맞은 것은?</summary><p>① Cloud Run이 tesseract 없이도 시작할 수 있도록 오류를 숨겨 주기 때문이다 ② 앱은 시작할 때 tesseract를 확인하지 않고, 사진 요청이 들어와 프로그램을 부를 때에야 없다는 것을 알게 되기 때문이다 ③ staging에서는 <code>OCR_ENABLED</code>가 꺼져 있어서 기능이 실행되지 않았기 때문이다 ④ buildpacks가 tesseract를 설치했지만 한국어 데이터만 빠졌기 때문이다</p><p><strong>정답: ②</strong> ①은 Cloud Run이 오류를 숨긴 것이 아니라 요청 처리 중 오류가 난 것이다. ③은 staging에서 <code>OCR_ENABLED=true</code>로 켰기 때문에 OCR 요청이 실행됐다. ④는 한국어 데이터만 빠진 것이 아니라 tesseract 프로그램 자체를 찾지 못한 것이다.</p></details>
+<hr>
+<h2 id="3-이미지와-컨테이너의-차이">3. 이미지와 컨테이너의 차이</h2>
+<p>Dockerfile을 쓰기 전에 Docker가 다루는 두 가지를 구분해 둔다.</p>
+<ul><li><strong>이미지(image)</strong>: 운영체제 기본 파일, 프로그램, 라이브러리, 코드, 시작 명령까지 <strong>실행에 필요한 것을 모두 묶어 둔 파일</strong>. 한 번 만들면 내용이 바뀌지 않는다.</li><li><strong>컨테이너(container)</strong>: 그 이미지를 <strong>실행한 것</strong>. 같은 이미지로 컨테이너를 여러 개 띄울 수 있고, 컨테이너마다 자기 메모리와 파일 변경을 따로 가진다.</li></ul>
+<div class="callout example"><p><span class="label">🧪 예제</span> — [해설서 비유] <strong>이미지는 붕어빵 틀과 재료를 갖춘 준비물</strong>, <strong>컨테이너는 그 준비물로 실제로 만들어 낸 붕어빵</strong>이다. 붕어빵 하나를 먹어 치워도 틀과 재료(이미지)는 그대로 남아 있고, 같은 준비물로 붕어빵을 몇 개든 만들 수 있다. Dockerfile은 이 준비물을 만드는 방법을 적은 문서다. 컨테이너 안에서 파일을 바꿔도 원본 이미지는 자동으로 바뀌지 않는다.</p></div>
+<div class="diagram-wrap"><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>이미지 1개</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">코드+라이브러리+실행 환경</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>컨테이너 A</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">메모리·상태 A</div></div></div><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>이미지 1개</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">코드+라이브러리+실행 환경</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>컨테이너 B</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">메모리·상태 B</div></div></div></div>
+<h3 id="3-1-cloud-run-용어와의-대응">3-1. Cloud Run 용어와의 대응</h3>
+<div class="table-scroll"><table><thead><tr><th>Docker 개념</th><th>쉽게 이해하기</th><th>Cloud Run에서 대응하는 개념</th></tr></thead><tbody><tr><td>이미지</td><td>실행 준비물 패키지</td><td>배포할 컨테이너 이미지</td></tr><tr><td>컨테이너</td><td>이미지를 실행한 인스턴스</td><td>인스턴스 안에서 실행되는 컨테이너</td></tr><tr><td>—</td><td>이미지 + 환경변수·요청 타임아웃(request timeout, 요청 하나를 처리할 수 있는 최대 시간) 등 설정을 묶은 버전</td><td><strong>리비전(Revision)</strong></td></tr><tr><td>—</td><td>그 리비전으로 실행 중인 컨테이너</td><td><strong>인스턴스(Instance)</strong></td></tr></tbody></table></div>
+<p>이 구조로 N048·N049에서 겪은 현상이 설명된다. 에이전트 서비스는 대화 기록을 <strong>컨테이너의 메모리</strong>에 둔다. 새 리비전을 배포하면 새 컨테이너가 실행되고, 새 컨테이너는 이전 컨테이너의 메모리를 자동으로 이어받지 않는다. 그래서 새 리비전을 배포할 때마다 대화 기록이 사라졌다. 서비스가 재시작되거나 인스턴스가 교체돼도 유지돼야 하는 데이터는 Supabase 같은 <strong>외부 데이터베이스(영속 저장소)</strong>에 보관해야 한다.</p>
+<p>이미지 안에 <strong>키 같은 시크릿을 넣지 않는 이유</strong>도 여기서 나온다. 이미지는 저장소에 올라가 여러 곳에서 내려받아 실행되는 파일이므로, 안에 든 값은 이미지를 받은 누구나 꺼내 볼 수 있다.</p>
+<h3 id="3-2-docker-desktop-준비">3-2. Docker Desktop 준비</h3>
+<p>이 장부터는 로컬 환경에서 Docker를 쓴다. <strong>Docker Desktop</strong>은 macOS와 Windows에서 컨테이너를 실행할 수 있게 해 주는 프로그램으로, 컨테이너가 쓰는 리눅스 환경을 컴퓨터 안에 띄우고 <code>docker</code> 명령과 이미지·컨테이너를 보는 화면을 함께 제공한다. 이미 설치돼 있다면 Docker Desktop을 켜고 <code>docker --version</code>과 <code>docker info</code>만 실행한다. 둘 다 오류 없이 결과가 나오면 준비 완료다. <code>docker info</code>가 <strong>데몬</strong>(daemon, 실제로 이미지를 만들고 컨테이너를 실행하는 프로그램)에 연결할 수 없다는 오류를 내면 Docker Desktop이 꺼져 있는 것이니 켠 뒤 다시 실행한다.</p>
+<p>없을 때 설치하는 순서(원문):</p>
+<ol><li>Docker Desktop 내려받기 페이지에서 내 운영체제에 맞는 설치 파일을 받는다. macOS는 Apple Silicon(M 시리즈)과 Intel 칩 가운데 내 컴퓨터에 맞는 것을 고른다(Apple 메뉴 &gt; 이 Mac에 관하여).</li><li>macOS는 <code>Docker.dmg</code>를 열어 Docker 아이콘을 응용 프로그램 폴더로 끌어넣고 실행한다. Windows는 설치 파일을 실행하며 설정 화면에서 <strong>WSL 2</strong>(Windows 안에서 리눅스를 실행하는 기능)를 사용하는 옵션을 켠 채 설치한다. 설치 중 함께 켜지거나 재시작을 요구할 수 있다.</li><li>처음 실행하면 이용 약관에 동의하고 Docker Hub 계정으로 로그인한다. 계정이 없으면 무료로 만든다. 강의실처럼 여러 사람이 같은 인터넷 주소를 쓰면 <strong>로그인하지 않은 이미지 내려받기가 횟수 제한에 금방 걸리기 때문</strong>이다.</li><li>화면 아래쪽에 엔진이 실행 중(Engine running)이라고 나오면 새 터미널에서 확인 명령을 실행한다.</li></ol>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 설치 중 막히는 곳은 운영체제마다 다르다. macOS는 칩에 맞지 않는 설치 파일을 받으면 실행되지 않고, Windows는 WSL 2가 켜지지 않았거나 BIOS에서 가상화 기능이 꺼져 있으면 엔진이 시작되지 않는다. 회사 컴퓨터에 설치한다면 Docker Desktop은 직원 250명 이상이거나 매출이 일정 규모를 넘는 회사에서 쓸 때 유료 구독이 필요하다. 개인 컴퓨터와 교육 목적으로는 무료다.</p></div>
+<h3 id="3-3-공식-python-이미지-실행해-보기--여기에도-tesseract는-없다">3-3. 공식 Python 이미지 실행해 보기 — 여기에도 tesseract는 없다</h3>
+<p>Docker가 공식으로 배포하는 Python 이미지(<code>python:3.13-slim-bookworm</code>, 이후 Dockerfile의 베이스 이미지로 쓸 것과 같다)를 내려받아 컨테이너로 실행한다(부록 A-5). 첫 줄은 Python 3.13 버전을 출력하고, 둘째 줄은 <strong>"tesseract 없음"</strong>을 출력한다. <code>--rm</code>은 실행이 끝나면 컨테이너를 자동으로 지우라는 옵션이고 이미지는 남아 다음 실행에서 재사용된다.</p>
+<p>공식 Python 이미지에도 tesseract는 없다. Python이 설치된 이미지라고 해서 OCR에 필요한 모든 외부 프로그램까지 들어 있는 것은 아니므로, 이 이미지 <strong>위에 설치하는 줄을 Dockerfile에 넣어야</strong> 한다.</p>
+<h3 id="3-4-컨테이너끼리-나누지-않는-것">3-4. 컨테이너끼리 나누지 않는 것</h3>
+<p>컨테이너 하나 안에 파일을 만들고, 같은 이미지로 새 컨테이너를 띄워 그 파일이 보이는지 확인한다(부록 A-6). 첫 컨테이너(<code>note-a</code>)는 <code>--rm</code> 없이 실행해 끝난 뒤에도 남겨 둔다.</p>
+<table><thead><tr><th>실행 단계</th><th>결과</th></tr></thead><tbody><tr><td>첫 컨테이너 <code>note-a</code> 안에서 <code>/tmp/note.txt</code>에 "메모"를 쓰고 읽기</td><td><code>메모</code></td></tr><tr><td>같은 이미지로 새 컨테이너에서 같은 파일 읽기</td><td><code>파일 없음</code></td></tr><tr><td><code>docker rm note-a</code></td><td>note-a 컨테이너가 삭제됨</td></tr></tbody></table>
+<p>두 컨테이너는 같은 이미지에서 시작했지만 한쪽에서 생긴 파일을 다른 쪽이 보지 못한다. <code>docker rm note-a</code> 전에 Docker Desktop을 열어 보면 <strong>이미지(Images) 화면</strong>에는 <code>python:3.13-slim-bookworm</code>이 한 줄, <strong>컨테이너(Containers) 화면</strong>에는 실행이 끝난 <code>note-a</code>가 보인다(<code>--rm</code>으로 실행한 컨테이너는 이미 지워져 목록에 없다). <code>docker rm note-a</code>는 <strong>컨테이너를 지우는 명령</strong>이지 이미지를 지우는 명령이 아니므로, 지우기 전에 대상이 컨테이너 <code>note-a</code>인지 확인한다.</p>
+<div class="callout tip"><p><span class="label">💡 팁</span> — 해설서의 단서: 이 실험은 컨테이너 내부의 임시 파일을 쓴 경우다. 볼륨이나 외부 저장소를 연결하면 여러 컨테이너가 같은 데이터를 공유하도록 구성할 수 있다.</p></div>
+<details><summary>객관식 퀴즈 — 같은 이미지로 컨테이너 두 개를 실행했고 첫 컨테이너 안에서 /tmp/note.txt를 만들었습니다. 둘째 컨테이너에서 읽으면?</summary><p>① 같은 이미지에서 시작했으므로 파일이 보인다 ② 파일이 보이지 않는다. 파일은 첫 컨테이너 안에서만 생긴 변경이고 이미지는 바뀌지 않았다 ③ 첫 컨테이너가 실행 중일 때만 보인다 ④ 첫 컨테이너를 지우면 그때부터 보인다</p><p><strong>정답: ②</strong> 파일은 첫 컨테이너의 파일 변경 사항이며 원본 이미지나 둘째 컨테이너에 자동으로 반영되지 않는다.</p></details>
+<h3 id="3-5-포트로-컨테이너에-요청-보내기">3-5. 포트로 컨테이너에 요청 보내기</h3>
+<p>지금까지 실행한 컨테이너는 명령 하나를 실행하고 바로 끝났다. 에이전트 서비스처럼 웹 서버를 담은 컨테이너는 켜진 채로 요청을 기다리는데, 바깥에서 요청을 보내려면 <strong>포트</strong>를 알아야 한다. 포트(port)는 한 컴퓨터에서 여러 프로그램이 네트워크를 함께 쓸 때 들어온 연결을 어느 프로그램에 줄지 정하는 번호다. 주소 <code>localhost</code>가 어느 컴퓨터인지를 가리킨다면 <code>:9000</code> 같은 포트는 <strong>그 컴퓨터의 어느 프로그램인지</strong>를 가리키고, 한 포트에서는 한 프로그램만 기다릴 수 있다.</p>
+<p>컨테이너는 파일뿐 아니라 <strong>네트워크도 따로</strong> 가진다. 컨테이너 안의 프로그램이 8000번에서 기다려도 내 컴퓨터의 8000번과는 이어져 있지 않다. 둘을 잇는 것이 <code>docker run</code>의 <strong><code>-p 9000:8000</code></strong>이다.</p>
+<div class="table-scroll"><table><thead><tr><th>표기</th><th>의미</th></tr></thead><tbody><tr><td><code>-p 9000:8000</code>의 <strong>앞 숫자 9000</strong></td><td>내 컴퓨터의 포트</td></tr><tr><td><code>-p 9000:8000</code>의 <strong>뒤 숫자 8000</strong></td><td>컨테이너 안의 포트</td></tr><tr><td>동작</td><td>내 컴퓨터의 9000번으로 들어온 요청을 Docker가 컨테이너의 8000번으로 넘기고, 응답을 받아 그대로 돌려줌</td></tr></tbody></table></div>
+<p>공식 Python 이미지에 들어 있는 간단한 웹 서버(<code>python -m http.server 8000</code>)로 같은 이미지에서 컨테이너를 두 개 띄워 확인한다(부록 A-7). 결과는 다음과 같다.</p>
+<div class="table-scroll"><table><thead><tr><th>확인</th><th>결과</th></tr></thead><tbody><tr><td>브라우저로 <code>http://localhost:9000</code>, <code>http://localhost:9001</code></td><td>둘 다 컨테이너 안 폴더의 파일 목록이 보임</td></tr><tr><td>브라우저로 <code>http://localhost:8000</code></td><td>열리지 않음 — 컨테이너 안 8000번은 내 컴퓨터 8000번과 이어져 있지 않음</td></tr><tr><td><code>docker ps</code></td><td>같은 이미지로 띄운 컨테이너 두 줄, 포트 칸에 <code>9000-&gt;8000</code>, <code>9001-&gt;8000</code></td></tr><tr><td>세 번째 컨테이너를 <code>-p 9000:8000</code>으로 띄우기</td><td><code>port is already allocated</code> 오류 — 내 컴퓨터 9000번에서는 이미 <code>web-a</code>로 가는 연결이 기다리고 있음</td></tr></tbody></table></div>
+<p>컨테이너마다 네트워크가 따로라서 컨테이너 <strong>안의</strong> 포트는 모두 같은 번호를 써도 부딪히지 않는다. 그래서 안쪽 포트는 이미지가 한 번 정해 두고, 여러 개를 띄울 때는 <strong>바깥 포트만</strong> 바꾼다. 정리 명령 <code>docker rm -f web-a web-b web-c</code>는 해당 이름의 컨테이너를 강제로 종료하고 삭제하므로, 실행 전에 실습용 컨테이너 이름인지 확인한다.</p>
+<h3 id="3-6-cloud-run과-port-환경변수">3-6. Cloud Run과 PORT 환경변수</h3>
+<p>Cloud Run은 이 연결을 대신 해 준다. 요청을 보낼 컨테이너 안의 포트를 <strong><code>PORT</code> 환경변수</strong>(기본값 8080)로 알려 준다. 그래서 에이전트 서비스는 <strong>포트 번호를 코드에 박아 두지 않고</strong> <code>PORT</code> 환경변수를 읽어 그 번호에서 기다리게 만든다(4장 체크리스트에서 이 점을 확인한다). 예를 들어 <code>docker run -p 9000:8080 friend-agent:local</code>로 띄웠다면 접속 주소는 <strong><code>http://localhost:9000</code></strong>이다. 앞의 9000은 내 컴퓨터 포트, 뒤의 8080은 컨테이너 내부 포트이기 때문이다.</p>
+<details><summary>객관식 퀴즈 — docker run -p 9000:8080 friend-agent:local 로 띄웠습니다. 브라우저에서 서비스를 열려면?</summary><p>① <code>http://localhost:8080</code> ② <code>http://localhost:9000</code> ③ 두 주소 모두 열린다 ④ 컨테이너 안에서만 열 수 있다</p><p><strong>정답: ②</strong> 앞의 9000은 내 컴퓨터의 포트, 뒤의 8080은 컨테이너 내부 포트다. 내 컴퓨터의 8080은 이어져 있지 않다.</p></details>
+<h3 id="3-7-이-장이-ai-서비스-운영에서-주는-세-가지-원칙-해설서">3-7. 이 장이 AI 서비스 운영에서 주는 세 가지 원칙 (해설서)</h3>
+<ol><li><strong>실행 환경의 재현성</strong>: 같은 이미지를 사용해 일관된 실행 환경을 구성할 수 있다.</li><li><strong>데이터의 지속성</strong>: 컨테이너의 메모리나 임시 파일에만 데이터를 보관하면 재시작이나 교체 시 사라질 수 있다.</li><li><strong>서비스 접근성</strong>: 포트 연결을 이해해야 로컬에서 컨테이너 안의 웹 서비스에 접속할 수 있다.</li></ol>
+<div class="callout summary"><p><span class="label">📌 요약</span> — Docker 이미지는 실행 환경을 담은 패키지이고 컨테이너는 그 패키지를 실행한 독립적인 인스턴스다. 둘의 차이를 이해해야 데이터·네트워크·배포를 올바르게 관리할 수 있다.</p></div>
+<hr>
+<h2 id="4-dockerfile에-적을-것">4. Dockerfile에 적을 것</h2>
+<p>2장에서 서버에 빠져 있던 것은 tesseract와 한국어 데이터였고, 3장에서 공식 Python 이미지에도 tesseract가 없다는 것을 확인했다. Dockerfile에는 이 둘을 포함해 <strong>실행 환경을 처음부터 끝까지</strong> 적는다. 어떤 베이스 이미지에서 출발할지, 어떤 시스템 패키지와 라이브러리를 설치할지, 코드를 어디에 둘지, 누구의 권한으로 어떤 명령으로 실행할지다.</p>
+<div class="callout example"><p><span class="label">🧪 예제</span> — [해설서 비유] 새 식당을 여러 곳에 열어도 같은 음식을 만들 수 있도록 <strong>조리법과 준비물 목록</strong>을 적어 놓는 것과 같다. 어떤 Python 환경에서 시작할 것인가, 어떤 프로그램과 라이브러리를 설치할 것인가, 소스 코드를 어디에 둘 것인가, 어떤 사용자 권한으로 실행할 것인가, 컨테이너가 시작되면 어떤 명령을 실행할 것인가를 적는다.</p></div>
+<p>Dockerfile은 코딩 에이전트에게 쓰게 하거나 템플릿의 예시 파일(<code>starter/Dockerfile</code>, <code>starter/dockerignore</code>)을 복사해 쓴다. 에이전트에게 맡길 때도 <strong>무엇을 넣어야 하는지는 요청문에 직접 적는다.</strong> 에이전트는 요청받은 대로 파일을 쓸 뿐, Python 버전을 고정할지, root 사용자로 실행할지 같은 판단을 대신 정해 주지 않는다.</p>
+<h3 id="4-1-한-줄씩-읽기">4-1. 한 줄씩 읽기</h3>
+<p>아래는 템플릿 예시에서 설명 주석을 뺀 Dockerfile이다. 에이전트가 쓴 파일과 줄 순서나 표현이 조금 달라도 괜찮고, 표의 각 줄이 하는 일이 들어 있는지를 본다.</p>
+<pre><code>FROM python:3.13-slim-bookworm
+RUN apt-get update \
+    &amp;&amp; apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-kor \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+RUN useradd --create-home appuser
+USER appuser
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]</code></pre>
+<div class="table-scroll"><table><thead><tr><th>줄</th><th>하는 일</th></tr></thead><tbody><tr><td><code>FROM python:3.13-slim-bookworm</code></td><td>공식 Python 3.13 이미지(Debian bookworm 기반의 작은 버전)에서 시작. <code>python:3.13</code>은 버전, <code>slim</code>은 비교적 작은 이미지, <code>bookworm</code>은 Debian 운영체제 기반</td></tr><tr><td><code>RUN apt-get ... tesseract-ocr tesseract-ocr-kor</code></td><td>시스템 패키지 tesseract와 한국어 데이터 설치(<code>apt-get update</code>는 설치 가능한 패키지 목록 갱신). 마지막에 내려받은 패키지 목록(<code>rm -rf /var/lib/apt/lists/*</code>)을 지워 이미지 크기를 줄임. <strong>이 줄이 2장 OCR 오류를 푸는 핵심</strong></td></tr><tr><td><code>WORKDIR /app</code></td><td>이후 명령을 실행하고 파일을 둘 폴더. 파일 복사·명령 실행의 기준이 됨</td></tr><tr><td><code>COPY requirements.txt .</code> 과 <code>RUN pip install</code></td><td>라이브러리 목록만 <strong>먼저</strong> 복사해 설치</td></tr><tr><td><code>COPY . .</code></td><td>나머지 코드 복사. <code>.dockerignore</code>에 적힌 파일은 빠짐</td></tr><tr><td><code>RUN useradd</code> 과 <code>USER appuser</code></td><td><strong>non-root 사용자</strong>(root 권한이 없는 일반 사용자) <code>appuser</code>를 만들고 그 사용자로 실행</td></tr><tr><td><code>CMD [...]</code></td><td>컨테이너가 시작할 때 실행할 명령. <code>--host 0.0.0.0</code>은 컨테이너 바깥에서 들어오는 요청을 받도록 바인딩, <code>${PORT:-8080}</code>은 <code>PORT</code> 값이 있으면 그 값, 없으면 8080</td></tr></tbody></table></div>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — <code>pytesseract</code>와 <code>tesseract-ocr</code>는 서로 다른 역할이다. 전자는 Python 라이브러리(<code>requirements.txt</code>), 후자는 운영체제 수준에서 설치하는 실제 OCR 프로그램(<code>apt-get</code>)이다. Dockerfile에 둘 다 있어야 한다.</p></div>
+<p>root로 앱을 실행하면 보안 문제가 생겼을 때 공격자가 할 수 있는 일이 더 많아진다. 일반 사용자로 실행하면 이 위험을 줄이는 데 도움이 된다. <code>python:latest</code> 대신 구체적인 버전을 쓰면 빌드 시점에 따라 Python 버전이 달라질 위험을 줄일 수 있다.</p>
+<h3 id="4-2-레이어와-레이어-캐시">4-2. 레이어와 레이어 캐시</h3>
+<p>이미지는 Dockerfile의 줄을 따라 쌓이는데, 줄 하나가 만든 파일 변경을 묶은 단위를 <strong>레이어(layer)</strong>라고 한다. 원문의 그림은 레이어마다 크기를 이렇게 보여 준다(2026년 10월 로컬 빌드 기준).</p>
+<div class="table-scroll"><table><thead><tr><th>Dockerfile 줄</th><th>의미</th><th>레이어 크기</th></tr></thead><tbody><tr><td><code>FROM python:3.13-slim-bookworm</code></td><td>베이스 이미지</td><td>약 225MB</td></tr><tr><td><code>RUN apt-get install … tesseract-ocr tesseract-ocr-kor</code></td><td>시스템 패키지</td><td>약 95MB</td></tr><tr><td><code>COPY requirements.txt .</code> + <code>RUN pip install -r requirements.txt</code></td><td>라이브러리</td><td>약 89MB</td></tr><tr><td><code>COPY . .</code></td><td>에이전트 서비스 코드</td><td>약 0.2MB</td></tr><tr><td><code>RUN useradd … / USER appuser</code></td><td>non-root 사용자</td><td>거의 0</td></tr><tr><td><code>CMD … --port ${PORT:-8080}</code></td><td>시작 명령</td><td>0</td></tr></tbody></table></div>
+<div class="diagram-wrap"><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>레이어 1 베이스 이미지</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">Python 3.13 + Debian</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>레이어 2 시스템 패키지</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">tesseract + kor</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>레이어 3 Python 라이브러리</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>레이어 4 애플리케이션 코드</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">자주 바뀜</div></div></div></div>
+<p>빌드할 때 Docker는 위에서부터 내려오며 <strong>내용이 바뀌지 않은 줄은 이전 빌드에서 만든 레이어를 다시 쓰고, 처음 바뀐 줄부터 아래를 새로 만든다.</strong> 이렇게 이전 레이어를 다시 쓰는 것이 <strong>레이어 캐시</strong>다. 시간이 오래 걸리는 시스템 패키지와 라이브러리 설치를 위에 두고, 자주 바뀌는 코드 복사를 아래에 둔 이유다. <code>requirements.txt</code>만 먼저 복사한 것도 같은 이유로, 코드 전체를 먼저 복사했다면 코드 한 줄만 고쳐도 라이브러리 설치를 매번 다시 했을 것이다. 이미지 크기는 베이스 이미지와 tesseract, 라이브러리가 대부분을 차지하고 코드는 1MB도 되지 않는다. 해설서의 단서: 이 레이어 그림은 개념도이며 실제 레이어 경계는 Docker 명령과 빌드 방식에 따라 달라질 수 있다.</p>
+<h3 id="4-3-dockerignore--무엇을-이미지에-넣지-않을까">4-3. `.dockerignore` — 무엇을 이미지에 넣지 않을까</h3>
+<p><code>COPY . .</code>은 폴더 전체를 이미지에 넣으므로, 빼야 할 파일을 <code>.dockerignore</code>에 적는다. 원문과 해설서가 언급하는 항목은 이렇다.</p>
+<table><thead><tr><th>항목</th><th>이유</th></tr></thead><tbody><tr><td><code>.env</code></td><td>API 키 등 민감한 환경변수가 들어 있을 수 있음</td></tr><tr><td><code>.venv</code></td><td>로컬 가상환경 파일은 이미지에 불필요</td></tr><tr><td><code>.git</code></td><td>Git 이력과 내부 저장소 정보가 이미지에 들어가는 것을 막음</td></tr><tr><td><code>tests</code>, <code>docs</code></td><td>실행에 필요 없는 테스트 파일·문서</td></tr><tr><td><code>__pycache__</code>, <code>*.pyc</code></td><td>파이썬 캐시</td></tr></tbody></table>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — <code>.dockerignore</code>는 민감한 파일이 이미지에 들어가는 위험을 줄이는 장치이지 <strong>시크릿 관리 자체를 대신하지 않는다.</strong></p></div>
+<h3 id="4-4-체크리스트로-검토하기--다섯-가지">4-4. 체크리스트로 검토하기 — 다섯 가지</h3>
+<p>에이전트가 쓴 파일이든 복사한 파일이든 아래 표의 다섯 가지를 확인한다. 한 줄이라도 걸리면 그 부분만 고쳐 달라고 다시 요청한다.</p>
+<div class="table-scroll"><table><thead><tr><th>확인할 것</th><th>올바른 기준</th><th>고치지 않으면(이유)</th></tr></thead><tbody><tr><td>베이스 이미지와 Python 버전이 고정돼 있는가</td><td><code>python:3.13-slim-bookworm</code>처럼 구체적으로(<code>python:latest</code>가 아님)</td><td>빌드할 때마다 다른 버전이 들어와 결과가 달라질 수 있음</td></tr><tr><td>tesseract와 한국어 데이터를 설치하는 줄이 있는가</td><td><code>tesseract-ocr</code>, <code>tesseract-ocr-kor</code> 설치</td><td>2장에서 서버에 없던 것 — OCR 실패</td></tr><tr><td><code>.dockerignore</code>에 <code>.env</code>가 들어 있는가</td><td><code>.env</code> 포함</td><td>빠지면 <code>COPY . .</code>이 API 키가 든 파일을 이미지에 넣음</td></tr><tr><td>실행 명령이 <code>PORT</code> 환경변수를 쓰는가</td><td><code>${PORT:-8080}</code></td><td>Cloud Run은 정해 준 포트로 요청을 보내므로 다른 포트를 <strong>리슨</strong>(listen, 포트를 열고 요청을 기다림)하면 시작에 실패함</td></tr><tr><td>non-root 사용자로 실행하는가</td><td><code>USER appuser</code> 등</td><td>앱에 문제가 생겨도 컨테이너 안에서 할 수 있는 일을 줄임</td></tr></tbody></table></div>
+<p><code>Procfile</code>과 <code>.python-version</code>은 buildpacks가 시작 명령과 Python 버전을 정할 때 쓰던 파일이다. 저장소에 Dockerfile이 생기면 배포할 때 Dockerfile로 빌드하므로 시작 명령은 <code>CMD</code> 줄이, Python 버전은 <code>FROM</code> 줄이 정한다. 두 파일은 지우지 않아도 되지만 Dockerfile과 값이 다르면 헷갈리니 같은 버전인지 한 번 확인한다.</p>
+<h3 id="4-5-주관식-퀴즈와-해설서-모범-답안">4-5. 주관식 퀴즈와 해설서 모범 답안</h3>
+<p>문제: 에이전트가 쓴 Dockerfile이 <code>FROM python:latest</code>로 시작하고, 마지막 줄이 <code>CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]</code>이며, <code>USER</code> 줄이 없다. 체크리스트로 검토한 결과를 적고, 각각 고치지 않으면 어떤 일이 생길지 설명하라.</p>
+<div class="table-scroll"><table><thead><tr><th>문제</th><th>고치지 않으면</th><th>고치는 방법</th></tr></thead><tbody><tr><td><code>FROM python:latest</code></td><td>빌드 시점에 따라 서로 다른 Python 환경이 쓰여 결과가 달라질 수 있음(재현성)</td><td><code>FROM python:3.13-slim-bookworm</code>처럼 버전 고정</td></tr><tr><td>고정된 8000번 포트의 <code>CMD</code></td><td>Cloud Run이 전달하는 <code>PORT</code>를 쓰지 않아 서버가 기대하는 포트와 앱이 기다리는 포트가 달라질 수 있음(배포 호환성)</td><td><code>${PORT:-8080}</code> 사용</td></tr><tr><td><code>USER</code> 줄 없음</td><td>별도 사용자 지정이 없으면 root 권한으로 실행될 수 있음(보안)</td><td><code>appuser</code> 같은 일반 사용자를 만들고 <code>USER appuser</code></td></tr></tbody></table></div>
+<p>결론: 베이스 이미지 버전 고정, <code>PORT</code> 환경변수 사용, non-root 실행은 각각 <strong>재현성·배포 호환성·보안</strong> 측면에서 중요하다.</p>
+<div class="callout tip"><p><span class="label">💡 팁</span> — 해설서의 마지막 단서: 코딩 에이전트에게 Dockerfile 작성을 맡길 수는 있지만, 어떤 Python 버전을 고정할지, 어떤 권한으로 실행할지, 어떤 파일을 제외할지에 대한 <strong>판단은 여전히 사람의 몫</strong>이다.</p></div>
+<hr>
+<h2 id="5-이미지-빌드와-실행">5. 이미지 빌드와 실행</h2>
+<p>서버에 올리기 전에 로컬 환경에서 Dockerfile로 이미지를 만들고 컨테이너로 실행해 본다. 이번에는 로컬에 설치한 tesseract가 아니라 <strong>이미지 안에 설치된 tesseract</strong>가 사진을 읽는다. 첫 빌드는 베이스 이미지와 시스템 패키지를 내려받느라 몇 분 걸린다.</p>
+<div class="callout example"><p><span class="label">🧪 예제</span> — [해설서 비유] <strong>Dockerfile은 요리법, 이미지는 미리 준비한 밀키트, 컨테이너는 밀키트로 실제 요리를 만드는 과정</strong>이다. 이번 장은 밀키트를 직접 만들고, 실제로 요리해 본 다음, 재료와 조리 도구가 제대로 들어 있는지 검사하는 시간이다.</p></div>
+<h3 id="5-1-빌드와-실행-명령">5-1. 빌드와 실행 명령</h3>
+<pre><code>docker build -t friend-agent:local .
+docker run --rm -p 8080:8080 --env-file .env -e OCR_ENABLED=true friend-agent:local</code></pre>
+<table><thead><tr><th>명령·옵션</th><th>의미</th></tr></thead><tbody><tr><td><code>docker build</code></td><td>Docker 이미지를 빌드</td></tr><tr><td><code>-t friend-agent:local</code></td><td>이미지에 이름과 태그를 붙임</td></tr><tr><td><code>.</code></td><td>현재 폴더를 빌드 대상으로 지정</td></tr><tr><td><code>--rm</code></td><td>컨테이너가 종료되면 자동으로 삭제</td></tr><tr><td><code>-p 8080:8080</code></td><td>내 컴퓨터 8080 포트를 컨테이너 8080 포트에 연결</td></tr><tr><td><code>--env-file .env</code></td><td><code>.env</code> 파일의 값을 컨테이너 환경변수로 전달</td></tr><tr><td><code>-e OCR_ENABLED=true</code></td><td>OCR 기능을 켜는 환경변수 추가</td></tr></tbody></table>
+<p>2장에서 로컬에 직접 띄운 서비스가 아직 8080 포트를 쓰고 있으면 컨테이너가 포트를 잡지 못하니 <strong>먼저 끈다.</strong> 컨테이너가 뜨면 <code>http://localhost:8080</code>에서 <code>schedule.png</code>를 다시 보낸다. 로컬 tesseract에 한국어 데이터가 없었던 사람도 이번에는 <strong>한국어 일정이 그대로 읽힌다.</strong> Docker Desktop 컨테이너 화면에는 <code>friend-agent:local</code>로 실행 중인 컨테이너와 포트 <code>8080:8080</code>이 보인다.</p>
+<h3 id="5-2-api-키는-이미지에-넣지-않고-실행할-때-건넨다">5-2. API 키는 이미지에 넣지 않고 실행할 때 건넨다</h3>
+<p>보안과 관련해 반드시 이해할 부분이다.</p>
+<table><thead><tr><th>방식</th><th>명령</th><th>결과</th></tr></thead><tbody><tr><td><strong>권장: 실행할 때 전달</strong></td><td><code>docker run --env-file .env friend-agent:local</code></td><td>키가 이미지 파일에 남지 않음</td></tr><tr><td><strong>피할 것: 이미지에 복사</strong></td><td>Dockerfile의 <code>COPY .env .</code></td><td>이미지를 공유하거나 저장소에 올릴 때 비밀정보가 함께 나감</td></tr></tbody></table>
+<p><code>--env-file .env</code>는 로컬 <code>.env</code> 파일에 적힌 값을 컨테이너 환경변수로 넘기는 옵션이고, <code>.env</code> 파일 자체는 <code>.dockerignore</code> 때문에 이미지에 들어가지 않는다. 이 방식이면 <strong>같은 이미지를 키만 바꿔 다른 곳에서 실행</strong>할 수 있고, 이미지가 밖으로 나가도 키는 따라가지 않는다.</p>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — <code>--env-file</code>은 값을 감싼 <strong>따옴표를 지우지 않으므로</strong> <code>.env</code> 값은 따옴표 없이 적어야 한다. 또한 이미지에서 키를 빼도 실행 중인 컨테이너의 환경이나 로그 등에 키가 노출될 가능성까지 없어지지는 않는다. 운영 서버에서는 Secret Manager 같은 비밀정보 관리 수단을 쓰는 것이 좋다.</p></div>
+<details><summary>객관식 퀴즈 — API 키를 --env-file .env 로 건넸습니다. Dockerfile에 COPY .env . 를 넣어 이미지 안에 키를 두는 방식과 비교한 설명으로 옳은 것은?</summary><p>① 두 방식은 같다 ② 이미지에 넣는 편이 안전하다. 이미지는 바뀌지 않기 때문이다 ③ 실행할 때 건네면 키가 이미지 파일에 남지 않아, 이미지가 저장소에 올라가거나 다른 사람에게 전달돼도 키가 따라가지 않는다 ④ 실행할 때 건네면 키를 Secret Manager에 둘 필요가 없어진다</p><p><strong>정답: ③</strong> ①은 컨테이너에서 키를 읽을 수는 있지만 저장 위치와 노출 위험이 다르다. ②는 이미지가 바뀌지 않는다는 사실이 이미지 속 비밀을 안전하게 만들어 주지 않는다. ④는 <code>--env-file</code>이 비밀정보 관리 시스템을 대체하지 않는다.</p></details>
+<h3 id="5-3-이미지-안-들여다보기">5-3. 이미지 안 들여다보기</h3>
+<p>빌드됐다고 끝이 아니다. 체크리스트에서 확인한 내용이 실제 이미지에도 들어맞는지 본다. 실행 중인 컨테이너는 그대로 두고 새 터미널에서 같은 이미지로 짧은 명령을 실행한다(명령 끝에 다른 명령을 붙이면 <code>CMD</code> 대신 그 명령이 실행된다). 명령은 부록 A-11.</p>
+<div class="table-scroll"><table><thead><tr><th>확인</th><th>기대 결과</th><th>문제가 보이면</th></tr></thead><tbody><tr><td><code>ls -a /app</code></td><td><code>app</code>, <code>static</code>, <code>requirements.txt</code>는 있고 <strong><code>.env</code>, <code>tests</code>, <code>docs</code>는 없어야 함</strong></td><td><code>.env</code>가 보이면 <code>.dockerignore</code>를 고치고 다시 빌드한 뒤 <strong>그 이미지는 다른 곳에 올리지 말고 지움</strong>. 실제 키가 들어갔다면 키 교체도 검토(해설서)</td></tr><tr><td><code>app</code> 안 <code>__pycache__</code></td><td>없어야 함</td><td><code>.dockerignore</code>의 캐시 줄이 저장소 맨 위 폴더에만 적용된 것. <code>.dockerignore</code>는 <code>.gitignore</code>와 달리 하위 폴더까지 저절로 보지 않아 <code>**/__pycache__/</code>처럼 앞에 <code>**/</code>를 붙임</td></tr><tr><td><code>whoami</code></td><td><code>appuser</code> (root가 아님)</td><td><code>USER appuser</code> 줄 확인</td></tr><tr><td><code>docker image ls</code></td><td>약 <strong>400MB대</strong></td><td>대부분은 베이스 이미지·tesseract·라이브러리 용량. 이미지가 크면 다운로드·배포가 느려지지만 크기만 무조건 줄이기보다 기능·보안·안정성을 함께 고려</td></tr></tbody></table></div>
+<h3 id="5-4-레이어-캐시를-직접-확인하기">5-4. 레이어 캐시를 직접 확인하기</h3>
+<p>4장에서 본 레이어 캐시를 직접 확인한다.</p>
+<div class="table-scroll"><table><thead><tr><th>빌드</th><th>결과</th></tr></thead><tbody><tr><td>첫 번째 빌드</td><td>이미지와 패키지를 내려받고 설치 — 몇 분</td></tr><tr><td>아무것도 바꾸지 않고 다시 빌드</td><td>단계마다 <code>CACHED</code>가 붙고 <strong>몇 초</strong> 만에 끝남</td></tr><tr><td><code>README.md</code>에 빈 줄 하나 추가 후 빌드</td><td><code>apt-get</code>과 <code>pip install</code> 단계는 <code>CACHED</code>, <strong><code>COPY . .</code>부터 아래 단계만</strong> 새로 실행</td></tr></tbody></table></div>
+<p>확인이 끝나면 README 변경은 되돌린다.</p>
+<h3 id="5-5-왜-로컬에서-만든-이미지를-서버에-올리지-않을까">5-5. 왜 로컬에서 만든 이미지를 서버에 올리지 않을까</h3>
+<p>서버에서 쓸 이미지는 <strong>배포 과정에서 같은 Dockerfile로 다시</strong> 만든다. 이유는 두 가지다.</p>
+<ul><li><strong>CPU 아키텍처 차이</strong>: 로컬과 서버의 CPU 아키텍처(amd64, arm64처럼 CPU가 실행할 수 있는 명령 형식)가 다를 수 있다.</li><li><strong>재현성과 추적 가능성</strong>: 로컬에서 만든 이미지는 누가 언제 어떤 코드로 만들었는지 기록이 남지 않는다. 서버 배포 과정에서 코드·설정·빌드 과정을 관리하면 어떤 버전이 배포됐는지 확인하기 쉽다.</li></ul>
+<p>확인이 끝나면 컨테이너를 실행한 터미널에서 <code>Ctrl+C</code>로 멈춘다. <code>--rm</code>으로 실행했으므로 컨테이너도 함께 지워지지만 <strong>이미지까지 자동으로 삭제되지는 않는다.</strong></p>
+<div class="callout summary"><p><span class="label">📌 요약</span> — Dockerfile은 설계도, 이미지는 실행 패키지, 컨테이너는 실제 실행 환경이다. 이미지에 tesseract와 한국어 데이터를 넣으면 내 컴퓨터의 설치 상태에 대한 의존을 줄일 수 있다. 단 로컬 이미지가 실행된다고 운영 서버에서도 반드시 성공하는 것은 아니므로 서버 환경과 배포 과정을 따로 검증해야 한다.</p></div>
+<hr>
+<h2 id="6-dockerfile을-기존-자동-배포로-올리기">6. Dockerfile을 기존 자동 배포로 올리기</h2>
+<p>시작 상태의 <code>deploy.yml</code>은 저장소 코드를 그대로 올리는 <strong>소스 배포</strong>를 쓴다. Cloud Run의 소스 배포는 올라온 코드에 Dockerfile이 있으면 <strong>buildpacks 대신 그 Dockerfile로 이미지를 만든다.</strong> 그래서 새로운 배포 시스템을 만들 필요가 없고, Dockerfile과 <code>.dockerignore</code>를 커밋해 CI를 거쳐 <code>staging</code> 브랜치로 PR을 보내면 된다.</p>
+<div class="table-scroll"><table><thead><tr><th>방식</th><th>흐름</th></tr></thead><tbody><tr><td>기존</td><td>소스 코드 → buildpacks → 이미지 → Cloud Run (Google이 실행 환경을 자동 구성)</td></tr><tr><td>변경</td><td>소스 코드 + Dockerfile → Dockerfile 기반 빌드 → 이미지 → Cloud Run (우리가 정의한 Python·시스템 패키지·라이브러리로 이미지 생성)</td></tr></tbody></table></div>
+<div class="callout example"><p><span class="label">🧪 예제</span> — [해설서 비유] 기존 방식은 식당에 필요한 재료를 이야기하면 주방에서 알아서 준비해 주는 방식이고, 변경 방식은 <strong>재료 목록과 조리법을 직접 작성해 전달</strong>하는 방식이다. 자동 배포 시스템을 새로 만드는 것이 아니라 기존 파이프라인의 <strong>빌드 방식을 바꾸는 것</strong>이다.</p></div>
+<h3 id="6-1-한-군데만-고친다----clear-base-image">6-1. 한 군데만 고친다 — `--clear-base-image`</h3>
+<p>buildpacks로 배포한 서비스에는 Google이 관리하는 베이스 이미지를 자동으로 최신 보안 패치로 바꿔 주는 <strong>자동 베이스 이미지 업데이트</strong>가 켜져 있다. 이 기능은 Dockerfile로 만든 이미지에는 쓸 수 없어서, 그대로 배포하면 <strong><code>Missing required argument [--clear-base-image]</code></strong> 오류로 멈춘다. 이제 베이스 이미지는 Dockerfile의 <code>FROM</code> 줄이 정하므로, <code>.github/workflows/deploy.yml</code>의 <code>flags:</code> 줄 <strong>끝에 <code>--clear-base-image</code>를 붙여</strong> 이 기능을 끈다.</p>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 기존 <code>flags:</code> 줄의 다른 옵션은 그대로 두고 끝에 <code>--clear-base-image</code> <strong>하나만</strong> 추가한다. 그 대신 베이스 이미지의 보안 패치는 <code>FROM</code> 줄을 바꾸고 다시 빌드할 때 들어온다. 해설서의 표현으로, Dockerfile을 도입하면 실행 환경을 더 명확하게 통제할 수 있지만 <strong>보안 패치 관리 책임도 커진다.</strong></p></div>
+<h3 id="6-2-올라가는-파일은-세-번-확인한다">6-2. 올라가는 파일은 세 번 확인한다</h3>
+<table><thead><tr><th>단계</th><th>파일</th><th>하는 일</th></tr></thead><tbody><tr><td>① Git 커밋</td><td>커밋 대상 목록</td><td>커밋에 <code>.env</code>가 들어가지 않았는지</td></tr><tr><td>② 소스 업로드</td><td><code>.gcloudignore</code></td><td>소스 배포가 코드를 올릴 때 적힌 파일을 뺌</td></tr><tr><td>③ 이미지 빌드</td><td><code>.dockerignore</code></td><td>빌드할 때 <code>COPY . .</code>이 적힌 파일을 다시 뺌</td></tr></tbody></table>
+<p><code>.gcloudignore</code>와 <code>.dockerignore</code> 모두 <code>.env</code>를 빼고 있는지 커밋 전에 확인한다. 해설서의 단서: <code>.dockerignore</code>가 있다고 해서 Git 커밋에서 자동으로 제외되는 것은 아니다. 세 가지는 서로 다른 확인 사항이다.</p>
+<h3 id="6-3-staging으로-pr-보내기">6-3. staging으로 PR 보내기</h3>
+<p>수정 대상은 세 파일뿐이다.</p>
+<table><thead><tr><th>파일</th><th>변경 목적</th></tr></thead><tbody><tr><td><code>Dockerfile</code></td><td>실행 환경과 필요한 시스템 패키지 정의</td></tr><tr><td><code>.dockerignore</code></td><td>이미지에 포함하지 않을 파일 지정</td></tr><tr><td><code>.github/workflows/deploy.yml</code></td><td>기존 배포 설정에 <code>--clear-base-image</code> 추가</td></tr></tbody></table>
+<p>작업 브랜치(<code>add-dockerfile</code>)를 만들어 세 파일만 커밋하고 <code>staging</code> 브랜치로 PR을 만든다(명령은 부록 A-13). 실행 전에 <strong>커밋 대상이 세 파일뿐인지, <code>deploy.yml</code>에서 바뀐 것이 <code>flags:</code> 줄 끝의 한 단어뿐인지, 강제 푸시 같은 옵션이 없는지</strong> 본다. 실무에서는 <code>git status</code>와 <code>git diff --cached</code>로 변경 파일과 내용을 확인하는 습관이 중요하다. PR 화면에서 <strong>상태 체크</strong>(status check, CI 결과)가 통과한 것을 확인하고 머지하면 staging 배포 워크플로가 실행된다. 에이전트에게 맡길 때의 조건은 다음과 같이 명시한다.</p>
+<ul><li>지정된 세 파일만 수정·커밋한다.</li><li><code>.env</code>가 커밋 대상에 없는지 확인한다.</li><li><code>deploy.yml</code>에서는 <code>flags:</code> 줄 끝에 옵션 하나만 추가한다.</li><li>강제 푸시 등 위험한 명령을 쓰지 않는다.</li><li>PR의 CI가 통과했는지 확인하고 결과를 보고한다(머지는 사람이 확인한 뒤에).</li></ul>
+<h3 id="6-4-빌드-기록에서-dockerfile이-쓰였는지-확인하기">6-4. 빌드 기록에서 Dockerfile이 쓰였는지 확인하기</h3>
+<p>배포 워크플로가 끝나도 GitHub Actions 결과만 보고 끝내지 않는다. <strong>Dockerfile을 커밋했더라도 실제 빌드에 쓰이지 않았다면 원하는 실행 환경이 만들어지지 않는다.</strong> 빌드 로그는 배포 성공 여부를 넘어 의도한 방식으로 이미지가 만들어졌는지 보여 주는 증거다.</p>
+<ol><li>GitHub 저장소의 Actions 탭에서 방금 실행된 배포가 성공했는지 본다.</li><li>Google Cloud 콘솔의 <strong>Cloud Build &gt; 기록(History)</strong>에서 가장 최근 빌드를 연다.</li><li>빌드 로그에서 <code>FROM python:3.13-slim-bookworm</code>과 <strong>tesseract-ocr를 설치하는 단계</strong>를 찾는다.</li><li>Cloud Run &gt; <code>friend-agent-staging</code> &gt; 리비전 탭에서 새 리비전이 트래픽 100%를 받는지 본다.</li></ol>
+<p>staging 주소에서 같은 사진을 보내면 이번에는 <strong>일정 세 줄이 입력창에 들어온다.</strong> <code>OCR_ENABLED=true</code>는 2장에서 staging 서비스에 넣어 두었고 배포할 때 지워지지 않았기 때문이다. 로그 탭에도 tesseract 오류 대신 OCR에 성공했다는 정보 줄이 남는다. 확인할 사항은 일정 세 줄이 들어오는가, 로그에 성공 기록이 남는가, 예전 "tesseract 프로그램을 찾을 수 없습니다" 오류가 사라졌는가, 새 리비전이 정상 처리하는가다. 해설서의 단서: OCR이 성공했다고 모든 기능과 보안 설정이 검증된 것은 아니며 다른 기능은 별도로 테스트해야 한다.</p>
+<h3 id="6-5-production-배포">6-5. production 배포</h3>
+<p>staging에서 확인했으면 production에 올린다. <code>staging</code>에서 <code>main</code>으로 PR을 보내 CI를 통과시키고, 머지한 뒤 <strong>배포 승인 화면에서 승인</strong>한다. production 서비스에는 아직 <code>OCR_ENABLED</code>가 없으므로 <strong>배포가 끝난 뒤</strong> 환경변수를 추가한다(<code>--update-env-vars OCR_ENABLED=true</code>, 부록 A-14). 실행 전에 서비스 이름(<code>friend-agent</code>)과 리전을 확인하고 기존 환경변수에 영향이 없는지 점검한다. production 변경은 사용자의 승인과 배포 정책에 따라 진행하는 것이 안전하다.</p>
+<p>production 주소에서도 같은 사진을 보내 확인한다. <strong>로컬 컨테이너, staging, production에서 같은 사진이 같은 결과로 읽히면</strong> 실행 환경이 이미지 하나로 고정됐다는 뜻이다.</p>
+<h3 id="6-6-오늘-바뀐-파이프라인--그리고-아직-안-바뀐-것">6-6. 오늘 바뀐 파이프라인 — 그리고 아직 안 바뀐 것</h3>
+<p>원문의 그림은 지금까지 만든 배포 파이프라인에서 오늘 바뀐 칸을 표시한다. <strong>바뀐 것은 빌드 칸 두 개뿐</strong>이다. buildpacks가 알아서 정하던 베이스 이미지·시스템 패키지·의존성을 이제 Dockerfile에 적어 두었으므로 어느 빌드에서든 같은 내용으로 이미지가 만들어진다.</p>
+<div class="diagram-wrap"><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>PR</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>CI 테스트</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>빌드①</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">Dockerfile로 이미지 생성</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>staging</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>production 승인</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>빌드②</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">같은 Dockerfile로 이미지 다시 생성</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>production</strong></div></div></div>
+<p>하지만 빌드 칸은 <strong>여전히 두 번</strong> 나온다. <code>staging</code> 브랜치에 머지할 때 한 번, <code>main</code> 브랜치에 머지할 때 한 번 소스를 올리고 Cloud Build가 그때마다 Dockerfile로 이미지를 새로 만들기 때문이다.</p>
+<table><thead><tr><th>구분</th><th>의미</th></tr></thead><tbody><tr><td>Dockerfile의 일관성</td><td>어떤 방식으로 이미지를 만들지 명시</td></tr><tr><td>빌드 결과의 동일성</td><td>실제 이미지에 들어간 모든 구성요소까지 동일한지</td></tr></tbody></table>
+<p><code>apt-get update &amp;&amp; apt-get install</code>은 실행 시점의 패키지 저장소 최신 정보를 가져온다. staging과 production을 서로 다른 시간에 빌드하면, <strong>같은 Dockerfile이어도 그사이 새로 나온 패키지 버전을 받아 두 이미지의 내용이 달라질 수 있다.</strong> 이 문제의 해법(검증한 이미지를 그대로 승격, 버전 고정, 이미지 다이제스트 관리)은 이번 강의의 몫이 아니라 다음 단계로 남는다(8장).</p>
+<div class="callout tip"><p><span class="label">💡 팁</span> — [보충 비유] 신제품을 시제품으로 검수(staging)하고 통과했는데, 납품(production)할 때 공장에서 같은 설계도로 <strong>다시 양산</strong>하는 것과 같다. 설계도(Dockerfile)는 같아도 그사이 원자재(패키지) 로트가 바뀌었다면, 검수한 제품과 납품한 제품이 같다고 말할 수 없다. 검수한 바로 그 제품을 납품하려면 "한 번 만든 것을 두 곳에 보낸다"는 구조가 필요하다.</p></div>
+<details><summary>객관식 퀴즈 — Dockerfile을 커밋했는데 staging 빌드 로그에 tesseract 설치 단계가 보이지 않고 OCR도 여전히 실패합니다. 가장 먼저 확인할 곳은?</summary><p>① OpenAI 대시보드의 사용 한도 ② Dockerfile이 저장소 루트에 <code>Dockerfile</code>이라는 이름으로 있는지, 그리고 <code>.gcloudignore</code>가 Dockerfile을 빼고 있지 않은지 ③ Cloud Run의 최대 인스턴스 수 ④ staging 서비스의 요청 타임아웃</p><p><strong>정답: ②</strong> Dockerfile이 저장소 루트에 없거나 이름이 다르면 소스 배포가 기대한 Dockerfile을 찾지 못할 수 있고, <code>.gcloudignore</code>가 Dockerfile을 제외하면 Google Cloud에 소스가 올라갈 때 그 파일이 전달되지 않을 수 있다. 빌드 로그에 설치 단계가 없다면 먼저 Dockerfile이 빌드 단계에 실제로 전달됐는지부터 의심하는 것이 합리적이다. 나머지는 이 현상의 첫 원인이 아니다.</p></details>
+<hr>
+<h2 id="7-과제-구성">7. 과제 구성</h2>
+<p>오늘 만든 이미지로 이미지와 컨테이너가 어떻게 움직이는지 직접 확인하고, 오늘 겪은 문제를 새 기능에 스스로 적용해 본다. 수업 시간에는 기본 과제를 하고 나머지는 골라서 한다. 해설서의 핵심 질문 세 가지는 이것이다.</p>
+<ol><li>컨테이너를 삭제하고 다시 실행하면 이전 대화와 기억은 어떻게 될까?</li><li>같은 Dockerfile로 이미지를 두 번 만들면 완전히 같은 이미지가 나올까?</li><li>OCR처럼 운영체제에 별도 프로그램이 필요한 기능을 새로 만들 때 어떤 순서로 개발하고 배포해야 할까?</li></ol>
+<div class="table-scroll"><table><thead><tr><th>과제</th><th>단계</th><th>하는 일</th><th>확인하는 것</th></tr></thead><tbody><tr><td>1. 실행 중인 컨테이너 들여다보기</td><td>기본</td><td>컨테이너 안에 들어가 보고, 컨테이너를 지웠다 다시 띄워 대화가 남는지 본다</td><td>컨테이너는 실행할 때마다 이미지에서 새로 시작한다</td></tr><tr><td>2. 같은 Dockerfile로 두 번 빌드하기</td><td>중간</td><td>캐시 없이 이미지를 두 번 만들어 이미지 ID와 설치된 패키지를 비교한다</td><td>Dockerfile이 같아도 따로 빌드한 이미지는 서로 다른 이미지다</td></tr><tr><td>3. 시스템 프로그램이 필요한 기능 하나 더 붙이기</td><td>도전</td><td>원하는 기능을 정해 필요한 시스템 프로그램을 Dockerfile에 직접 넣는다</td><td>오늘 배운 순서를 처음 보는 기능에 스스로 적용할 수 있다</td></tr></tbody></table></div>
+<h3 id="7-1-과제-1--실행-중인-컨테이너-들여다보기">7-1. 과제 1 — 실행 중인 컨테이너 들여다보기</h3>
+<p>5장에서 띄운 컨테이너를 이번에는 <strong>이름을 붙여 뒤에서(<code>-d</code>)</strong> 실행하고, 실행 중인 컨테이너 안에서 <code>docker exec</code>로 명령을 실행해 본다.</p>
+<table><thead><tr><th>명령</th><th>확인하는 것</th></tr></thead><tbody><tr><td><code>docker exec friend-agent-test whoami</code></td><td>현재 실행 사용자</td></tr><tr><td><code>docker exec friend-agent-test pwd</code></td><td>현재 작업 폴더</td></tr><tr><td><code>docker exec friend-agent-test ls</code></td><td>현재 폴더의 파일 목록</td></tr></tbody></table>
+<p><code>docker exec</code>는 이미 실행 중인 컨테이너 안에서 추가 명령을 실행하는 기능이라, 컨테이너를 새로 만들지 않고도 내부 환경을 점검할 수 있다. 브라우저로 <code>http://localhost:8080</code>을 열어 캐릭터와 한두 마디 나눈 뒤 컨테이너를 지우고 같은 이미지로 다시 띄운다. <strong>다시 띄운 컨테이너의 화면에는 방금 나눈 대화가 없다.</strong> 지금 에이전트 서비스는 대화와 기억을 컨테이너 안의 메모리에 두고, 컨테이너는 실행할 때마다 이미지에서 새로 시작하기 때문이다. Cloud Run에서 새 리비전을 배포할 때마다 대화가 사라지는 것도 같은 이유다.</p>
+<table><thead><tr><th>구분</th><th>설명</th></tr></thead><tbody><tr><td>이미지</td><td>프로그램과 실행 환경을 담은 패키지</td></tr><tr><td>컨테이너 메모리</td><td>실행 중에 만들어진 임시 상태</td></tr><tr><td>영속 저장소</td><td>컨테이너가 종료돼도 데이터를 보존하는 데이터베이스·파일 저장소</td></tr></tbody></table>
+<div class="callout summary"><p><span class="label">📌 요약</span> — 컨테이너는 실행 환경을 분리하지만 <strong>데이터의 영속성을 자동으로 보장하지 않는다.</strong> 사용자의 글과 인터뷰 기록을 보존해야 하는 서비스(예: MSM)는 Supabase 같은 외부 데이터베이스에 저장하고, 새 컨테이너가 시작될 때 필요한 정보를 다시 읽도록 설계해야 한다.</p></div>
+<h3 id="7-2-과제-2--같은-dockerfile로-두-번-빌드하기">7-2. 과제 2 — 같은 Dockerfile로 두 번 빌드하기</h3>
+<p>Dockerfile 하나로 이미지를 만들면 언제 어디서 만들어도 같은 이미지가 나올까? 캐시를 쓰지 않고(<code>--no-cache</code>) 같은 Dockerfile로 이미지를 두 번 만든 뒤 두 이미지의 ID와 이미지 안에 설치된 Python 패키지 목록(<code>pip freeze</code>)을 비교한다. 이미지 ID는 이미지 내용으로 계산한 값이라 내용이 조금이라도 다르면 달라진다.</p>
+<table><thead><tr><th>비교 결과</th><th>의미</th></tr></thead><tbody><tr><td>이미지 ID가 다름</td><td>동일한 이미지가 아님(이번 실험의 결과)</td></tr><tr><td>이미지 ID 다름 + <code>pip freeze</code> 같음</td><td>Python 패키지는 같지만 이미지의 다른 내용은 다를 수 있음</td></tr><tr><td><code>pip freeze</code>까지 다름</td><td>Python 의존성 구성에도 차이가 있음</td></tr></tbody></table>
+<p>몇 분 사이에 만들었다면 패키지 목록은 같게 나올 가능성이 높지만, 빌드 중에 만들어지는 파일과 시각이 달라 이미지 내용 전체는 같지 않다. 며칠 간격을 두고 빌드하면 그사이 새로 나온 패키지 버전이 들어가 목록까지 달라질 수 있다. 그래서 staging과 production에 같은 Dockerfile로 <strong>따로 빌드해 배포</strong>하면 두 환경은 같은 Dockerfile로 만든 <strong>서로 다른 이미지</strong>를 실행하게 된다. 확인한 이미지를 그대로 내보내는 방법은 다음 실습에서 다룬다.</p>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 비교 명령의 <code>diff &lt;(...)</code> 형식은 macOS·Linux의 Bash 계열 터미널에서 쓸 수 있다. <strong>Windows의 일반 PowerShell에서는 그대로 작동하지 않을 수 있으므로</strong> Git Bash 같은 Bash 환경을 쓰는 것이 편하다. <code>--no-cache</code>도 모든 외부 입력을 고정하지는 않아서, 빌드 중 최신 패키지를 내려받으면 시점에 따라 결과가 달라질 수 있다. 실험이 끝나면 <code>docker rmi friend-agent:try-a friend-agent:try-b</code>로 실습용 이미지를 지운다.</p></div>
+<p>운영 서비스에서는 단순히 Dockerfile만 공유하는 것보다 ① 베이스 이미지와 의존성 버전 고정 ② 빌드 결과 기록과 이미지 다이제스트 관리 ③ staging에서 검증한 이미지를 production으로 그대로 승격하는 방법을 고려할 수 있다(해설서).</p>
+<h3 id="7-3-과제-3--시스템-프로그램이-필요한-기능-하나-더-붙이기">7-3. 과제 3 — 시스템 프로그램이 필요한 기능 하나 더 붙이기</h3>
+<p>OCR은 Python 라이브러리만으로는 동작하지 않고 운영체제에 tesseract 프로그램이 필요했다. 이렇게 <strong>시스템 프로그램이 필요한 기능</strong>을 하나 골라 에이전트 서비스에 직접 붙여 본다. 무엇을 만들지는 자유이며, 원문의 예시는 다음과 같다(실제로 필요한 시스템 패키지는 선택한 라이브러리와 구현 방법에 따라 달라질 수 있다).</p>
+<table><thead><tr><th>만들 기능</th><th>검토할 도구</th></tr></thead><tbody><tr><td>PDF 공지문에서 글자 읽기</td><td>poppler</td></tr><tr><td>아이폰 사진 형식(HEIC) 받기</td><td>libheif</td></tr><tr><td>음성 메모를 글로 옮기기 전 소리 파일 변환</td><td>ffmpeg</td></tr><tr><td>사진 속 QR 코드 읽기</td><td>zbar</td></tr></tbody></table>
+<p><strong>오늘 OCR에서 한 그대로 밟는 순서</strong>는 이렇다.</p>
+<ol><li>어떤 기능을 어느 화면에 붙일지, 그 기능에 필요한 <strong>시스템 프로그램이 무엇인지</strong> 정한다. 모르겠으면 코딩 에이전트에게 "이 기능에 Python 라이브러리 말고 운영체제에 따로 설치해야 하는 프로그램이 있는지" 묻는다.</li><li>로컬에 그 프로그램을 설치하고, 코딩 에이전트에게 기능을 만들게 해 <strong>로컬 환경에서 동작을 확인</strong>한다.</li><li><strong>Dockerfile에 무엇을 더해야 할지 스스로 정하고</strong> 고친다. 4장의 체크리스트로 다시 검토한다.</li><li><strong>로컬 컨테이너</strong>에서 같은 입력으로 같은 결과가 나오는지 확인한다.</li><li><strong>staging으로 PR</strong>을 올려 머지하고, staging 주소에서도 같은 결과가 나오는지 확인한다.</li></ol>
+<p><strong>다 했는지 확인하는 방법</strong>: 같은 입력이 로컬 환경, 로컬 컨테이너, staging 세 곳에서 같은 결과를 내고, Dockerfile에서 바뀐 줄이 왜 필요한지 <strong>한 문장으로 설명</strong>할 수 있다. 가장 중요한 것은 기능이 작동하는지 확인하는 데 그치지 않고 Dockerfile에 추가한 각 줄이 왜 필요한지 설명하는 것이다.</p>
+<h3 id="7-4-사람과-코딩-에이전트의-역할-나누기-해설서">7-4. 사람과 코딩 에이전트의 역할 나누기 (해설서)</h3>
+<table><thead><tr><th>작업</th><th>사용자의 역할</th><th>코딩 에이전트의 역할</th></tr></thead><tbody><tr><td>기능 기획</td><td>기능과 화면 결정</td><td>구현 방법과 의존성 조사 지원</td></tr><tr><td>시스템 의존성</td><td>필요한 이유 검토</td><td>별도 설치 프로그램 확인</td></tr><tr><td>기능 구현</td><td>결과 확인</td><td>코드 작성 및 로컬 테스트 지원</td></tr><tr><td>Dockerfile 변경</td><td>추가할 줄 결정</td><td>사용자가 결정한 내용을 반영</td></tr><tr><td>기존 기능 보호</td><td>변경 범위 승인</td><td>기존 기능과 워크플로 파일 보존</td></tr><tr><td>배포 검증</td><td>PR과 배포 승인</td><td>테스트 및 검증 결과 보고</td></tr></tbody></table>
+<p>이렇게 역할을 나누면 에이전트가 기존 기능이나 배포 워크플로까지 임의로 바꾸는 위험을 줄일 수 있다. 특히 <strong>"기존 기능과 워크플로 파일은 바꾸지 말 것"</strong>이라는 제약을 요청문에 명시하는 것이 중요하다.</p>
+<h3 id="7-5-주관식-기록-예시--ffmpeg를-골랐다면-해설서">7-5. 주관식 기록 예시 — ffmpeg를 골랐다면 (해설서)</h3>
+<p>기록할 것은 과제 3에서 고른 기능, Dockerfile에 더한 줄, 그 줄이 없었다면 로컬·로컬 컨테이너·staging 가운데 어디에서 처음 문제가 드러났을지다. 해설서의 작성 예시(실제 과제에서는 직접 선택한 기능과 검증 결과를 기록한다):</p>
+<div class="table-scroll"><table><thead><tr><th>항목</th><th>예시</th></tr></thead><tbody><tr><td>선택한 기능</td><td>음성 메모를 텍스트 변환에 쓸 수 있도록 오디오 형식을 변환하는 기능</td></tr><tr><td>필요한 시스템 프로그램</td><td>FFmpeg</td></tr><tr><td>Dockerfile에 추가한 줄</td><td><code>RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends ffmpeg &amp;&amp; rm -rf /var/lib/apt/lists/*</code></td></tr><tr><td>추가한 이유</td><td>Python 코드가 FFmpeg 실행 프로그램을 호출하므로 컨테이너 안에도 설치돼 있어야 함</td></tr><tr><td>줄이 없을 때 예상 문제</td><td>로컬에 FFmpeg가 있으면 로컬에서는 작동하지만 이미지 안에는 없어 <strong>로컬 컨테이너에서 처음 실패</strong></td></tr><tr><td>검증 방법</td><td>같은 음성 파일을 로컬 환경·로컬 컨테이너·staging에 각각 넣어 변환 결과 비교</td></tr></tbody></table></div>
+<hr>
+<h2 id="8-오늘-배운-것-회고">8. 오늘 배운 것 (회고)</h2>
+<h3 id="8-1-네-가지-요약">8-1. 네 가지 요약</h3>
+<div class="table-scroll"><table><thead><tr><th>주제</th><th>핵심</th></tr></thead><tbody><tr><td>실행 환경의 차이</td><td>같은 코드가 로컬에서는 되고 staging에서는 안 된 이유는 코드가 아니라 실행 환경. 로컬에 직접 설치한 tesseract는 저장소에 기록되지 않았고, 코드만 보고 이미지를 만드는 buildpacks는 그 프로그램을 알 수 없었음. 원인은 화면 안내가 아니라 <strong>로그의 오류 줄</strong>에서 찾음</td></tr><tr><td>이미지와 컨테이너</td><td>이미지는 실행에 필요한 것을 묶은 바뀌지 않는 파일, 컨테이너는 그 이미지를 실행한 것. 한 컨테이너에서 만든 파일을 다른 컨테이너가 보지 못함. Cloud Run의 리비전·인스턴스도 같은 구조로 설명됨</td></tr><tr><td>Dockerfile 검토</td><td>베이스 이미지 고정, 필요한 시스템 패키지 설치, <code>.dockerignore</code>의 <code>.env</code>, <code>PORT</code> 환경변수, non-root 사용자의 <strong>다섯 기준</strong>으로 파일을 읽음. 로컬에서 이미지 안의 파일 목록과 실행 사용자로 기준을 확인. 키는 이미지에 넣지 않고 실행할 때 건넴</td></tr><tr><td>배포 흐름은 거의 그대로</td><td>워크플로에는 자동 베이스 이미지 업데이트를 끄는 옵션 하나만 더하고 Dockerfile을 커밋했는데, 소스 배포가 Dockerfile을 찾아 그 파일로 빌드함. 빌드 기록에서 <code>FROM</code> 줄과 tesseract 설치 단계를 찾아 확인</td></tr></tbody></table></div>
+<h3 id="8-2-회고-질문과-해설서-모범-답안">8-2. 회고 질문과 해설서 모범 답안</h3>
+<p>회고 질문: 1장에서 로컬 환경과 서버 사이에 무엇이 다를 수 있을지 적었다. 그 답을 다시 읽고 오늘 실제로 달랐던 것과 비교해 보라. 그리고 이제 Dockerfile이 생긴 저장소에서 같은 종류의 문제가 다시 생긴다면 어디부터 확인할지 적어 보라.</p>
+<p>모범 답안(해설서)의 요지는 이렇다. 로컬에서는 직접 설치한 tesseract와 한국어 언어 데이터가 있어서 OCR이 작동했지만 staging에서는 실행 환경에 해당 프로그램이 없어 실패했다. 코드만으로 이미지를 만드는 buildpacks가 로컬에 설치된 시스템 프로그램까지 자동으로 포함하지 못한 것이 원인이었다. 같은 문제가 다시 생기면 <strong>확인 순서</strong>는 이렇다.</p>
+<ol><li>staging <strong>로그</strong>에서 오류 메시지를 확인한다.</li><li>Dockerfile에 필요한 <strong>시스템 프로그램과 언어 데이터</strong>가 설치돼 있는지 살핀다.</li><li>Dockerfile을 사용해 빌드했는지, <strong>빌드 기록</strong>에 해당 설치 단계가 있는지 확인한다.</li><li><strong>로컬 컨테이너</strong>에서 재현한 뒤 staging에서도 같은 입력으로 테스트한다.</li></ol>
+<h3 id="8-3-아직-남은-숙제-세-가지--다음-강의로-이어지는-것">8-3. 아직 남은 숙제 세 가지 — 다음 강의로 이어지는 것</h3>
+<p>이제 에이전트 서비스의 실행 환경은 Dockerfile 한 파일에 적혀 있고, 로컬 컨테이너와 staging과 production에서 같은 사진을 같은 결과로 읽는다. 그래도 남은 것이 있다.</p>
+<div class="table-scroll"><table><thead><tr><th>숙제</th><th>문제</th><th>앞으로의 방향</th></tr></thead><tbody><tr><td>① 이미지 추적</td><td>서버용 이미지는 배포할 때마다 Cloud Build가 새로 만들고 이름이 자동으로 붙어, 지금 production에서 도는 이미지가 <strong>어느 커밋으로 만든 것인지</strong> 이름만 보고는 알기 어렵다</td><td>태그와 digest 관리</td></tr><tr><td>② 이미지 일관성</td><td>staging에서 확인한 이미지와 production에 올라간 이미지는 같은 Dockerfile로 <strong>따로 만든 별개의 이미지</strong>다. 확인한 것과 나간 것이 같다고 말하려면 이미지를 <strong>한 번만 만들어 두 환경에 보내야</strong> 한다</td><td>검증한 이미지를 그대로 승격하는 빌드·배포 흐름</td></tr><tr><td>③ 저장 공간</td><td>이미지 크기가 400MB대여서 배포할 때마다 쌓이는 저장 공간을 아직 관리하지 않았다</td><td>불필요한 이미지·레이어 정리</td></tr></tbody></table></div>
+<p>특히 해설서는 이미지 크기를 줄이는 것만큼 중요한 것이 <strong>검증한 결과물을 그대로 운영 환경에 배포하는 것</strong>이며, 크기 최적화와 배포 추적은 별개의 과제로 나누어 접근하라고 권한다.</p>
+<div class="table-scroll"><table><thead><tr><th>용어</th><th>뜻</th></tr></thead><tbody><tr><td>태그(tag)</td><td><code>friend-agent:v1.0</code>처럼 사람이 알아보기 쉬운 이름. 같은 태그가 나중에 다른 이미지로 바뀔 수 있음</td></tr><tr><td>digest</td><td>이미지 내용을 식별하는 고유한 해시값. digest를 기준으로 하면 특정 이미지 내용을 더 정확히 지정할 수 있음</td></tr></tbody></table></div>
+<p>오늘 이 부족한 점들을 <strong>이미지, 레이어, 빌드 기록, 태그</strong> 같은 이름으로 짚을 수 있게 됐으니 무엇을 정리해야 하는지도 구체적으로 정할 수 있다.</p>
+<hr>
+<h2 id="맺음말">맺음말</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — N049가 "걸러 내는 게이트"를 붙인 강의였다면 N050은 <strong>게이트가 확인하지 못하던 바닥, 즉 실행 환경을 코드로 적어 저장소에 넣은</strong> 강의다. 로컬 성공·CI 통과·배포 성공이 모두 사실이어도 staging에서 실패할 수 있었던 이유는 tesseract라는 시스템 프로그램이 저장소 어디에도 적혀 있지 않았기 때문이다. Dockerfile은 베이스 이미지·시스템 패키지·라이브러리·코드·실행 사용자·시작 명령을 한 파일에 적고, 키는 이미지에 넣지 않고 실행할 때 건네며, 기존 자동 배포는 <code>--clear-base-image</code> 한 단어만 더해 그대로 쓴다. 남은 것은 "확인한 이미지"와 "나간 이미지"를 같게 만드는 일이다.</p></div>
+<p><strong>AI 서비스·1인 컨설팅에 연결하기</strong> (해설서의 적용)</p>
+<ol><li><strong>My-Story-Maker(MSM)</strong>: 글 분석·문서 변환·전자책 생성 등에 필요한 프로그램과 라이브러리를 실행 환경에 포함한다. 사용자의 글과 인터뷰 기록은 컨테이너 메모리에 두지 않고 데이터베이스에 보존한다.</li><li><strong>Travel Creator</strong>: 여행 일정표·이미지·문서를 처리하는 기능을 서버에 배포할 때 필요한 시스템 의존성을 점검한다.</li><li><strong>뉴스레터 에이전트</strong>: 로컬에서 성공한 자동화가 서버에서도 같은 조건으로 실행되도록 실행 환경을 같게 유지하고 배포 결과를 추적한다.</li><li><strong>AI 컨설팅</strong>: 코드 문제·환경 문제·배포 문제를 구분해 진단하고, 개발자가 쓰거나 코딩 에이전트가 쓴 Dockerfile을 검토해 <strong>실행 환경 누락·보안 위험·배포 설정 문제</strong>를 찾는다.</li></ol>
+<div class="callout tip"><p><span class="label">💡 팁</span> — 컨설턴트가 모든 오류를 직접 고칠 필요는 없다. 로그를 읽고 문제의 원인을 논리적으로 구분할 수 있으면 개발자와 훨씬 효과적으로 협업할 수 있다. 질문도 "코드가 맞는가?"에서 "<strong>실행 환경이 제대로 구성됐는가?</strong>"로 한 걸음 넓어진다.</p></div>
+<p><strong>원문에 실린 참고 자료</strong>(링크 대신 문서 이름으로 정리)</p>
+<table><thead><tr><th>자료</th><th>무엇을 볼 수 있나</th></tr></thead><tbody><tr><td>What is an image? (Docker 공식)</td><td>이미지가 무엇을 담고 있고 왜 바뀌지 않는지, 이미지와 레이어 개념</td></tr><tr><td>What is a container? (Docker 공식)</td><td>컨테이너가 서로 나뉘어 실행되는 방식(짧은 영상 포함, 자막 켜고 보기)</td></tr><tr><td>Docker Hub: python 공식 이미지</td><td>오늘 베이스 이미지로 쓴 <code>python:3.13-slim-bookworm</code> 같은 태그 목록과 차이</td></tr><tr><td>Dockerfile reference</td><td><code>FROM</code>, <code>RUN</code>, <code>COPY</code>, <code>USER</code>, <code>CMD</code> 등이 각각 어떻게 동작하는지</td></tr><tr><td>Build context와 .dockerignore</td><td>빌드할 때 어떤 파일이 Docker로 넘어가고 <code>.dockerignore</code>가 무엇을 빼는지</td></tr><tr><td>Build cache</td><td>바뀐 줄부터 아래만 다시 빌드되는 규칙과 줄 순서를 정하는 요령</td></tr><tr><td>Deploy services from source code (Cloud Run)</td><td>소스 배포에서 Dockerfile이 있으면 그 파일로 빌드한다는 내용</td></tr><tr><td>Container runtime contract (Cloud Run)</td><td>컨테이너가 <code>PORT</code> 환경변수의 포트로 요청을 받아야 하는 이유</td></tr><tr><td>Tesseract 설치 안내 / UB Mannheim Tesseract 설치 파일</td><td>운영체제별 tesseract 설치 방법, Windows용 설치 파일</td></tr></tbody></table>
+<hr>
+<h2 id="부록-a--실전-코드-모음">부록 A · 실전 코드 모음</h2>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 아래 명령은 원문 그대로다. <code>docker rm -f</code>, <code>gcloud run services update</code>, <code>gh pr merge</code> 같은 변경 명령은 실행 전에 <strong>서비스 이름·컨테이너 이름·브랜치 대상</strong>을 한 번 더 확인한다. Windows PowerShell에서는 줄 이음 <code>\</code>와 <code>diff &lt;(...)</code>가 그대로 동작하지 않을 수 있어 Git Bash를 권한다.</p></div>
+<h3 id="a-1-시작-상태-확인-명령">A-1. 시작 상태 확인 명령</h3>
+<pre><code>gcloud run services describe friend-agent --region us-central1 --format "value(status.url)"
+gh variable list
+ls .github/workflows/
+gh api repos/{owner}/{repo}/environments --jq ".environments[].name"
+git ls-remote --heads origin staging
+gcloud run services describe friend-agent-staging --region us-central1 --format "value(status.url)"</code></pre>
+<h3 id="a-2-tesseract-설치와-확인">A-2. tesseract 설치와 확인</h3>
+<pre><code># macOS (Homebrew)
+brew install tesseract tesseract-lang
+# 설치된 언어 목록에 kor 가 있어야 한국어를 읽는다
+tesseract --list-langs</code></pre>
+<p>Windows는 UB Mannheim 설치 파일 실행 → Additional language data에서 Korean 체크 → 사용자 변수 Path에 <code>C:\Program Files\Tesseract-OCR</code> 추가 → 터미널·VS Code 재시작 후 아래로 확인.</p>
+<pre><code>tesseract --version
+tesseract --list-langs</code></pre>
+<h3 id="a-3-로컬에서-기능-켜고-실행">A-3. 로컬에서 기능 켜고 실행</h3>
+<pre><code># .env 에 OCR_ENABLED=true 를 추가한 뒤, 저장소 루트에서
+uvicorn app.main:app --port 8080</code></pre>
+<h3 id="a-4-staging-서비스에만-기능-켜기">A-4. staging 서비스에만 기능 켜기</h3>
+<pre><code>gcloud run services update friend-agent-staging --region us-central1 --update-env-vars OCR_ENABLED=true</code></pre>
+<p><code>--set-env-vars</code>가 아니라 <code>--update-env-vars</code>인지 꼭 확인한다.</p>
+<h3 id="a-5-공식-python-이미지로-컨테이너-실행">A-5. 공식 Python 이미지로 컨테이너 실행</h3>
+<pre><code># 처음 실행할 때 이미지를 내려받는다. --rm: 실행이 끝나면 컨테이너를 지운다
+docker run --rm python:3.13-slim-bookworm python --version
+docker run --rm python:3.13-slim-bookworm sh -c "command -v tesseract || echo 'tesseract 없음'"</code></pre>
+<h3 id="a-6-컨테이너-두-개-비교">A-6. 컨테이너 두 개 비교</h3>
+<pre><code># 컨테이너 note-a 안에 파일을 만들고 읽는다
+docker run --name note-a python:3.13-slim-bookworm sh -c "echo 메모 &gt; /tmp/note.txt &amp;&amp; cat /tmp/note.txt"
+# 같은 이미지로 새 컨테이너를 띄워 같은 파일을 읽어 본다
+docker run --rm python:3.13-slim-bookworm sh -c "cat /tmp/note.txt || echo '파일 없음'"
+# Docker Desktop 화면을 확인한 뒤 note-a 를 지운다
+docker rm note-a</code></pre>
+<h3 id="a-7-포트를-이어-컨테이너-두-개-띄우기">A-7. 포트를 이어 컨테이너 두 개 띄우기</h3>
+<pre><code># 컨테이너 안에서는 둘 다 8000번에서 기다리고, 바깥 포트만 9000과 9001로 나눈다
+docker run -d --name web-a -p 9000:8000 python:3.13-slim-bookworm python -m http.server 8000
+docker run -d --name web-b -p 9001:8000 python:3.13-slim-bookworm python -m http.server 8000
+# 실행 중인 컨테이너와 이어진 포트 보기
+docker ps
+# 이미 쓰고 있는 바깥 포트로 하나 더 띄워 보기 (실패한다)
+docker run -d --name web-c -p 9000:8000 python:3.13-slim-bookworm python -m http.server 8000
+# 확인이 끝나면 세 컨테이너를 지운다
+docker rm -f web-a web-b web-c</code></pre>
+<h3 id="a-8-예시-파일을-제자리로-복사">A-8. 예시 파일을 제자리로 복사</h3>
+<pre><code># 저장소 루트에서. 작업 브랜치를 먼저 만든다
+git switch -c add-dockerfile
+cp starter/Dockerfile Dockerfile
+cp starter/dockerignore .dockerignore</code></pre>
+<h3 id="a-9-dockerfile-템플릿-예시에서-설명-주석을-뺀-것">A-9. Dockerfile (템플릿 예시에서 설명 주석을 뺀 것)</h3>
+<pre><code>FROM python:3.13-slim-bookworm
+RUN apt-get update \
+    &amp;&amp; apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-kor \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+RUN useradd --create-home appuser
+USER appuser
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]</code></pre>
+<h3 id="a-10-dockerignore-예시-원문해설서가-언급한-항목을-모은-것">A-10. `.dockerignore` 예시 (원문·해설서가 언급한 항목을 모은 것)</h3>
+<pre><code>.env
+.venv
+.git
+tests
+docs
+**/__pycache__/
+*.pyc</code></pre>
+<p>템플릿의 <code>starter/dockerignore</code> 원본 내용은 PDF에 실려 있지 않다. 위는 본문에서 이유를 설명한 항목들을 정리한 예시이며, 실제 파일은 템플릿을 기준으로 하되 <code>.env</code>가 들어 있는지 반드시 확인한다.</p>
+<h3 id="a-11-이미지-빌드실행과-이미지-안-확인">A-11. 이미지 빌드·실행과 이미지 안 확인</h3>
+<pre><code># 저장소 루트에서. -t: 이미지 이름과 태그
+docker build -t friend-agent:local .
+# -p: 로컬 8080 포트를 컨테이너 8080 포트에 연결  --env-file: 키를 실행할 때 전달
+docker run --rm -p 8080:8080 --env-file .env -e OCR_ENABLED=true friend-agent:local
+
+# /app 에 들어간 파일 목록. .env 가 없어야 한다
+docker run --rm friend-agent:local ls -a /app
+# 실행 사용자. root 가 아니라 appuser 여야 한다
+docker run --rm friend-agent:local whoami
+# 이미지 크기
+docker image ls friend-agent:local</code></pre>
+<h3 id="a-12-레이어-캐시-확인">A-12. 레이어 캐시 확인</h3>
+<pre><code># 아무것도 바꾸지 않고 같은 빌드 명령을 다시 실행 → 단계마다 CACHED, 몇 초
+docker build -t friend-agent:local .
+# README.md 에 빈 줄 하나를 더한 뒤 다시 빌드 → apt-get, pip install 은 CACHED, COPY . . 부터 새로 실행
+docker build -t friend-agent:local .
+# 확인이 끝나면 README 변경은 되돌린다</code></pre>
+<h3 id="a-13-커밋하고-staging에-pr-보내기">A-13. 커밋하고 staging에 PR 보내기</h3>
+<pre><code># .github/workflows/deploy.yml 의 flags: 줄 끝에 --clear-base-image 를 붙인 뒤
+git add Dockerfile .dockerignore .github/workflows/deploy.yml
+git commit -m "Dockerfile로 실행 환경 정하기"
+git push -u origin add-dockerfile
+gh pr create --base staging --title "Dockerfile 추가" --body "tesseract와 한국어 데이터를 포함한 실행 환경"
+# CI가 끝날 때까지 기다린 뒤 머지한다
+gh pr checks --watch
+gh pr merge --merge</code></pre>
+<p>커밋 전에 <code>git status</code>와 <code>git diff --cached</code>로 대상이 세 파일뿐인지, <code>.env</code>가 없는지 본다.</p>
+<h3 id="a-14-production-배포와-기능-켜기">A-14. production 배포와 기능 켜기</h3>
+<pre><code>gh pr create --base main --head staging --title "Dockerfile로 실행 환경 정하기" --body "staging에서 OCR 확인"
+gh pr checks --watch
+gh pr merge --merge
+# GitHub Actions 탭에서 production 배포를 승인하고, 배포가 끝난 뒤
+gcloud run services update friend-agent --region us-central1 --update-env-vars OCR_ENABLED=true</code></pre>
+<h3 id="a-15-과제-1--실행-중인-컨테이너-들여다보기">A-15. 과제 1 — 실행 중인 컨테이너 들여다보기</h3>
+<pre><code># 5장에서 만든 이미지를 이름을 붙여 뒤에서 실행한다
+docker run -d --name friend-agent-test -p 8080:8080 --env-file .env friend-agent:local
+# 실행 중인 컨테이너 안에서 명령 실행하기
+docker exec friend-agent-test whoami
+docker exec friend-agent-test pwd
+docker exec friend-agent-test ls
+# 브라우저로 http://localhost:8080 에서 대화를 나눈 뒤, 컨테이너를 지우고 다시 띄운다
+docker rm -f friend-agent-test
+docker run -d --name friend-agent-test -p 8080:8080 --env-file .env friend-agent:local
+# 확인이 끝나면 정리
+docker rm -f friend-agent-test</code></pre>
+<h3 id="a-16-과제-2--같은-dockerfile로-두-번-빌드하기">A-16. 과제 2 — 같은 Dockerfile로 두 번 빌드하기</h3>
+<pre><code># 캐시 없이 두 번 빌드한다 (몇 분씩 걸린다)
+docker build --no-cache -t friend-agent:try-a .
+docker build --no-cache -t friend-agent:try-b .
+# 두 이미지의 ID 비교
+docker image inspect --format "{{.Id}}" friend-agent:try-a friend-agent:try-b
+# 두 이미지 안의 Python 패키지 목록 비교 (macOS, Linux 터미널)
+diff &lt;(docker run --rm --entrypoint pip friend-agent:try-a freeze) &lt;(docker run --rm --entrypoint pip friend-agent:try-b freeze) &amp;&amp; echo "패키지 목록 같음"
+# 확인이 끝나면 정리
+docker rmi friend-agent:try-a friend-agent:try-b</code></pre>
+<h3 id="a-17-과제-3--시스템-프로그램을-설치하는-줄의-모양-해설서의-ffmpeg-예시">A-17. 과제 3 — 시스템 프로그램을 설치하는 줄의 모양 (해설서의 ffmpeg 예시)</h3>
+<pre><code>RUN apt-get update \
+    &amp;&amp; apt-get install -y --no-install-recommends ffmpeg \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*</code></pre>
+<div class="callout tip"><p><span class="label">💡 팁</span> — OCR의 <code>tesseract-ocr tesseract-ocr-kor</code> 줄과 모양이 같다. 바뀌는 것은 패키지 이름뿐이다. 이름을 모르면 코딩 에이전트에게 "이 기능에 필요한 apt 패키지 이름이 뭐야?"를 먼저 묻고, 추가한 이유를 한 문장으로 적는다.</p></div>
+<a class="backlink" href="#목차">↑ 목차로</a>
+<hr>
+<h2 id="부록-b--트러블슈팅-표">부록 B · 트러블슈팅 표</h2>
+<div class="table-scroll"><table><thead><tr><th>증상</th><th>원인</th><th>해결</th></tr></thead><tbody><tr><td>로컬에서는 OCR이 되는데 staging에서만 "사진에서 글자를 읽는 프로그램이 서버에 없습니다" / <code>POST /api/ocr</code> 500</td><td>서버 이미지에 tesseract가 없음(buildpacks는 코드에 적힌 것만 설치)</td><td>로그의 오류 줄을 근거로 확인 → Dockerfile에 <code>tesseract-ocr</code>, <code>tesseract-ocr-kor</code> 설치</td></tr><tr><td>CI는 통과했는데 OCR이 서버에서 실패</td><td>테스트는 "기능이 꺼져 있을 때 거절하는지"만 확인, 러너와 staging 이미지는 다른 환경</td><td>CI 통과를 실행 환경 검증으로 보지 말고 staging에서 실제 사진으로 확인</td></tr><tr><td>OCR은 되는데 한국어가 영어로만 읽히고 서비스 로그에 한국어 데이터 없음 경고</td><td><code>kor</code> 언어 데이터 미설치</td><td><code>tesseract --list-langs</code>에서 <code>kor</code> 확인, 없으면 한국어 데이터 설치(Windows는 설치 중 Korean 체크)</td></tr><tr><td>Windows에서 <code>tesseract --version</code>이 안 나옴</td><td>설치 폴더가 Path에 없거나 터미널을 재시작하지 않음</td><td><code>C:\Program Files\Tesseract-OCR</code>를 사용자 변수 Path에 넣고 터미널·VS Code를 모두 닫았다 다시 열기</td></tr><tr><td><code>docker info</code>가 데몬에 연결할 수 없다는 오류</td><td>Docker Desktop이 꺼져 있음</td><td>Docker Desktop을 켜고 엔진이 Engine running인지 확인 후 재실행</td></tr><tr><td>Docker Desktop 엔진이 시작되지 않음</td><td>Windows: WSL 2 미사용·BIOS 가상화 꺼짐 / macOS: 칩에 맞지 않는 설치 파일</td><td>공식 설치 안내의 시스템 요구 사항·문제 해결 확인, 칩 종류에 맞는 파일 다시 설치</td></tr><tr><td>이미지 내려받기가 횟수 제한에 걸림</td><td>강의실 같은 공용 인터넷 주소에서 로그인하지 않고 내려받음</td><td>Docker Hub에 로그인(무료 계정)</td></tr><tr><td><code>port is already allocated</code></td><td>내 컴퓨터의 같은 바깥 포트를 이미 다른 컨테이너·프로그램이 사용 중</td><td>바깥 포트만 바꿔 실행(<code>-p 9001:8000</code>), 또는 먼저 사용 중인 것을 끔</td></tr><tr><td>컨테이너가 8080 포트를 잡지 못함</td><td>2장에서 로컬에 띄운 uvicorn이 아직 8080을 사용 중</td><td>로컬 서비스를 먼저 종료한 뒤 컨테이너 실행</td></tr><tr><td><code>-p 9000:8080</code>으로 띄웠는데 <code>localhost:8080</code>이 안 열림</td><td>앞 숫자가 내 컴퓨터 포트</td><td><code>http://localhost:9000</code>으로 접속</td></tr><tr><td>컨테이너를 지우니 대화가 사라짐 / 새 리비전 배포 후 대화 사라짐</td><td>대화·기억이 컨테이너 메모리에만 있음. 컨테이너는 실행할 때마다 이미지에서 새로 시작</td><td>유지돼야 하는 데이터는 Supabase 같은 외부 DB(영속 저장소)에 저장</td></tr><tr><td><code>--env-file</code>로 넘긴 키가 인식되지 않음</td><td><code>.env</code> 값에 따옴표가 있음(<code>--env-file</code>은 따옴표를 지우지 않음)</td><td><code>.env</code> 값을 따옴표 없이 적기</td></tr><tr><td>이미지 안 <code>ls -a /app</code>에 <code>.env</code>가 보임</td><td><code>.dockerignore</code>에 <code>.env</code>가 없음</td><td><code>.dockerignore</code> 수정 → 다시 빌드 → 그 이미지는 다른 곳에 올리지 말고 삭제, 실제 키가 들어갔다면 키 교체 검토</td></tr><tr><td><code>app</code> 안에 <code>__pycache__</code>가 보임</td><td><code>.dockerignore</code>의 캐시 줄이 저장소 맨 위 폴더에만 적용됨(<code>.dockerignore</code>는 하위 폴더를 자동으로 보지 않음)</td><td><code>**/__pycache__/</code>처럼 앞에 <code>**/</code> 붙이기</td></tr><tr><td>코드 한 줄만 고쳤는데 라이브러리 설치부터 매번 다시 함</td><td>코드를 <code>requirements.txt</code>보다 먼저 복사하는 순서</td><td><code>COPY requirements.txt .</code> → <code>pip install</code> → <code>COPY . .</code> 순서</td></tr><tr><td>빌드가 처음에 몇 분씩 걸림</td><td>베이스 이미지·시스템 패키지를 처음 내려받는 정상 동작</td><td>다시 빌드하면 <code>CACHED</code>로 몇 초 — 레이어 캐시</td></tr><tr><td>배포가 <code>Missing required argument [--clear-base-image]</code>로 멈춤</td><td>buildpacks용 자동 베이스 이미지 업데이트가 Dockerfile 이미지와 충돌</td><td><code>deploy.yml</code>의 <code>flags:</code> 줄 끝에 <code>--clear-base-image</code> 한 단어만 추가</td></tr><tr><td>Dockerfile을 커밋했는데 빌드 로그에 tesseract 설치 단계가 없고 OCR도 실패</td><td>Dockerfile이 빌드에 전달되지 않음(이름·위치 문제, 또는 <code>.gcloudignore</code>가 제외)</td><td>저장소 루트에 <code>Dockerfile</code>이라는 이름인지, <code>.gcloudignore</code>가 빼고 있지 않은지 확인</td></tr><tr><td>staging 환경변수를 바꿨더니 다른 변수(<code>ENV</code> 등)가 사라짐</td><td><code>--set-env-vars</code>로 설정을 교체함</td><td><code>--update-env-vars</code>로 추가·갱신</td></tr><tr><td>production 배포 후 사진 버튼(📷)이 안 보임</td><td>production에는 <code>OCR_ENABLED</code>가 아직 없음</td><td>배포가 끝난 뒤 <code>friend-agent</code>에 <code>--update-env-vars OCR_ENABLED=true</code></td></tr><tr><td><code>diff &lt;(...)</code> 명령이 Windows PowerShell에서 안 됨</td><td>프로세스 치환은 Bash 계열 문법</td><td>Git Bash 같은 Bash 환경에서 실행</td></tr><tr><td><code>Procfile</code>·<code>.python-version</code>과 Dockerfile의 Python 버전이 달라 헷갈림</td><td>Dockerfile 도입 후에는 <code>FROM</code>·<code>CMD</code>가 버전·시작 명령을 정함</td><td>지우지 않아도 되지만 같은 버전인지 한 번 확인</td></tr><tr><td>서비스가 시작하자마자 실패(<code>PORT</code> 관련)</td><td><code>CMD</code>가 고정 포트(예: 8000)를 리슨, Cloud Run은 <code>PORT</code>로 요청을 보냄</td><td><code>${PORT:-8080}</code>을 쓰도록 수정</td></tr><tr><td>같은 Dockerfile인데 staging과 production 이미지 내용이 다름</td><td>두 번 따로 빌드하면서 그사이 패키지 버전이 달라짐</td><td>베이스·패키지 버전 고정, 검증한 이미지 그대로 승격(다음 실습)</td></tr></tbody></table></div>
+<a class="backlink" href="#목차">↑ 목차로</a>
+<hr>
+<h2 id="부록-c--ai-프롬프트-모음집">부록 C · AI 프롬프트 모음집</h2>
+<h3 id="원문의-코딩-에이전트에게-맡길-때-지시문">원문의 "코딩 에이전트에게 맡길 때" 지시문</h3>
+<p><strong>① 시작 상태 확인</strong></p>
+<pre><code>docs/start-states.md 를 읽고, 'Dockerfile' 실습을 시작하는 데 필요한 상태가 갖춰져 있는지 확인만 해 줘.
+아무것도 만들거나 바꾸지 말고, 갖춰진 항목과 빠진 항목을 표로 알려 줘. 빠진 항목은 문서의 어느 단계로 만들면 되는지도 적어 줘.</code></pre>
+<p><strong>② tesseract 설치</strong></p>
+<pre><code>내 컴퓨터에 tesseract 프로그램과 한국어 언어 데이터를 설치해 줘.
+설치 명령을 실행하기 전에 무엇을 설치하는지 한 줄씩 설명해 줘.
+설치가 끝나면 tesseract --list-langs 결과에 kor 가 있는지 확인해 줘.</code></pre>
+<p><strong>③ 로컬 환경에서 기능 켜기</strong></p>
+<pre><code>.env 파일에 OCR_ENABLED=true 한 줄만 추가하고, 서비스를 로컬에서 8080 포트로 실행해 줘.
+.env 의 다른 값은 읽거나 출력하지 말고 바꾸지도 마.</code></pre>
+<p><strong>④ staging 기능 켜기</strong></p>
+<pre><code>us-central1 의 friend-agent-staging 서비스에 환경변수 OCR_ENABLED=true 하나만 추가해 줘.
+production 서비스(friend-agent)와 다른 환경변수, 시크릿 설정은 바꾸지 마.</code></pre>
+<p><strong>⑤ 원인 찾기</strong></p>
+<pre><code>friend-agent-staging 에서 OCR 기능이 실패했어. 최근 Cloud Run 로그의 오류 줄을 읽고,
+로그에 적힌 내용을 근거로 원인을 설명해 줘. 아직 아무것도 고치지 마.</code></pre>
+<p><strong>⑥ 공식 Python 이미지 실행</strong></p>
+<pre><code>Docker로 python:3.13-slim-bookworm 이미지를 실행해서 Python 버전을 보여 주고,
+같은 이미지 안에 tesseract 프로그램이 있는지 확인해 줘. 컨테이너는 실행이 끝나면 지워지게 해 줘.</code></pre>
+<p><strong>⑦ 컨테이너 두 개 비교</strong></p>
+<pre><code>python:3.13-slim-bookworm 이미지로 note-a 라는 컨테이너를 실행해서 /tmp/note.txt 에 "메모"를 쓰고 읽어 줘.
+note-a 는 지우지 말고 남겨 둬. 그다음 같은 이미지로 새 컨테이너를 실행해서 같은 파일을 읽어 보고,
+결과를 보여 준 뒤 실행이 끝나면 그 컨테이너는 지워 줘.</code></pre>
+<p><strong>⑧ 포트를 이어 컨테이너 두 개 띄우기</strong></p>
+<pre><code>python:3.13-slim-bookworm 이미지로 python -m http.server 8000 을 실행하는 컨테이너 두 개를 띄워 줘.
+web-a 는 내 컴퓨터의 9000번, web-b 는 9001번 포트에 이어 줘. 띄운 뒤 docker ps 결과를 보여 줘.
+그다음 9000번 포트로 web-c 를 하나 더 띄워 보고 어떤 오류가 나는지 알려 줘. 확인이 끝나면 세 컨테이너를 지우고, 지우기 전에 이름을 다시 보여 줘.</code></pre>
+<p><strong>⑨ Dockerfile 쓰기</strong></p>
+<pre><code>add-dockerfile 브랜치를 만들고, 저장소 루트에 에이전트 서비스용 Dockerfile 과 .dockerignore 를 만들어 줘.
+- 베이스 이미지는 python:3.13-slim-bookworm 으로 고정
+- 시스템 패키지 tesseract-ocr 과 한국어 데이터 tesseract-ocr-kor 설치, 설치 뒤 패키지 목록 캐시는 지우기
+- requirements.txt 를 코드보다 먼저 복사해서 라이브러리 설치
+- root 가 아닌 사용자(non-root 사용자)로 실행
+- 시작 명령은 PORT 환경변수의 포트로 uvicorn app.main:app 실행(없으면 8080)
+- .dockerignore 에 .env, .venv, .git, tests, docs 등 이미지에 필요 없는 파일
+starter/Dockerfile 과 starter/dockerignore 를 참고해도 돼. 다 쓰면 줄마다 무엇을 하는지 설명해 줘.</code></pre>
+<p><strong>⑩ 이미지 빌드와 실행</strong></p>
+<pre><code>저장소 루트의 Dockerfile 로 friend-agent:local 이미지를 빌드하고, 컨테이너로 실행해 줘.
+로컬 8080 포트를 컨테이너 8080 포트에 연결하고, 환경변수는 .env 파일을 --env-file 로 넘기고 OCR_ENABLED=true 를 더해 줘.
+.env 의 값은 읽거나 출력하지 마. 이미 로컬에서 8080 포트로 실행 중인 서비스가 있으면 먼저 알려 줘.</code></pre>
+<p><strong>⑪ 이미지 안 확인</strong></p>
+<pre><code>friend-agent:local 이미지 안의 /app 파일 목록, 컨테이너를 실행하는 사용자 이름, 이미지 크기를 보여 줘.
+.env 파일이 이미지 안에 들어 있는지 특히 확인해 줘. 파일 내용은 출력하지 마.</code></pre>
+<p><strong>⑫ staging에 PR 보내기</strong></p>
+<pre><code>.github/workflows/deploy.yml 의 flags: 줄 끝에 --clear-base-image 하나만 붙여 줘. 다른 줄과 액션 버전은 바꾸지 마.
+그다음 Dockerfile, .dockerignore, .github/workflows/deploy.yml 세 파일만 커밋해서 add-dockerfile 브랜치를 올리고, staging 브랜치로 PR 을 만들어 줘.
+다른 파일은 커밋하지 마. 커밋하기 전에 .env 가 커밋 대상에 없는지 보여 줘.
+PR의 상태 체크가 모두 통과하면 알려 줘. 머지는 내가 확인한 뒤에 할게.</code></pre>
+<p><strong>⑬ 빌드 기록 확인</strong></p>
+<pre><code>friend-agent-staging 의 가장 최근 Cloud Build 빌드 로그에서 Dockerfile 로 빌드되었는지 확인해 줘.
+FROM 줄과 tesseract 를 설치한 단계가 로그에 있는지 보여 주고, 새 리비전이 트래픽을 받는지도 알려 줘.</code></pre>
+<p><strong>⑭ production 배포</strong></p>
+<pre><code>staging 에서 main 으로 PR 을 만들어 줘. CI가 통과하면 알려 주고, 머지와 배포 승인은 내가 할게.
+production 배포가 끝났다고 내가 말하면 friend-agent 서비스에 OCR_ENABLED=true 하나만 추가해 줘. 다른 설정은 바꾸지 마.</code></pre>
+<p><strong>⑮ 과제 1</strong></p>
+<pre><code>5장에서 만든 friend-agent:local 이미지로 friend-agent-test 라는 이름의 컨테이너를 8080 포트로 뒤에서 실행해 줘. .env 는 --env-file 로 넘기고 값은 출력하지 마.
+그다음 docker exec 로 컨테이너 안의 실행 사용자, 현재 폴더, 파일 목록을 보여 줘.
+내가 브라우저에서 대화를 나누고 말하면, 컨테이너를 지우고 같은 이미지로 다시 실행해 줘. 컨테이너를 지우기 전에 이름을 다시 보여 줘.</code></pre>
+<p><strong>⑯ 과제 2</strong></p>
+<pre><code>저장소의 Dockerfile 로 캐시 없이 이미지를 두 번 만들어 friend-agent:try-a, friend-agent:try-b 로 태그를 붙여 줘.
+두 이미지의 ID가 같은지, 이미지 안의 pip freeze 결과가 같은지 비교해서 표로 보여 줘. 끝나면 두 이미지를 지워 줘.</code></pre>
+<p><strong>⑰ 과제 3</strong></p>
+<pre><code>에이전트 서비스에 &lt;만들 기능과 화면에서 보일 위치&gt;를 추가하고 싶어. 먼저 이 기능에 Python 라이브러리 말고 운영체제에 따로 설치해야 하는 프로그램이 있는지 알려 줘.
+작업 브랜치에서 기능을 구현하고 로컬 환경에서 내가 확인할 수 있게 해 줘. Dockerfile 은 내가 무엇을 더할지 정한 뒤에 고쳐 줘.
+기존 기능과 워크플로 파일은 바꾸지 마.</code></pre>
+<h3 id="상황별-추가-프롬프트">상황별 추가 프롬프트</h3>
+<p><strong>Dockerfile 검토 맡기기</strong></p>
+<pre><code>저장소 루트의 Dockerfile 과 .dockerignore 를 읽고 아래 다섯 가지 기준으로 검토해 줘. 아직 아무것도 고치지 마.
+(1) 베이스 이미지와 Python 버전이 고정돼 있는가 (2) tesseract 와 한국어 데이터를 설치하는 줄이 있는가
+(3) .dockerignore 에 .env 가 들어 있는가 (4) 실행 명령이 PORT 환경변수를 쓰는가 (5) non-root 사용자로 실행하는가
+기준마다 통과/실패와 근거가 된 줄을 표로 보여 줘.</code></pre>
+<p><strong>새 기능의 시스템 의존성 묻기</strong></p>
+<pre><code>&lt;기능 이름&gt;을 만들려고 해. 이 기능에 Python 라이브러리 말고 운영체제에 따로 설치해야 하는 프로그램이 있는지,
+있다면 Debian(bookworm) 기준 apt 패키지 이름이 무엇인지 알려 줘. 확실하지 않은 것은 확실하지 않다고 말해 줘.</code></pre>
+<p><strong>배포에서 Dockerfile이 쓰였는지 확인</strong></p>
+<pre><code>가장 최근 staging 배포의 Cloud Build 로그를 읽고, buildpacks 가 아니라 Dockerfile 로 빌드됐는지 근거가 되는 로그 줄과 함께 알려 줘.
+Dockerfile 이 쓰이지 않았다면 저장소 루트의 파일 이름과 .gcloudignore 설정부터 확인해 줘. 아직 아무것도 고치지 마.</code></pre>
+<p><strong>이미지에 비밀이 들어갔는지 점검</strong></p>
+<pre><code>friend-agent:local 이미지에 .env 나 API 키가 들어 있는지 점검해 줘. 파일 목록과 환경변수 이름만 보여 주고 값은 출력하지 마.
+들어 있다면 어느 Dockerfile 줄과 .dockerignore 설정이 원인인지 설명해 줘.</code></pre>
+<p><strong>두 이미지가 같은지 비교</strong></p>
+<pre><code>staging 에 배포된 이미지와 production 에 배포된 이미지의 이름(태그·digest)을 각각 찾아서 같은 이미지인지 비교해 줘.
+다르다면 각각 어느 커밋으로 빌드됐는지 알 수 있는 단서를 같이 찾아 줘. 아직 아무것도 바꾸지 마.</code></pre>
+<a class="backlink" href="#목차">↑ 목차로</a>
+<hr>
+<h2 id="부록-d--용어-사전">부록 D · 용어 사전</h2>
+<h3 id="영문-알파벳순">영문 알파벳순</h3>
+<table><thead><tr><th>용어</th><th>정의</th></tr></thead><tbody><tr><td>apt / apt-get</td><td>리눅스(Debian 계열)에서 시스템 패키지를 설치하는 도구</td></tr><tr><td>base image (베이스 이미지)</td><td>Dockerfile이 출발점으로 삼는 이미지. 예: <code>python:3.13-slim-bookworm</code></td></tr><tr><td>buildpacks</td><td>소스 코드를 보고 실행 환경과 이미지를 자동으로 만들어 주는 도구</td></tr><tr><td>CACHED</td><td>빌드 로그에서 이전 레이어를 다시 썼다는 표시</td></tr><tr><td>CI (Continuous Integration)</td><td>코드를 합칠 때마다 정해 둔 테스트를 자동으로 돌리는 방식</td></tr><tr><td>CMD</td><td>컨테이너가 시작될 때 실행할 기본 명령을 지정하는 Dockerfile 줄</td></tr><tr><td>container (컨테이너)</td><td>이미지를 실행한 것. 컨테이너마다 메모리·파일 변경·네트워크를 따로 가짐</td></tr><tr><td>COPY</td><td>파일을 이미지 안으로 복사하는 Dockerfile 줄</td></tr><tr><td>CPU architecture</td><td>amd64, arm64처럼 CPU가 실행할 수 있는 명령 형식</td></tr><tr><td>daemon (데몬)</td><td>실제로 이미지를 만들고 컨테이너를 실행하는 프로그램</td></tr><tr><td>digest</td><td>이미지 내용을 식별하는 고유한 해시값</td></tr><tr><td>Docker Desktop</td><td>macOS·Windows에서 컨테이너를 실행하게 해 주고 이미지·컨테이너 화면을 제공하는 프로그램</td></tr><tr><td>Dockerfile</td><td>이미지를 만드는 방법(베이스·패키지·코드·실행 사용자·시작 명령)을 적은 파일</td></tr><tr><td><code>.dockerignore</code></td><td>이미지 빌드 때 복사하지 않을 파일을 적는 파일</td></tr><tr><td><code>docker exec</code></td><td>실행 중인 컨테이너 안에서 추가 명령을 실행</td></tr><tr><td><code>--env-file</code></td><td>파일에 적힌 값을 컨테이너 환경변수로 넘기는 <code>docker run</code> 옵션</td></tr><tr><td>FROM</td><td>베이스 이미지를 지정하는 Dockerfile 줄</td></tr><tr><td><code>.gcloudignore</code></td><td>소스 배포로 코드를 올릴 때 뺄 파일을 적는 파일</td></tr><tr><td>image (이미지)</td><td>실행에 필요한 것을 모두 묶어 둔, 바뀌지 않는 파일</td></tr><tr><td>instance (인스턴스)</td><td>Cloud Run에서 리비전으로 실행 중인 컨테이너</td></tr><tr><td>kor</td><td>tesseract의 한국어 언어 데이터</td></tr><tr><td>layer (레이어)</td><td>Dockerfile 줄 하나가 만든 파일 변경을 묶은 단위</td></tr><tr><td>layer cache (레이어 캐시)</td><td>내용이 바뀌지 않은 줄의 이전 빌드 레이어를 다시 쓰는 것</td></tr><tr><td>listen (리슨)</td><td>포트를 열고 요청이 들어오기를 기다리는 것</td></tr><tr><td>non-root user</td><td>root 권한이 없는 일반 사용자</td></tr><tr><td>OCR</td><td>광학 문자 인식. 이미지 속 글자를 텍스트로 바꾸는 기술</td></tr><tr><td>port (포트)</td><td>한 컴퓨터에서 들어온 연결을 어느 프로그램에 줄지 정하는 번호</td></tr><tr><td><code>PORT</code></td><td>Cloud Run이 컨테이너 안에서 기다릴 포트를 알려 주는 환경변수(기본 8080)</td></tr><tr><td><code>-p 9000:8000</code></td><td>내 컴퓨터 9000번 포트를 컨테이너 8000번 포트에 연결</td></tr><tr><td><code>pytesseract</code></td><td>tesseract를 불러 쓰는 Python 래퍼 라이브러리</td></tr><tr><td><code>--rm</code></td><td>컨테이너가 끝나면 자동으로 삭제하는 옵션</td></tr><tr><td>revision (리비전)</td><td>Cloud Run에서 이미지와 환경변수·타임아웃 등 설정을 묶은 버전</td></tr><tr><td>root</td><td>운영체제 전체를 바꿀 수 있는 최고 권한 사용자</td></tr><tr><td>secret (시크릿)</td><td>API 키처럼 밖에 드러나면 안 되는 값</td></tr><tr><td>status check (상태 체크)</td><td>PR 화면에 표시되는 CI 결과</td></tr><tr><td>system package (시스템 패키지)</td><td>운영체제에 따로 설치하는 프로그램(apt 패키지 등)</td></tr><tr><td>tag (태그)</td><td><code>friend-agent:v1.0</code>처럼 사람이 알아보기 쉬운 이미지 이름표</td></tr><tr><td>tesseract</td><td>이미지에서 글자를 읽는 실제 OCR 프로그램</td></tr><tr><td>USER</td><td>이후 명령과 앱을 실행할 사용자를 지정하는 Dockerfile 줄</td></tr><tr><td>WORKDIR</td><td>이후 명령을 실행하고 파일을 둘 작업 폴더를 지정하는 Dockerfile 줄</td></tr><tr><td>wrapper (래퍼)</td><td>다른 프로그램을 대신 불러 주는 얇은 라이브러리</td></tr><tr><td>WSL 2</td><td>Windows 안에서 리눅스를 실행하는 기능(Docker Desktop이 사용)</td></tr></tbody></table>
+<h3 id="한글-가나다순">한글 가나다순</h3>
+<table><thead><tr><th>용어</th><th>정의</th></tr></thead><tbody><tr><td>데몬</td><td>이미지를 만들고 컨테이너를 실행하는 백그라운드 프로그램(daemon)</td></tr><tr><td>래퍼</td><td>다른 프로그램을 불러 쓰도록 연결해 주는 라이브러리(<code>pytesseract</code> 등)</td></tr><tr><td>레이어</td><td>Dockerfile 줄 하나가 만든 파일 변경 묶음</td></tr><tr><td>레이어 캐시</td><td>바뀌지 않은 줄의 이전 레이어를 다시 쓰는 것</td></tr><tr><td>리비전</td><td>Cloud Run의 이미지+설정 묶음 버전</td></tr><tr><td>리슨</td><td>포트를 열고 요청을 기다림</td></tr><tr><td>베이스 이미지</td><td>Dockerfile이 출발점으로 삼는 이미지</td></tr><tr><td>상태 체크</td><td>PR 화면에 표시되는 CI 결과</td></tr><tr><td>소스 배포</td><td>코드를 올리면 Cloud Run이 이미지를 만들어 배포하는 방식</td></tr><tr><td>시스템 의존성</td><td>Python 라이브러리 밖의, 운영체제에 설치해야 하는 프로그램·파일</td></tr><tr><td>시스템 패키지</td><td>apt 패키지처럼 운영체제에 설치하는 프로그램</td></tr><tr><td>시크릿</td><td>API 키처럼 밖에 드러나면 안 되는 값</td></tr><tr><td>영속 저장소</td><td>컨테이너가 끝나도 데이터를 보존하는 DB·파일 저장소</td></tr><tr><td>이미지</td><td>실행에 필요한 것을 묶어 둔, 바뀌지 않는 파일</td></tr><tr><td>인스턴스</td><td>리비전으로 실행 중인 컨테이너</td></tr><tr><td>컨테이너</td><td>이미지를 실행한 것</td></tr><tr><td>태그</td><td>사람이 알아보기 쉬운 이미지 이름표</td></tr><tr><td>포트</td><td>연결을 어느 프로그램에 줄지 정하는 번호</td></tr><tr><td>해시값(digest)</td><td>이미지 내용을 식별하는 고유 값</td></tr></tbody></table>
+<a class="backlink" href="#목차">↑ 목차로</a>
+<hr>
+<h2 id="부록-e--개념-비교표-모음">부록 E · 개념 비교표 모음</h2>
+<h3 id="e-1-buildpacks-vs-dockerfile">E-1. buildpacks vs Dockerfile</h3>
+<table><thead><tr><th>구분</th><th>buildpacks</th><th>Dockerfile</th></tr></thead><tbody><tr><td>비유</td><td>필요한 물건을 알아서 준비해 주는 서비스</td><td>준비할 물건과 순서를 적은 상세 작업 지시서</td></tr><tr><td>무엇을 보고 만드나</td><td>소스 코드(<code>.python-version</code>, <code>requirements.txt</code> 등)</td><td>저장소에 적힌 Dockerfile</td></tr><tr><td>시스템 패키지(tesseract)</td><td>코드만으로 알 수 없어 설치하지 못함</td><td><code>RUN apt-get install</code>로 직접 지정</td></tr><tr><td>Python 버전 결정</td><td><code>.python-version</code></td><td><code>FROM</code> 줄</td></tr><tr><td>시작 명령 결정</td><td><code>Procfile</code></td><td><code>CMD</code> 줄</td></tr><tr><td>베이스 이미지 보안 패치</td><td>Google이 자동으로 최신 패치</td><td><code>FROM</code> 줄을 바꾸고 다시 빌드할 때(<code>--clear-base-image</code> 필요, 책임이 커짐)</td></tr></tbody></table>
+<h3 id="e-2-이미지-vs-컨테이너">E-2. 이미지 vs 컨테이너</h3>
+<table><thead><tr><th>구분</th><th>이미지</th><th>컨테이너</th></tr></thead><tbody><tr><td>비유</td><td>붕어빵 틀과 재료를 갖춘 준비물 / 밀키트</td><td>그 준비물로 만든 붕어빵 / 밀키트로 만드는 요리</td></tr><tr><td>성격</td><td>한 번 만들면 바뀌지 않는 파일</td><td>실행 중인 것. 메모리·파일 변경·네트워크를 따로 가짐</td></tr><tr><td>개수</td><td>하나</td><td>같은 이미지로 여러 개</td></tr><tr><td>Cloud Run 대응</td><td>배포할 이미지(리비전의 한 요소)</td><td>인스턴스 안에서 실행되는 것</td></tr><tr><td>지우는 명령</td><td><code>docker rmi</code></td><td><code>docker rm</code></td></tr><tr><td>Docker Desktop 화면</td><td>Images</td><td>Containers</td></tr></tbody></table>
+<h3 id="e-3-pytesseract-vs-tesseract-vs-kor">E-3. pytesseract vs tesseract vs kor</h3>
+<div class="table-scroll"><table><thead><tr><th>구분</th><th><code>pytesseract</code></th><th><code>tesseract</code></th><th><code>kor</code></th></tr></thead><tbody><tr><td>정체</td><td>Python 라이브러리(래퍼)</td><td>운영체제에 설치하는 실제 OCR 프로그램</td><td>한국어 언어 데이터</td></tr><tr><td>비유</td><td>통역을 요청하는 사람</td><td>실제로 글자를 읽는 도구</td><td>한국어 사전</td></tr><tr><td>설치 방법</td><td><code>requirements.txt</code> → pip</td><td>apt·brew 같은 시스템 패키지</td><td><code>tesseract-ocr-kor</code> 등 시스템 패키지</td></tr><tr><td>빠지면</td><td>라이브러리 임포트 실패</td><td>"tesseract 프로그램을 찾을 수 없습니다"(500)</td><td>영어로만 읽고 경고 로그</td></tr></tbody></table></div>
+<h3 id="e-4-gitignore--gcloudignore--dockerignore">E-4. `.gitignore` · `.gcloudignore` · `.dockerignore`</h3>
+<table><thead><tr><th>구분</th><th>작동하는 때</th><th>막는 것</th></tr></thead><tbody><tr><td>Git 커밋 대상(<code>.gitignore</code> 등)</td><td><code>git add</code>·커밋</td><td>저장소에 <code>.env</code>가 올라가는 것</td></tr><tr><td><code>.gcloudignore</code></td><td>소스 배포가 코드를 Google Cloud로 올릴 때</td><td>업로드되는 파일</td></tr><tr><td><code>.dockerignore</code></td><td>빌드 때 <code>COPY . .</code></td><td>이미지에 들어가는 파일(하위 폴더는 <code>**/</code>로 지정)</td></tr></tbody></table>
+<p>세 가지는 서로 다른 단계라서 하나가 있다고 다른 것이 대신해 주지 않는다.</p>
+<h3 id="e-5---update-env-vars-vs---set-env-vars">E-5. `--update-env-vars` vs `--set-env-vars`</h3>
+<table><thead><tr><th>구분</th><th><code>--update-env-vars</code></th><th><code>--set-env-vars</code></th></tr></thead><tbody><tr><td>동작</td><td>지정한 변수만 추가·갱신</td><td>환경변수 집합을 지정한 것으로 교체</td></tr><tr><td>기존 변수</td><td>유지</td><td>사라질 수 있음</td></tr><tr><td>이번 실습에서</td><td><code>OCR_ENABLED=true</code>를 켤 때 사용</td><td>쓰지 않음(<code>ENV</code> 같은 변수가 날아감)</td></tr></tbody></table>
+<h3 id="e-6---env-file로-전달-vs-copy-env-">E-6. `--env-file`로 전달 vs `COPY .env .`</h3>
+<table><thead><tr><th>구분</th><th>실행할 때 전달</th><th>이미지에 복사</th></tr></thead><tbody><tr><td>키의 위치</td><td>컨테이너 환경변수(이미지 파일에는 없음)</td><td>이미지 파일 안</td></tr><tr><td>이미지를 공유·업로드하면</td><td>키가 따라가지 않음</td><td>이미지를 받은 누구나 키를 꺼내 볼 수 있음</td></tr><tr><td>키 교체</td><td>실행 때 값만 바꿈</td><td>이미지를 다시 만들어야 함</td></tr><tr><td>한계</td><td>실행 중 환경·로그에는 노출 가능, 운영은 Secret Manager 권장</td><td>피해야 할 방식</td></tr></tbody></table>
+<h3 id="e-7-태그-vs-digest">E-7. 태그 vs digest</h3>
+<table><thead><tr><th>구분</th><th>태그</th><th>digest</th></tr></thead><tbody><tr><td>형태</td><td><code>friend-agent:v1.0</code></td><td>이미지 내용에서 계산한 해시값(예: <code>sha256:…</code>)</td></tr><tr><td>성격</td><td>사람이 읽는 이름표</td><td>이미지 내용을 가리키는 고유 식별값</td></tr><tr><td>약점</td><td>나중에 다른 이미지로 바뀔 수 있음</td><td>사람이 읽기 어려움</td></tr><tr><td>쓰임</td><td>구분·버전 표시</td><td>배포 대상을 정확히 지정·추적</td></tr></tbody></table>
+<h3 id="e-8-코드-문제--환경-문제--배포-문제">E-8. 코드 문제 · 환경 문제 · 배포 문제</h3>
+<table><thead><tr><th>구분</th><th>질문</th><th>이번 사례</th></tr></thead><tbody><tr><td>코드 문제</td><td>프로그램 로직이나 입력 처리에 오류가 있나</td><td>로컬에서 성공 → 아님</td></tr><tr><td>환경 문제</td><td>필요한 프로그램·라이브러리·설정이 빠졌나</td><td><strong>tesseract 누락</strong></td></tr><tr><td>배포 문제</td><td>테스트한 이미지와 실제 운영 이미지가 같은가</td><td>같은 Dockerfile로 두 번 따로 빌드 → 다음 숙제</td></tr></tbody></table>
+<a class="backlink" href="#목차">↑ 목차로</a>
+<hr>
+<h2 id="부록-f--학습-로드맵">부록 F · 학습 로드맵</h2>
+<h3 id="이-강의로-할-수-있게-된-것">이 강의로 할 수 있게 된 것</h3>
+<ul><li>로컬에서는 되고 staging에서는 안 되는 문제를 <strong>로그의 오류 줄</strong>을 근거로 설명하고, 코드·환경·배포 문제로 나눌 수 있다.</li><li>buildpacks가 만든 이미지에 무엇이 들어 있고 무엇이 빠지는지, 왜 CI가 이 문제를 못 잡았는지 설명할 수 있다.</li><li>이미지와 컨테이너, 리비전과 인스턴스의 차이를 설명하고 Docker Desktop 화면에서 구분할 수 있다.</li><li><code>-p</code> 포트 연결과 <code>PORT</code> 환경변수의 관계를 설명하고 <code>localhost</code> 접속 주소를 맞게 고를 수 있다.</li><li>Dockerfile을 한 줄씩 읽고 <strong>다섯 가지 기준</strong>(베이스 이미지 고정·시스템 패키지·<code>.dockerignore</code>의 <code>.env</code>·<code>PORT</code>·non-root)으로 검토할 수 있다.</li><li>이미지를 빌드해 컨테이너로 실행하고, 이미지 안의 파일 목록·실행 사용자·크기·레이어 캐시를 확인할 수 있다.</li><li>API 키를 이미지에 넣지 않고 <code>--env-file</code>로 실행할 때 건네는 이유를 설명할 수 있다.</li><li>기존 자동 배포에 <code>--clear-base-image</code> 하나만 더해 Dockerfile 빌드로 전환하고, Cloud Build 기록에서 Dockerfile이 쓰였는지 확인할 수 있다.</li><li>시스템 프로그램이 필요한 새 기능을 로컬 → 로컬 컨테이너 → staging 순서로 검증하고, Dockerfile에 더한 줄의 이유를 한 문장으로 설명할 수 있다.</li></ul>
+<h3 id="다음에-배우면-좋을-것">다음에 배우면 좋을 것</h3>
+<table><thead><tr><th>주제</th><th>이유</th></tr></thead><tbody><tr><td>이미지 태그와 digest 관리</td><td>production에서 도는 이미지가 어느 커밋으로 만든 것인지 추적하기 위해(남은 숙제 ①)</td></tr><tr><td>검증한 이미지를 그대로 승격하는 빌드·배포 흐름</td><td>staging에서 확인한 이미지와 production 이미지를 같게 만들기 위해(②)</td></tr><tr><td>이미지·레이어 저장 공간 관리</td><td>400MB대 이미지가 배포마다 쌓이는 문제(③)</td></tr><tr><td>베이스 이미지·패키지 버전 고정</td><td>같은 Dockerfile이어도 빌드 시점에 따라 달라지는 결과를 줄이기 위해</td></tr><tr><td>볼륨·외부 데이터베이스(Supabase)</td><td>컨테이너가 교체돼도 대화·기억을 유지하기 위해</td></tr><tr><td>Secret Manager 활용</td><td>운영에서 키를 안전하게 전달하기 위해</td></tr><tr><td>내 서비스(MSM, Travel Creator 등)에 Dockerfile 적용</td><td>문서 변환·이미지 처리 등 시스템 의존성 점검</td></tr></tbody></table>
+<a class="backlink" href="#목차">↑ 목차로</a>
+<hr>
+<h2 id="부록-g--복습-퀴즈">부록 G · 복습 퀴즈</h2>
+<details><summary>Q1. staging에서 OCR이 실패했는데 배포는 성공했고 다른 대화 기능도 정상이었던 이유로 가장 알맞은 것은?</summary><p>① Cloud Run이 오류를 숨겨 주기 때문이다 ② 앱은 시작할 때 tesseract를 확인하지 않고, 사진 요청이 들어와 프로그램을 부를 때에야 없다는 것을 알게 되기 때문이다 ③ staging에서는 <code>OCR_ENABLED</code>가 꺼져 있었기 때문이다 ④ buildpacks가 tesseract를 설치했지만 한국어 데이터만 빠졌기 때문이다</p><p><strong>정답: ②</strong> 서비스는 정상적으로 시작하고, 실제 OCR 요청이 들어온 순간에야 프로그램을 부르다 실패한다. 그래서 배포는 성공이고 다른 기능은 그대로 쓸 수 있다.</p></details>
+<details><summary>Q2. CI 테스트가 통과했는데도 staging에서 OCR이 실패한 이유로 알맞은 두 가지는?</summary><p>(주관식) 모범 답안: ① 템플릿의 OCR 테스트는 기능이 꺼져 있을 때 요청을 거절하는지만 확인하고, 실제 사진을 읽는 데 필요한 시스템 프로그램까지는 검증하지 않는다. ② 테스트가 도는 GitHub 러너와 staging 이미지는 서로 다른 실행 환경이라, 러너에서 통과했다고 staging 이미지에 tesseract가 있다는 뜻이 아니다.</p></details>
+<details><summary>Q3. 같은 이미지로 컨테이너 두 개를 실행하고 첫 컨테이너에서 /tmp/note.txt를 만들었다면 둘째 컨테이너에서는?</summary><p>① 파일이 보인다 ② 파일이 보이지 않는다 ③ 첫 컨테이너가 실행 중일 때만 보인다 ④ 첫 컨테이너를 지우면 보인다</p><p><strong>정답: ②</strong> 파일은 첫 컨테이너 안에서만 생긴 변경이고 이미지는 바뀌지 않았다.</p></details>
+<details><summary>Q4. docker run -p 9000:8080 friend-agent:local 로 띄웠다면 브라우저로 열 주소는?</summary><p>① <code>http://localhost:8080</code> ② <code>http://localhost:9000</code> ③ 둘 다 ④ 컨테이너 안에서만</p><p><strong>정답: ②</strong> 앞 숫자(9000)는 내 컴퓨터 포트, 뒤 숫자(8080)는 컨테이너 안의 포트다.</p></details>
+<details><summary>Q5. Dockerfile에서 requirements.txt를 코드(COPY . .)보다 먼저 복사해 라이브러리를 설치하는 이유는?</summary><p>(주관식) 모범 답안: 레이어 캐시 때문이다. Docker는 내용이 바뀌지 않은 줄의 이전 레이어를 다시 쓰고 처음 바뀐 줄부터 아래를 새로 만든다. 시간이 오래 걸리는 시스템 패키지·라이브러리 설치를 위에 두고 자주 바뀌는 코드 복사를 아래에 두면, 코드만 고쳤을 때 라이브러리 설치를 다시 하지 않아도 된다. 코드 전체를 먼저 복사하면 코드 한 줄만 고쳐도 설치가 매번 다시 실행된다.</p></details>
+<details><summary>Q6. 에이전트가 쓴 Dockerfile이 <code>FROM python:latest</code>로 시작하고 <code>--port 8000</code> 고정 CMD에 <code>USER</code> 줄이 없습니다. 각각 고치지 않으면?</summary><p>(주관식) 모범 답안: <code>python:latest</code>는 빌드 시점에 따라 다른 Python이 들어와 결과가 달라질 수 있어 <code>python:3.13-slim-bookworm</code>처럼 고정한다(재현성). 고정 8000번 포트는 Cloud Run이 <code>PORT</code>로 알려 주는 포트와 달라 시작에 실패할 수 있어 <code>${PORT:-8080}</code>을 쓴다(배포 호환성). <code>USER</code> 줄이 없으면 root로 실행될 수 있어 <code>appuser</code>를 만들고 <code>USER appuser</code>로 실행한다(보안).</p></details>
+<details><summary>Q7. API 키를 --env-file .env 로 건네는 방식이 Dockerfile의 COPY .env . 보다 나은 이유는?</summary><p>① 두 방식은 같다 ② 이미지에 넣는 편이 안전하다 ③ 실행할 때 건네면 키가 이미지 파일에 남지 않아 이미지가 저장소에 올라가거나 다른 사람에게 전달돼도 키가 따라가지 않는다 ④ Secret Manager가 필요 없어진다</p><p><strong>정답: ③</strong> ②는 이미지가 바뀌지 않는다는 사실이 이미지 안의 비밀을 안전하게 만들어 주지 않고, ④는 <code>--env-file</code>이 비밀정보 관리 시스템을 대체하지 않는다.</p></details>
+<details><summary>Q8. 이미지 안 <code>ls -a /app</code> 결과에 <code>.env</code>가 보입니다. 어떻게 해야 하나요?</summary><p>(주관식) 모범 답안: 그 이미지를 다른 곳에 올리지 말고 지운다. <code>.dockerignore</code>에 <code>.env</code>를 넣어 고친 뒤 다시 빌드한다. 실제 키가 이미지에 들어갔다면 키 교체도 검토한다.</p></details>
+<details><summary>Q9. 배포가 <code>Missing required argument [--clear-base-image]</code>로 멈췄습니다. 원인과 해결은?</summary><p>(주관식) 모범 답안: buildpacks로 배포한 서비스에 켜져 있던 자동 베이스 이미지 업데이트는 Dockerfile로 만든 이미지에는 쓸 수 없다. <code>deploy.yml</code>의 <code>flags:</code> 줄 끝에 <code>--clear-base-image</code> 하나만 붙여 끈다. 대신 베이스 이미지 보안 패치는 <code>FROM</code> 줄을 바꾸고 다시 빌드할 때 들어온다.</p></details>
+<details><summary>Q10. Dockerfile을 커밋했는데 staging 빌드 로그에 tesseract 설치 단계가 없고 OCR도 계속 실패합니다. 가장 먼저 확인할 곳은?</summary><p>① OpenAI 대시보드의 사용 한도 ② Dockerfile이 저장소 루트에 <code>Dockerfile</code>이라는 이름으로 있는지, <code>.gcloudignore</code>가 Dockerfile을 빼고 있지 않은지 ③ Cloud Run 최대 인스턴스 수 ④ staging 서비스의 요청 타임아웃</p><p><strong>정답: ②</strong> Dockerfile이 빌드 단계에 실제로 전달됐는지부터 확인하는 것이 합리적이다.</p></details>
+<details><summary>Q11. staging과 production에서 같은 Dockerfile로 빌드했는데도 두 이미지가 같다고 말할 수 없는 이유는?</summary><p>(주관식) 모범 답안: <code>staging</code>·<code>main</code> 브랜치에 머지할 때마다 Cloud Build가 Dockerfile로 이미지를 <strong>각각 새로 만들기</strong> 때문이다. <code>apt-get install</code>·<code>pip install</code>이 그사이 새로 나온 패키지 버전을 받으면 이미지 내용이 달라질 수 있다. 확인한 이미지를 그대로 내보내려면 이미지를 한 번만 만들어 두 환경에 보내야 한다.</p></details>
+<details><summary>Q12. 컨테이너를 지우고 같은 이미지로 다시 띄웠더니 대화가 사라졌습니다. 서비스를 어떻게 설계해야 하나요?</summary><p>(주관식) 모범 답안: 대화·기억이 컨테이너 메모리에만 있어서 새 컨테이너가 이전 메모리를 이어받지 못한 것이다. 계속 보존해야 하는 데이터는 Supabase 같은 외부 데이터베이스(영속 저장소)에 저장하고, 새 컨테이너가 시작될 때 필요한 정보를 다시 읽도록 설계한다.</p></details>
+<details><summary>Q13. 오늘의 회고 — 과제 3에서 고른 기능과 Dockerfile에 더한 줄, 그 줄이 없었다면 어디에서 처음 문제가 드러났을지 적어 보세요.</summary><p>(주관식) 모범 답안(작성 방법 예시): 선택한 기능 — 음성 메모 변환, 필요한 시스템 프로그램 — FFmpeg, 추가한 줄 — <code>apt-get install -y --no-install-recommends ffmpeg</code>, 추가한 이유 — Python 코드가 FFmpeg 실행 프로그램을 호출하므로 컨테이너 안에도 설치돼야 함, 줄이 없을 때 — 로컬에 FFmpeg가 있으면 로컬에서는 되지만 이미지 안에는 없어 <strong>로컬 컨테이너에서 처음 실패</strong>. 실제 과제에서는 직접 고른 기능과 검증 결과를 적는다.</p></details>
+<hr>
+<div class="callout summary"><p><span class="label">📌 요약</span> — 이번 강의의 핵심: ① 코드가 같아도 실행 환경이 다르면 실패하고, 원인은 화면이 아니라 로그에서 찾는다 ② 이미지는 바뀌지 않는 실행 패키지, 컨테이너는 그 이미지를 실행한 것이며 컨테이너 메모리는 영속 저장소가 아니다 ③ Dockerfile에는 베이스 이미지·시스템 패키지·<code>.env</code> 제외·<code>PORT</code>·non-root를 적고, 키는 이미지에 넣지 않고 실행할 때 건넨다 ④ 기존 자동 배포는 <code>--clear-base-image</code> 한 단어만 더해 Dockerfile 빌드로 바뀌고, 빌드 기록으로 확인한다 ⑤ 남은 숙제는 이미지 추적(태그·digest)·staging과 production의 동일 이미지·저장 공간 관리다.</p></div>
+<p class="footer-note">N050 · Dockerfile로 실행 환경 정하기 — 학습서 + 해설서 통합 정리 노트</p>
+
+</main>
+</body>
+</html>

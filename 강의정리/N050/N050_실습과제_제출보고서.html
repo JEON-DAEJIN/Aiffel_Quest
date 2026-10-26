@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N050 실습과제 제출보고서</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>[제출 보고서] N050 「Dockerfile로 실행환경 정하기」 실습 과제 수행 결과</h1>
+<p><strong>수신</strong>: N050 강의 강사님 · <strong>발신</strong>: 수강생 전대진(DJ)</p>
+<p><strong>실습일</strong>: 2026-10-26</p>
+<p><strong>과제 대상</strong>: N049에서 CI·staging·승인을 붙인 AI 친구 에이전트 서비스(<code>friend-agent</code>)에 "사진·PDF 속 글자를 읽어 입력창에 넣어 주는 기능(OCR)"을 켜고, 로컬에서는 되던 기능이 staging에서 실패하는 것을 재현한 뒤 Dockerfile로 서버의 실행 환경을 직접 정해 고치는 실습. 이어서 컨테이너 들여다보기(과제 1), 같은 Dockerfile 두 번 빌드(과제 2), PDF 읽기 추가(과제 3, 도전)까지 수행했다</p>
+<p><strong>평가 방법</strong>: 13번 "평가 체크리스트"를 보고 항목별로 점수와 한 줄 의견을 남겨 주세요.</p>
+<div class="callout summary"><p><span class="label">📌 요약</span> — 이 문서는 노션 「강의정리 양식」 구조(한눈에 → 절별 기록 → 사고 표 → 정리 → 궁금했던 것)로 쓴 <strong>한눈에 읽는 보고서</strong>이다. 명령·로그·수치를 있는 그대로 남긴 상세 기록은 같은 폴더의 부록 <code>N050_실습과제_제출보고서_부록_상세기록</code>에 있다. 서비스 주소·프로젝트 번호·계정 정보는 싣지 않았다(요청마다 수업 키로 비용이 나가는 공개 서비스라서). 시각은 한국 시간(KST)이다.</p></div>
+<h2 id="0-한눈에">0. 한눈에</h2>
+<div class="diagram-wrap"><div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px 0"><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>로컬에서는 됨</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>staging에서 500</strong><div style="font-size:12px;color:var(--text-muted);margin-top:2px">서버에 tesseract 없음</div></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>Cloud Run 로그로 원인 확인</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>Dockerfile에 설치 줄 추가</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>로컬 컨테이너에서 먼저 확인</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>staging 200</strong></div><span style="color:var(--accent);font-weight:700">→</span><div style="border:1.5px solid var(--svg-stroke);border-radius:10px;background:var(--bg-alt);padding:8px 12px;font-size:14px;text-align:center;max-width:190px"><strong>production 승인 후 200</strong></div></div></div>
+<p>코드가 같아도 <strong>서버의 실행 환경(운영체제 프로그램)이 없으면</strong> 기능이 안 된다. 그래서 <code>pip</code>가 아니라 운영체제에 설치할 프로그램을 Dockerfile에 적어 서버의 실행 환경을 직접 정하고, 같은 입력을 여러 곳에 보내 결과가 같은지로 확인했다.</p>
+<ul><li>저장소: friend-agent (N049에서 이어 사용, 공개 상태)</li><li>오늘 연 PR <strong>4개</strong>(#20~#23), 모두 머지</li><li>Cloud Build <strong>4번</strong>(615ce1d8 · 4718e203 · aa4d5d58 · 057dbfd2) 모두 SUCCESS, 로그에 buildpacks 언급 <strong>0줄</strong></li><li>배포 워크플로: staging <strong>2번</strong> · production <strong>2번</strong>(둘 다 내가 직접 승인) · 손으로 친 환경변수 추가 <strong>2번</strong>(staging 리비전 00006, production 리비전 00019)</li><li>실패가 드러난 것 <strong>2건</strong>: staging의 사진 읽기 500(일부러 재현, tesseract 없음), 로컬 컨테이너의 PDF 읽기 500(poppler 줄이 없던 상태에서 처음 드러남). 둘 다 Dockerfile의 설치 줄로 해결</li><li>같은 사진 <code>schedule.png</code> → 로컬·로컬 컨테이너·staging·production <strong>네 곳 모두 200 · 153글자 · 결과 해시 <code>e61b2db05f</code></strong></li><li>이미지 크기: 로컬 <code>friend-agent:local</code> <strong>460MB</strong> → poppler 추가 후 <strong>473MB</strong>(+13MB)</li></ul>
+<h2 id="1-시작-상태와-로컬-ocr-단계-12">1. 시작 상태와 로컬 OCR (단계 1~2)</h2>
+<ul><li>읽기만 한 시작 점검에서 서비스 둘과 저장소 변수 4개, 워크플로 3개가 정상이었고 두 서비스 모두 <code>OCR_ENABLED</code>가 없었다. 내 PC의 tesseract는 영어(eng)·osd만 있고 한국어(kor)가 없었으며 Docker는 없었다</li><li>한국어 데이터 <code>kor.traineddata</code>를 받아(11:28) 내가 관리자 PowerShell로 복사하고 Path를 등록한 뒤, 가짜 LLM으로 서버를 띄워 <code>schedule.png</code>를 보내자 <strong>200 · 153글자 · <code>e61b2db05f</code></strong>. 이 값이 이후 모든 비교의 기준이다</li><li>교재와 다르게 한 것: 저장소 변수가 교재는 5개(<code>BUILD_SA</code> 포함)인데 이 템플릿은 4개(N049에서 확인). kor를 설치해 "로컬이 한국어까지 되는 정상 환경"에서 시작. <code>.env</code>는 접근 규칙에 막혀 환경변수로 직접 넘겼다</li></ul>
+<h2 id="2-staging에서-ocr-켜고-실패-재현-단계-3">2. staging에서 OCR 켜고 실패 재현 (단계 3)</h2>
+<p>무엇을 했나: staging에만 <code>OCR_ENABLED=true</code>를 추가하고 같은 사진을 보냈다(11:34~11:35). production은 건드리지 않았다.</p>
+<p>무엇이 보였나: 서비스 루트와 <code>/version</code>은 정상인데 사진 요청은 <strong>HTTP 500</strong>이었다. API 응답은 <code>{"detail":"사진에서 글자를 읽는 프로그램이 서버에 없습니다."}</code>였고, 화면에는 "사진에서 글자를 읽지 못했어요: …"로 보였을 것이다(화면 캡처는 없음).</p>
+<p>원인을 어디서 찾았나: Cloud Run 로그. 11:35:05에 리비전 <code>friend-agent-staging-00006-dst</code>가 <code>tesseract 프로그램을 찾을 수 없습니다.</code>라는 ERROR와 <code>POST /api/ocr</code> 500을 남겼다. 서비스는 정상 시작했고 사진 요청이 들어온 순간 프로그램을 부르다 실패한 것이라, 배포는 성공이고 대화 기능은 정상이었다.</p>
+<p>처리: Dockerfile로 해결했다(5~6절).</p>
+<h2 id="3-이미지컨테이너-실험-단계-4-교안-3장">3. 이미지·컨테이너 실험 (단계 4, 교안 3장)</h2>
+<ul><li>공식 이미지 <code>python:3.13-slim-bookworm</code>에는 <strong>tesseract가 없다</strong>. 컨테이너 <code>note-a</code>에 적은 <code>/tmp/note.txt</code>는 같은 이미지의 새 컨테이너에서 <strong>없었다</strong></li><li>포트 9000·9001은 둘 다 200이었고, 이미 쓰는 9000에 다른 컨테이너를 띄우면 <code>port is already allocated</code>(의도한 실패)가 났다. 컨테이너 4개는 지우고 이미지는 남겼다</li><li>교재와 다르게 한 것: 포트 확인을 브라우저 대신 <code>curl</code>로 했다</li></ul>
+<h2 id="4-dockerfile-쓰고-로컬에서-빌드-단계-5">4. Dockerfile 쓰고 로컬에서 빌드 (단계 5)</h2>
+<ul><li>템플릿 Dockerfile·<code>.dockerignore</code>를 복사해 5기준(베이스 고정 · tesseract와 kor 설치 · <code>.env</code> 제외 · <code>${PORT:-8080}</code> · <code>USER appuser</code>)을 검토했고 모두 통과했다</li><li>첫 빌드 이미지는 <strong>460MB</strong>였고, 컨테이너에서 같은 사진이 <strong>200 · 153글자 · <code>e61b2db05f</code></strong>로 읽혔다. 이미지 안에는 <code>.env</code>·<code>tests</code>·<code>docs</code>가 없고 <code>whoami</code>는 <code>appuser</code>였다</li><li>막힌 일: 이미지 안 <code>/app/app/__pycache__</code>에 <strong>.pyc 17개</strong>(내 PC의 <code>.venv</code>가 만든 cpython-314)가 들어 있었다. 템플릿 <code>.dockerignore</code>의 두 줄이 맨 위 폴더에만 적용돼서였다. 하위 폴더까지 적용되는 패턴(앞에 별표 두 개와 슬래시를 붙이는 방식, 모양은 부록 코드 블록 참조)으로 고쳐 재빌드하자 <code>__pycache__</code>와 <code>.pyc</code>가 0개가 됐고, 크기는 460MB 그대로였다</li><li>교재와 달라진 것: 교재는 <code>__pycache__</code>가 "보이면" 고치라 했는데 실제로 나왔다. 교재의 레이어·이미지 크기와 이번 실측도 달랐다(교재 400MB대, 이번 460MB. 수치는 부록)</li></ul>
+<h2 id="5-pr-20--dockerfile을-staging에-단계-6">5. PR #20 — Dockerfile을 staging에 (단계 6)</h2>
+<ul><li><code>deploy.yml</code>에 <code>--clear-base-image</code> <strong>한 단어만</strong> 추가했고(diff +1/−1) 커밋은 3파일(<code>Dockerfile</code>, <code>.dockerignore</code>, <code>deploy.yml</code>)이다. PR #20은 CI 통과 후 내가 머지를 승인해 <code>c92135c</code>가 됐다</li><li><strong>Cloud Build <code>615ce1d8</code></strong>이 12:12~12:14에 SUCCESS(약 1분 14초). 로그에 <code>Dockerfile</code> 업로드와 <code>apt-get install … tesseract-ocr tesseract-ocr-kor</code> 단계가 있고 buildpacks 언급은 0줄이다</li><li>staging 새 리비전 <code>friend-agent-staging-00007-94j</code>에서 같은 사진이 <strong>200</strong>, 로그에 ERROR가 없었다. <code>OCR_ENABLED=true</code>는 배포 후에도 유지됐다. 화면에서는 📷 버튼으로 사진을 고르면 입력창에 일정 세 줄이 들어갔다(내가 직접 사진을 골라 캡처)</li><li>교재와 다르게 한 것: <code>--clear-base-image</code>를 교재 안내대로 처음부터 추가해서 <strong>이 옵션이 없을 때의 <code>Missing required argument</code> 오류는 직접 본 적이 없다</strong></li></ul>
+<h2 id="6-production-배포-단계-7">6. production 배포 (단계 7)</h2>
+<ul><li>staging→main PR #21(머지 <code>23b49b1</code>)의 배포가 승인 대기에서 멈췄고 내가 직접 승인했다(캡처 10b). 머지(12:40)부터 빌드 시작(13:45)까지 대기가 약 1시간이었고 이유는 기록이 없다. <strong>Cloud Build <code>4718e203</code></strong>이 SUCCESS했고 production 리비전 <code>friend-agent-00018-klq</code>가 100%가 됐다</li><li>production은 OCR을 켜기 전 <code>/api/ocr</code>이 <strong>404</strong>였다. 환경변수를 추가하자(리비전 00019) 로컬 컨테이너·staging·production이 모두 <strong>200 · 153글자 · <code>e61b2db05f</code></strong>였다</li><li>staging 빌드(<code>615ce1d8</code>)와 production 빌드(<code>4718e203</code>)는 베이스 digest, pip 30개, apt 62개가 모두 같은데 <strong>이미지 ID는 달랐다</strong>(<code>a31820f7a6bf</code> / <code>a3c0f9af949f</code>)</li></ul>
+<h2 id="7-과제-12--컨테이너-들여다보기-같은-dockerfile-두-번-빌드">7. 과제 1·2 — 컨테이너 들여다보기, 같은 Dockerfile 두 번 빌드</h2>
+<ul><li>과제 1: 실행 중인 컨테이너를 <code>docker exec</code>로 열어 보니 <code>appuser</code>, <code>/app</code>, <code>.env</code>·<code>tests</code>·<code>docs</code> 없음이었다. 대화 두 턴 뒤 메시지 <strong>4개</strong>였는데 컨테이너를 지우고 같은 이미지(ID 불변)로 다시 띄우자 <strong>0개</strong>가 됐다. Git Bash <code>curl -d</code>의 한글 JSON은 HTTP 400이 나서 파이썬 UTF-8 전송으로 확인했다. 교재와 다르게 브라우저 대신 <strong>API로 확인</strong>했다(화면 캡처 없음)</li><li>과제 2: <code>--no-cache</code>로 두 번 빌드하자 <code>pip freeze</code> 30줄과 deb 159개는 <strong>같고 이미지 ID는 달랐다</strong>(<code>8d665740853b…</code> / <code>3a23685075fb…</code>). 교안은 "몇 분씩"이라 했으나 이 PC에서는 30초대였다. 레이어 10개 중 베이스 4개와 <code>COPY . .</code>는 같고 apt · WORKDIR · requirements 복사 · pip · useradd 5개는 달랐다(레이어와 Dockerfile 줄의 대응은 추정, 원인 파일은 확인하지 않음). 며칠 간격의 빌드는 재현하지 않았다</li></ul>
+<h2 id="8-과제-3도전--pdf-공지문-읽기">8. 과제 3(도전) — PDF 공지문 읽기</h2>
+<p>poppler로 PDF를 읽는 기능을 붙였는데, Dockerfile에 poppler 줄이 없던 로컬 컨테이너에서만 PDF가 500("PDF를 읽는 프로그램이 서버에 없습니다.")이었다. 원인은 컨테이너 로그의 <code>poppler 프로그램을 찾을 수 없습니다</code>와 <code>pdftoppm</code> 부재였고, apt 줄에 <code>poppler-utils</code>를 더해 해결했다(이미지 473MB). 줄이 필요한 이유는 한 문장이다. "PDF를 이미지로 바꾸는 <code>pdftoppm</code>이 운영체제 프로그램이라 <code>pip</code>로는 설치되지 않기 때문이다." 이번에는 staging에 가기 전에 <strong>로컬 컨테이너에서 잡았다</strong>. 테스트는 기존 12 + 새 3 = 15 passed였고, PR #22(staging, Cloud Build <code>aa4d5d58</code>)와 PR #23(production, Cloud Build <code>057dbfd2</code>, 내가 직접 승인) 뒤 같은 입력이 네 곳에서 같은 결과였다. staging·production 빌드도 패키지는 같고 이미지 ID는 달랐다.</p>
+<table><thead><tr><th>입력</th><th>네 곳(로컬 · 로컬 컨테이너 · staging · production) 공통 결과</th></tr></thead><tbody><tr><td>사진(PNG)</td><td>200, 153글자, e61b2db05f</td></tr><tr><td>PDF 1쪽</td><td>200, 153글자, e61b2db05f</td></tr><tr><td>PDF 4쪽(앞 3쪽만)</td><td>200, 461글자, 4ba6dbbc32</td></tr><tr><td>깨진 PDF</td><td>500 PDF 파일을 읽을 수 없습니다</td></tr></tbody></table>
+<p>한계: 새 테스트 3개는 변환 함수를 가짜로 바꾸므로 poppler가 서버에 있는지는 검증하지 못한다. 확인은 컨테이너와 staging의 몫이었다.</p>
+<h2 id="9-사고문제-표">9. 사고·문제 표</h2>
+<div class="table-scroll"><table><thead><tr><th>번호</th><th>변경</th><th>결과</th><th>사용자에게 보였을 것</th><th>원인을 찾은 곳</th><th>처리</th></tr></thead><tbody><tr><td>1</td><td>staging에서 OCR 켜기(로컬에서는 됨)</td><td>500</td><td>"사진에서 글자를 읽지 못했어요: …서버에 없습니다."</td><td>Cloud Run 로그(ERROR tesseract 없음)</td><td>Dockerfile에 tesseract·kor 설치 줄 → staging 200</td></tr><tr><td>2</td><td><code>COPY . .</code>가 하위 <code>__pycache__</code>까지 복사</td><td>이미지에 .pyc 17개</td><td>안 보임, 이미지 점검에서 발견</td><td>이미지 안을 <code>ls</code>/<code>find</code>로 열어 봄</td><td><code>.dockerignore</code> 패턴 수정, 재빌드 0개</td></tr><tr><td>3</td><td>poppler 줄 없이 PDF 읽기(로컬 컨테이너)</td><td>PDF만 500</td><td>"PDF를 읽는 프로그램이 서버에 없습니다."</td><td>컨테이너 로그, <code>pdftoppm</code> 없음</td><td><code>poppler-utils</code> 추가</td></tr><tr><td>4</td><td>Git Bash <code>curl -d</code>로 한글 JSON 전송</td><td>HTTP 400</td><td>없음</td><td>컨테이너 로그의 400과 응답 본문</td><td>파이썬으로 UTF-8 전송</td></tr><tr><td>5</td><td>컨테이너를 지우고 다시 띄움</td><td>대화 4개 → 0개</td><td>대화가 사라짐</td><td>이미지 ID 불변과 메시지 수 비교</td><td>의도한 실험(컨테이너 메모리는 영속 저장소가 아님)</td></tr><tr><td>6</td><td>같은 Dockerfile로 staging·production 따로 빌드</td><td>이미지 ID 다름</td><td>없음</td><td>Cloud Build 로그 비교</td><td>남은 숙제로 기록</td></tr><tr><td>7</td><td>로컬 컨테이너를 8080에 띄움(로컬 uvicorn이 점유)</td><td>포트 충돌 우려</td><td>없음</td><td>8080 점유 프로세스 확인</td><td>실제 점유 PID를 다시 찾아 종료(부록 7절)</td></tr></tbody></table></div>
+<p>1번은 코드·CI·배포 어느 것도 실패하지 않았고 <strong>환경만 달랐다</strong>. 3번은 같은 종류(운영체제 프로그램 누락)의 두 번째 사례다.</p>
+<h2 id="10-풀지-못한-것--교재와-달라진-것">10. 풀지 못한 것 · 교재와 달라진 것</h2>
+<ul><li>staging 서비스·수업 키 처리는 이번에 다루지 않았다(수업 키를 staging·production이 공유, 한도 분리 못 함)</li><li>이미지 태그·digest 관리, 검증한 이미지를 그대로 승격하는 흐름, 이미지 저장 공간 관리는 교안이 "다음 실습"으로 남긴 숙제라 하지 않았다</li><li>며칠 간격 빌드의 패키지 버전 변화와 <code>--clear-base-image</code> 누락 오류는 재현하지 않았다</li><li>과제 1의 브라우저 대화는 API로 대체했고, QR·HEIC·ffmpeg는 구현하지 않았다</li></ul>
+<p>그 밖의 항목과 교재와 달라진 12가지는 부록 6절·8절에 있다.</p>
+<h2 id="11-정리">11. 정리</h2>
+<ul><li>문제를 <strong>코드 · 환경 · 배포 문제</strong>로 가른다. CI 통과와 배포 성공은 "실행 환경이 맞다"는 증거가 아니다</li><li>새 기능을 붙일 때는 "파이썬 라이브러리 말고 <strong>운영체제에 설치할 프로그램</strong>이 있는가"를 먼저 묻는다(이번 tesseract와 poppler)</li><li>Dockerfile은 5기준으로 점검하고 이미지 안을 열어 실제 내용(<code>.env</code> · <code>tests</code> · <code>docs</code> · <code>__pycache__</code>)을 확인한다</li><li>컨테이너는 실행할 때마다 이미지에서 새로 시작하고 컨테이너 메모리의 대화는 함께 사라진다</li><li><strong>같은 Dockerfile이라고 같은 이미지는 아니다.</strong> 패키지 목록이 같아도 이미지 ID는 달랐다</li><li>같은 입력을 여러 환경에 보내 결과(글자 수 · 해시)를 비교하면 "같은 환경"을 숫자로 말할 수 있다</li><li>다음: 이미지 태그·digest 관리, 한 번 만든 이미지를 그대로 승격하는 흐름, 저장 공간 관리</li></ul>
+<h2 id="12-궁금했던-것">12. 궁금했던 것</h2>
+<p>아래 질문은 이번 실습의 사고 표에서 뽑은 것이다.</p>
+<p><strong>Q. 로컬에서 되던 사진 읽기가 왜 staging에서만 500이었나?</strong></p>
+<ul><li>코드는 같았지만 staging 서버의 실행 환경에 tesseract가 없었고, 사진 요청이 들어온 순간에 실패해서 배포 성공·대화 정상으로 보였다. 원인은 Cloud Run 로그의 ERROR 한 줄에서 찾았다</li></ul>
+<p><strong>Q. 컨테이너를 지우고 다시 띄우면 대화가 왜 사라지나?</strong></p>
+<ul><li>대화는 컨테이너 메모리에 있고 컨테이너는 실행할 때마다 이미지에서 새로 시작한다. 이미지 ID는 그대로이고 메시지만 4개에서 0개가 됐다</li></ul>
+<p><strong>Q. 같은 Dockerfile로 staging과 production을 따로 빌드하면 같은 이미지인가?</strong></p>
+<ul><li>패키지 버전은 같았지만 이미지 ID는 달랐다(Cloud Build 두 빌드는 빌드마다 붙는 LABEL의 build_id가 달랐다. 로컬 <code>--no-cache</code> 두 빌드에서 어느 레이어 내용이 달랐는지는 원인 파일까지 확인하지 못했다). 같다고 말하려면 이미지를 한 번만 만들어 두 환경에 보내야 하는데 이번에는 하지 않았다</li></ul>
+<p><strong>Q. PDF 읽기에 <code>pip</code> 패키지(<code>pdf2image</code>)를 넣었는데 왜 Dockerfile 줄이 또 필요했나?</strong></p>
+<ul><li><code>pdf2image</code>는 파이썬 라이브러리이고, PDF를 이미지로 바꾸는 <code>pdftoppm</code>은 운영체제 프로그램이라 <code>pip</code>로 설치되지 않는다</li></ul>
+<h2 id="13-평가-체크리스트-15점-한-줄-의견">13. 평가 체크리스트 (1~5점, 한 줄 의견)</h2>
+<div class="table-scroll"><table><thead><tr><th>번호</th><th>확인할 것</th><th>근거가 있는 절</th><th>점수</th><th>의견</th></tr></thead><tbody><tr><td>1</td><td>로컬에서 되는 기능이 staging에서 실패하는 것을 재현하고 로그에서 원인을 찾았는가</td><td>2</td><td></td><td></td></tr><tr><td>2</td><td>이미지와 컨테이너의 차이(지우면 대화가 사라지고 이미지는 그대로)를 직접 확인했는가</td><td>3, 7</td><td></td><td></td></tr><tr><td>3</td><td>Dockerfile을 5기준으로 검토하고 이미지 안을 열어 <code>.env</code>·<code>tests</code>·<code>docs</code>·<code>__pycache__</code>를 확인했는가</td><td>4</td><td></td><td></td></tr><tr><td>4</td><td>한 줄 변경으로 배포 방식을 바꾸고 Cloud Build 로그에서 Dockerfile 단계를 확인했는가</td><td>5</td><td></td><td></td></tr><tr><td>5</td><td>같은 입력을 여러 환경에 보내 같은 결과인지 확인했는가</td><td>6, 8</td><td></td><td></td></tr><tr><td>6</td><td>같은 Dockerfile이 같은 이미지가 아님을 수치로 확인했는가</td><td>6, 7</td><td></td><td></td></tr><tr><td>7</td><td>필요한 운영체제 프로그램(poppler)을 빠뜨렸을 때의 실패를 로컬 컨테이너에서 먼저 잡고 Dockerfile 줄로 해결했는가</td><td>8</td><td></td><td></td></tr><tr><td>8</td><td>풀지 못한 것과 교재와 달라진 점을 숨기지 않고 적었는가</td><td>10</td><td></td><td></td></tr></tbody></table></div>
+<p><strong>전체 의견</strong>:</p>
+<h2 id="14-첨부할-증거-화면-notion에-직접-붙여-넣기">14. 첨부할 증거 화면 (Notion에 직접 붙여 넣기)</h2>
+<p>증거는 폴더 <code>강의정리\N050\증거화면\</code>의 30개 파일(PNG와 텍스트)이고, 파일 이름은 부록 9절 증거 인덱스에 모두 있다.</p>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 08b · 08c · 08d에는 프로젝트 ID(08d에는 서비스 계정도)가 화면에 보이고, 텍스트 03b에는 서비스 주소, 04a~04d에는 소스·이미지 저장소 주소가 보인다. 공개 문서나 노션에 올리기 전에 가릴지 정한다. 이 보고서에는 값을 옮겨 적지 않았다.</p></div>
+<table><thead><tr><th>절</th><th>장면</th><th>파일(번호)</th></tr></thead><tbody><tr><td>2</td><td>staging 500 응답·Cloud Run 로그, 콘솔 로그 화면(사용자 캡처)</td><td>03a · 08a</td></tr><tr><td>3</td><td>Docker Desktop 설치·로그인·Engine·컨테이너 4개(사용자 캡처)</td><td>06a~06d</td></tr><tr><td>4</td><td>로컬 이미지 점검</td><td>05a</td></tr><tr><td>5</td><td>PR #20 Merged·변경 3파일, 배포 실행 성공</td><td>01a · 01b · 07a</td></tr><tr><td>5</td><td>Cloud Build 615ce1d8 로그와 콘솔 빌드·리비전 화면(사용자 캡처)</td><td>04a · 08b · 08c · 08d</td></tr><tr><td>5</td><td>staging 배너·<code>/version</code>, 📷 버튼, 입력창에 일정 세 줄(사용자 캡처), 성공 응답</td><td>02a · 02b · 09a · 09b · 03b</td></tr><tr><td>6</td><td>production 승인 완료·진행 화면(첫 production 배포, 사용자 캡처)</td><td>10b</td></tr><tr><td>6</td><td>production 빌드 로그, 세 곳 비교, staging·production 이미지 비교</td><td>04b · 10c · 10d</td></tr><tr><td>7</td><td>과제 1(컨테이너 들여다보기), 과제 2(<code>--no-cache</code> 두 번 빌드)</td><td>11a · 12a</td></tr><tr><td>8</td><td>과제 3(로컬·컨테이너 실패→성공, staging, production, 빌드 로그)</td><td>13a · 13b · 14a · 04c · 04d</td></tr></tbody></table>
+<p>캡처가 없는 장면은 과제 1의 브라우저 대화와 두 번째 production 배포(PR #23)의 승인 화면이다.</p>
+<p>*이 문서에는 API 키 값, 서비스 주소, 프로젝트 ID, 계정 이메일이 없습니다.*</p>
+<p class="footer-note">N050 · 실습과제 제출보고서 — 노션 정리 양식 본문</p>
+
+</main>
+</body>
+</html>
