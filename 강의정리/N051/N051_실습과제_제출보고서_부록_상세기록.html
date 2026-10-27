@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[부록] N051 실습과제 제출보고서 — 상세 기록</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>[부록] N051 실습과제 제출보고서 — 상세 기록</h1>
+<p>본문(<code>N051_실습과제_제출보고서</code>)은 한눈에 읽는 보고서이고, 이 부록은 실습 중 실제로 친 명령과 나온 출력·수치를 있는 그대로 남긴 기록이다. 프로젝트 ID는 <code>&lt;프로젝트 ID&gt;</code>, 프로젝트 번호는 <code>&lt;프로젝트 번호&gt;</code>, 이메일은 <code>&lt;내 이메일&gt;</code>로 가렸다(공개 저장소). 커밋 SHA·다이제스트·PR 번호는 공개 값이라 그대로 적었다. 시각은 한국 시각(KST = UTC+9)이다.</p>
+<h2 id="목차">목차</h2>
+<ul><li><a href="#1-시작-상태와-소스-배포-이미지-기준선">1. 시작 상태와 소스 배포 이미지 기준선</a></li><li><a href="#2-장애-대응-훈련--처음의-정답표">2. 장애 대응 훈련 — 처음의 정답표</a></li><li><a href="#3-이미지-저장소권한변수-pr-24">3. 이미지 저장소·권한·변수, PR #24</a></li><li><a href="#4-연결표와-이미지-승격-pr-2527">4. 연결표와 이미지 승격 (PR #25~#27)</a></li><li><a href="#5-로컬-이미지-시험과-규칙-pr-28">5. 로컬 이미지 시험과 규칙 PR #28</a></li><li><a href="#6-정리-정책-드라이런">6. 정리 정책 드라이런</a></li><li><a href="#7-고장-난-dockerfile-4종">7. 고장 난 Dockerfile 4종</a></li><li><a href="#8-장애-대응-훈련--다시의-정답표">8. 장애 대응 훈련 — 다시의 정답표</a></li><li><a href="#9-시각-대조표">9. 시각 대조표</a></li><li><a href="#10-증거-인덱스">10. 증거 인덱스</a></li><li><a href="#11-하지-않은-것--쓰면-안-되는-값">11. 하지 않은 것 · 쓰면 안 되는 값</a></li></ul>
+<h2 id="1-시작-상태와-소스-배포-이미지-기준선">1. 시작 상태와 소스 배포 이미지 기준선</h2>
+<pre><code>gcloud config list
+gcloud run services list --region us-central1
+gh variable list
+gh api repos/{owner}/{repo}/environments --jq '.environments[].name'
+git branch -r
+ls .github/workflows Dockerfile .dockerignore</code></pre>
+<p>결과 요약: 프로젝트 <code>&lt;프로젝트 ID&gt;</code>, <code>run/region = us-central1</code>. Cloud Run 서비스 <code>friend-agent</code>(마지막 배포 2026-10-26 05:36Z)와 <code>friend-agent-staging</code>(05:16Z). 저장소 변수 <code>DEPLOY_SA</code>·<code>GCP_PROJECT_ID</code>·<code>RUNTIME_SA</code>·<code>WIF_PROVIDER</code> 4개(교안의 <code>BUILD_SA</code> 없음, 템플릿 어디에도 쓰이지 않음). 환경 <code>production</code>·<code>staging</code>. 워크플로 <code>ci.yml</code>·<code>deploy.yml</code>·<code>hello.yml</code>. 로컬 브랜치 <code>staging</code>이 원격과 같음.</p>
+<p>소스 배포 이미지 기준선(조회만 했다):</p>
+<pre><code>gcloud artifacts docker images list us-central1-docker.pkg.dev/&lt;프로젝트 ID&gt;/cloud-run-source-deploy --include-tags
+gcloud artifacts repositories describe cloud-run-source-deploy --location us-central1 --format="value(sizeBytes,name)"</code></pre>
+<div class="table-scroll"><table><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td>이미지 수</td><td>40 (<code>friend-agent</code> 26 · <code>friend-agent-staging</code> 12 · <code>load-test</code> 2)</td></tr><tr><td>태그</td><td><code>latest</code> 하나뿐(패키지마다 가장 최근 한 개)</td></tr><tr><td>저장소 크기</td><td>2,217.921MB (무료 0.5GB 초과)</td></tr><tr><td>가장 오래된 이미지</td><td>2026-10-20 06:22Z대(<code>friend-agent</code>)</td></tr></tbody></table></div>
+<p><code>/version</code> 응답(production, 승격 전):</p>
+<pre><code>{"commit":"21ee625dacc48abb78f1eb96613cc72fe554fabb","revision":"friend-agent-00020-clm","env":"production","llm":"openai","model":"gpt-4o-mini","storage":"memory","auth":"none","banner":""}</code></pre>
+<p>staging은 <code>"commit":"9c0a5b3c89af644f47a5eed5d3e095000295d76d","revision":"friend-agent-staging-00008-lhs"</code>였다.</p>
+<h2 id="2-장애-대응-훈련--처음의-정답표">2. 장애 대응 훈련 — 처음의 정답표</h2>
+<p>내가 화면을 열었고, 이 표는 같은 값을 조회 명령으로 다시 확인한 것이다.</p>
+<pre><code>for r in friend-agent-00020-clm friend-agent-00019-nlc friend-agent-00018-klq; do
+  gcloud run revisions describe $r --region us-central1 --format 'value(status.imageDigest)'; done</code></pre>
+<div class="table-scroll"><table><thead><tr><th>리비전</th><th>이미지 다이제스트(앞 12자리)</th><th>비고</th></tr></thead><tbody><tr><td><code>friend-agent-00020-clm</code></td><td><code>735e0e99525f</code></td><td>트래픽 100%, 이미지에 <code>latest</code> 태그</td></tr><tr><td><code>friend-agent-00019-nlc</code></td><td><code>33ee47ea2f53</code></td><td>바로 전 리비전</td></tr><tr><td><code>friend-agent-00018-klq</code></td><td><code>33ee47ea2f53</code></td><td>00019와 같은 이미지(설정만 바꾼 리비전)</td></tr><tr><td><code>friend-agent-staging-00008-lhs</code></td><td><code>2bf4368fae93</code></td><td>staging. 같은 저장소의 별도 패키지 <code>friend-agent-staging</code>의 <code>latest</code></td></tr></tbody></table></div>
+<p>리비전 생성 시각(UTC): 00020 = 2026-10-26T05:33:48Z, 00019 = 04:48:06Z, staging 00008 = 05:15:37Z. 이미지 목록의 만든 시각(KST) <code>735e0e99525f</code> = 14:33:47(= 05:33Z)와 맞아 <strong>시각으로 맞춰</strong> 찾았다.</p>
+<h2 id="3-이미지-저장소권한변수-pr-24">3. 이미지 저장소·권한·변수, PR #24</h2>
+<pre><code>gcloud artifacts repositories create friend-agent --project &lt;프로젝트 ID&gt; --repository-format docker --location us-central1
+gcloud artifacts repositories add-iam-policy-binding friend-agent --project &lt;프로젝트 ID&gt; --location us-central1 --member "serviceAccount:github-deployer@&lt;프로젝트 ID&gt;.iam.gserviceaccount.com" --role roles/artifactregistry.writer
+gh variable set AR_REPO --body "us-central1-docker.pkg.dev/&lt;프로젝트 ID&gt;/friend-agent"</code></pre>
+<p>출력: <code>Created repository [friend-agent].</code> · <code>Updated IAM policy for repository [friend-agent].</code> 조회로 저장소 목록(<code>cloud-run-source-deploy</code>, <code>friend-agent</code>), 저장소 권한(바인딩 하나: <code>github-deployer</code>의 <code>roles/artifactregistry.writer</code>), <code>AR_REPO</code>(2026-10-26T23:37:08Z 등록)를 확인했다.</p>
+<p>PR #24 diff(<code>.github/workflows/deploy.yml</code>, 21줄 추가 · 10줄 삭제)의 핵심:</p>
+<pre><code>+    env:
++      IMAGE: ${{ vars.AR_REPO }}/friend-agent:${{ github.sha }}
++      - uses: google-github-actions/setup-gcloud@v3
++      - name: 이미지 만들기와 올리기
++        run: |
++          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
++          docker build --tag "$IMAGE" .
++          docker push "$IMAGE"
+-          source: .
++          image: ${{ env.IMAGE }}
+-          flags: --service-account=${{ vars.RUNTIME_SA }} --clear-base-image
++          flags: --service-account=${{ vars.RUNTIME_SA }}</code></pre>
+<p>4기준 점검: 권한 추가는 워크플로에 없음(저장소 하나 writer는 위에서 따로) · 태그 <code>github.sha</code> · 시크릿 인자 없음 · 액션 버전 <code>checkout@v7</code>·<code>auth@v3</code>·<code>setup-gcloud@v3</code>·<code>deploy-cloudrun@v3</code> 유지. PR #24는 CI 2개 통과·충돌 없음에서 머지(08:40:39).</p>
+<p>실행 #18(staging, 커밋 <code>def31657453804a041b56586b406808a30592f10</code>) 결과:</p>
+<div class="table-scroll"><table><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td><code>docker push</code> 마지막 줄</td><td><code>def31657453804a041b56586b406808a30592f10: digest: sha256:d9a9f3de8df079e230122ce1c256e0a8e8f8eddd2f7c52b1d4b2860e2080b9c1 size: 2413</code></td></tr><tr><td>Artifact Registry 태그</td><td><code>def31657453804a041b56586b406808a30592f10</code> → <code>sha256:d9a9f3de8df079e2…</code>, 크기 113,413,019바이트</td></tr><tr><td>staging 리비전</td><td><code>friend-agent-staging-00009-vgg</code>, 트래픽 100%, 이미지 <code>…/friend-agent@sha256:d9a9f3de8df079e2…</code></td></tr><tr><td>staging <code>/version</code></td><td><code>"commit":"def31657453804a041b56586b406808a30592f10","revision":"friend-agent-staging-00009-vgg","env":"staging"</code></td></tr></tbody></table></div>
+<p>앱 화면 확인: 왼쪽 아래 "빌드 def3165". 일정표 사진(<code>data/samples/schedule.png</code>)을 올리자 입력창에 글자가 들어왔고(<code>산책 동아리 10월 일정</code>, <code>10월 21일 수요일 19:00 정기 모임(학생회관 302호)</code> 등), 보내기 후 오른쪽 패널에 <code>create_reminder</code>가 두 번 호출되고 도구 결과가 <code>약속을 저장하지 않았습니다: 이미 지난 시각입니다</code>였다(실습일 10-27, 사진 일정은 10-21~25). 하루는 "이미 지난 일정이라서 저장할 수 없어"라고 답했다. 첫 호출의 <code>due_at</code>이 <code>2026-10-26T19:00</code>(사진은 10월 21일)이라 모델의 날짜 해석이 틀렸으나 이번 배포 실습과는 무관하다.</p>
+<h2 id="4-연결표와-이미지-승격-pr-2527">4. 연결표와 이미지 승격 (PR #25~#27)</h2>
+<p><strong>PR #25(staging → main) 머지·승인 후</strong>(실행 #19, 커밋 <code>3201e13693a37a04737bf873498f849dd812267b</code>):</p>
+<pre><code>main: 3201e13693a37a04737bf873498f849dd812267b
+staging: def31657453804a041b56586b406808a30592f10
+tags:  3201e136…  -&gt; sha256:88f6f1871c112…      def31657…  -&gt; sha256:d9a9f3de8df079…
+friend-agent (production) rev=friend-agent-00021-kxd traffic=100  …@sha256:88f6f1871c112…
+friend-agent-staging      rev=friend-agent-staging-00009-vgg traffic=100  …@sha256:d9a9f3de8df079…</code></pre>
+<p>두 서비스의 <code>/version</code> commit이 각각 <code>3201e136…</code>, <code>def31657…</code>로 달랐고 다이제스트도 달랐다.</p>
+<p><strong>손 승격</strong>(production을 staging 이미지로, <code>COMMIT_SHA</code>도 함께):</p>
+<pre><code>gcloud run deploy friend-agent --region us-central1 \
+  --image us-central1-docker.pkg.dev/&lt;프로젝트 ID&gt;/friend-agent/friend-agent@sha256:d9a9f3de8df079e230122ce1c256e0a8e8f8eddd2f7c52b1d4b2860e2080b9c1 \
+  --update-env-vars COMMIT_SHA=def31657453804a041b56586b406808a30592f10</code></pre>
+<p>출력 마지막: <code>Service [friend-agent] revision [friend-agent-00022-p9n] has been deployed and is serving 100 percent of traffic.</code> 실행 후: production <code>00022-p9n</code> 100% <code>sha256:d9a9f3de8df0</code>, staging <code>00009-vgg</code> 100% <code>sha256:d9a9f3de8df0</code>, production <code>/version</code>의 commit <code>def31657…</code>, 환경변수 이름 <code>LLM_PROVIDER</code>·<code>LLM_API_KEY</code>·<code>COMMIT_SHA</code>·<code>ENV</code>·<code>OCR_ENABLED</code>.</p>
+<p><strong>워크플로 승격 PR #26 diff</strong>(커밋 <code>90af4bb</code>, 18줄 추가 · 3줄 삭제):</p>
+<pre><code>     env:
+-      IMAGE: ${{ vars.AR_REPO }}/friend-agent:${{ github.sha }}
++      STAGING_SERVICE: friend-agent-staging
+...
++      - name: 이미지 만들기와 올리기 (staging)
++        if: github.ref_name != 'main'
+         run: |
++          IMAGE="${{ vars.AR_REPO }}/friend-agent:${{ github.sha }}"
+           ...
++          echo "IMAGE=$IMAGE" &gt;&gt; "$GITHUB_ENV"
++          echo "COMMIT=${{ github.sha }}" &gt;&gt; "$GITHUB_ENV"
++
++      - name: staging 이미지 찾기 (production 승격)
++        if: github.ref_name == 'main'
++        run: |
++          REV=$(gcloud run services describe "$STAGING_SERVICE" --region us-central1 --format json | jq -r '.status.traffic | max_by(.percent) | .revisionName')
++          gcloud run revisions describe "$REV" --region us-central1 --format json &gt; rev.json
++          echo "IMAGE=$(jq -r '.status.imageDigest' rev.json)" &gt;&gt; "$GITHUB_ENV"
++          echo "COMMIT=$(jq -r '.spec.containers[0].env[] | select(.name=="COMMIT_SHA") | .value' rev.json)" &gt;&gt; "$GITHUB_ENV"
++          echo "staging 리비전 $REV 의 이미지를 승격한다"
+...
+-            COMMIT_SHA=${{ github.sha }}
++            COMMIT_SHA=${{ env.COMMIT }}</code></pre>
+<p><code>jq</code> 식 사전 점검(이 PC에는 <code>jq</code>가 없어 같은 경로를 Python으로 적용): staging 서비스 JSON의 <code>status.traffic</code> 최대 <code>percent</code>의 리비전 = <code>friend-agent-staging-00008…</code>(당시), <code>status.imageDigest</code>가 <code>…@sha256:…</code> 형태, <code>spec.containers[0].env</code>에 <code>COMMIT_SHA</code> 존재를 확인했다.</p>
+<p><strong>실행 #20(staging, 커밋 <code>8243335d0e64520924c23c92ac0010a8df8cd9ff</code>) 단계 결론</strong>: <code>이미지 만들기와 올리기 (staging)</code> = success, <code>staging 이미지 찾기 (production 승격)</code> = <strong>skipped</strong>. staging 리비전 <code>friend-agent-staging-00010-zx9</code>(다이제스트 <code>d339e5d333ec</code>, <code>/version</code> commit <code>8243335d…</code>).</p>
+<p><strong>실행 #21(main, 머지 커밋 <code>4ab996a</code>) 단계 결론</strong>: <code>이미지 만들기와 올리기 (staging)</code> = <strong>skipped</strong>, <code>staging 이미지 찾기 (production 승격)</code> = <strong>success</strong>, <code>deploy-cloudrun</code> = success. 로그 발췌:</p>
+<pre><code>staging 리비전 friend-agent-staging-00010-zx9 의 이미지를 승격한다
+배포된 주소 https://friend-agent-&lt;…&gt;.a.run.app
+배포한 이미지 us-central1-docker.pkg.dev/&lt;프로젝트 ID&gt;/friend-agent/friend-agent@sha256:d339e5d333ec55a40a225a8fe171afe15449217c8a819c86aee541add7cc3b67</code></pre>
+<p>승인 전 확인: staging <code>/version</code> = <code>{"commit":"8243335d0e64520924c23c92ac0010a8df8cd9ff","revision":"friend-agent-staging-00010-zx9","env":"staging",…}</code>. 승인 후 조회:</p>
+<pre><code>friend-agent         friend-agent-00023-8ht         100%  sha256:d339e5d333ec
+friend-agent-staging friend-agent-staging-00010-zx9 100%  sha256:d339e5d333ec
+production /version: "commit":"8243335d0e64520924c23c92ac0010a8df8cd9ff","revision":"friend-agent-00023-8ht","env":"production"</code></pre>
+<p><strong>실행 시간 비교</strong>(Actions 화면): 실행 #19 test 15초 · deploy <strong>1분 26초</strong>(이미지 새로 빌드), 실행 #21 test 17초 · deploy <strong>46초</strong>(승격), 실행 #20 test 25초 · deploy 1분 26초(staging 빌드).</p>
+<h2 id="5-로컬-이미지-시험과-규칙-pr-28">5. 로컬 이미지 시험과 규칙 PR #28</h2>
+<pre><code>docker info --format '{{.OSType}}/{{.Architecture}} {{.ServerVersion}}'   # linux/x86_64 29.9.2 (Docker Desktop을 켠 뒤)
+gcloud artifacts repositories create local-test --project &lt;프로젝트 ID&gt; --repository-format docker --location us-central1
+gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+docker build -t us-central1-docker.pkg.dev/&lt;프로젝트 ID&gt;/local-test/friend-agent:local .
+docker image inspect --format '{{.Architecture}}/{{.Os}}' &lt;위 이미지&gt;   # amd64/linux
+docker push &lt;위 이미지&gt;      # local: digest: sha256:35c162470d2dd19b67f8cea6a2292a0d1bbaa7aa23f393b8aac3802ebe3b7c8b size: 856
+gcloud run deploy local-test --region us-central1 --image &lt;위 이미지&gt; --set-env-vars LLM_PROVIDER=fake --no-allow-unauthenticated --min-instances 0 --max-instances 1</code></pre>
+<p>결과: 리비전 <code>local-test-00001-rsv</code> 배포 성공. <code>/version</code>(인증 토큰으로) = <code>{"commit":"local","revision":"local-test-00001-rsv","env":"local","llm":"fake","model":"fake","storage":"memory","auth":"none","banner":""}</code>, 토큰 없이 호출 = <code>403</code>. 삭제:</p>
+<pre><code>gcloud run services list … | grep -x local-test      # 이름 확인
+gcloud run services delete local-test --region us-central1 --quiet     # Deleted service [local-test].
+gcloud artifacts repositories delete local-test --location us-central1 --quiet   # Deleted repository [local-test].
+docker image rm &lt;위 이미지&gt;</code></pre>
+<p>삭제 뒤 서비스는 <code>friend-agent</code>·<code>friend-agent-staging</code>뿐, Artifact Registry 저장소는 <code>cloud-run-source-deploy</code>·<code>friend-agent</code>뿐이었다.</p>
+<p>PR #28(커밋 <code>1010a7d</code>로 머지, 09:31:04): <code>AGENTS.md</code>의 "배포와 권한" 끝에 한 줄 추가.</p>
+<pre><code>+- 배포용 이미지는 GitHub Actions에서만 만든다. 로컬 환경에서 만든 이미지를 Artifact Registry에 올리거나 배포하지 않는다.</code></pre>
+<p>실행 #22(staging, <code>1010a7d</code>) success. 그 결과 staging 리비전 <code>friend-agent-staging-00011-7sm</code>가 다이제스트 <code>c87c9b5279f8</code>로 production(<code>d339e5d333ec</code>)보다 앞서게 됐다.</p>
+<h2 id="6-정리-정책-드라이런">6. 정리 정책 드라이런</h2>
+<p><code>docs/cleanup-policy.json</code>(작업 폴더의 git 미추적 파일. 처음 만든 로컬 브랜치 <code>cleanup-policy</code>는 파일을 커밋하지 않았고 비어 있어 삭제했다):</p>
+<pre><code>[
+  {"name": "delete-older-than-7d", "action": {"type": "Delete"}, "condition": {"tagState": "any", "olderThan": "7d"}},
+  {"name": "keep-recent-10", "action": {"type": "Keep"}, "mostRecentVersions": {"keepCount": 10}}
+]</code></pre>
+<pre><code>gcloud artifacts repositories set-cleanup-policies friend-agent --project &lt;프로젝트 ID&gt; --location us-central1 --policy docs/cleanup-policy.json --dry-run
+gcloud artifacts repositories set-cleanup-policies cloud-run-source-deploy --project &lt;프로젝트 ID&gt; --location us-central1 --policy docs/cleanup-policy.json --dry-run
+gcloud artifacts repositories describe &lt;저장소&gt; --project &lt;프로젝트 ID&gt; --location us-central1 --format="yaml(cleanupPolicyDryRun,cleanupPolicies)"</code></pre>
+<p>조회 결과(두 저장소 동일): <code>delete-older-than-7d</code>(action DELETE, <code>olderThan: 604800s</code>, <code>tagState: ANY</code>), <code>keep-recent-10</code>(action KEEP, <code>keepCount: 10</code>), <strong><code>cleanupPolicyDryRun: true</code></strong>. 저장소 크기: <code>friend-agent</code> 316.397MB, <code>cloud-run-source-deploy</code> 2217.921MB.</p>
+<p><code>cloud-run-source-deploy</code> 이미지 40개의 만든 시각(UTC)으로 시뮬레이션한 삭제 후보(7일 초과이면서 최근 10개 밖):</p>
+<div class="table-scroll"><table><thead><tr><th>시점</th><th>7일 초과</th><th>저장소 전체 기준 삭제</th><th>이미지 이름별 기준 삭제</th></tr></thead><tbody><tr><td>10-27 01:20Z(지금)</td><td>0</td><td>0</td><td>0</td></tr><tr><td>10-28 01:20Z(내일)</td><td>6</td><td>6</td><td>6</td></tr><tr><td>10-30 01:20Z(3일 뒤)</td><td>20</td><td>20</td><td>16</td></tr></tbody></table></div>
+<p>크기 합계는 이미지끼리 겹치는 레이어를 중복으로 세므로 실제 확보 용량보다 크게 나와 표에서 뺐다. 감사 로그(<code>artifactregistry.googleapis.com</code>의 정리 관련 메서드)를 <code>--freshness=2d</code>로 조회했으나 기록이 없었다.</p>
+<h2 id="7-고장-난-dockerfile-4종">7. 고장 난 Dockerfile 4종</h2>
+<p>공통: 고장본을 루트에 <code>cp</code>로 덮어쓰고 <code>docker build</code>, 확인 뒤 <code>git checkout -- Dockerfile</code>(또는 <code>.dockerignore</code>)로 복구하고 같은 확인을 다시 했다. 모든 컨테이너는 <code>-e LLM_PROVIDER=fake</code>로 띄워 외부 호출 없이 시험했다. 교안의 <code>cp starter/…</code> 복구는 쓰지 않았다(<code>poppler-utils</code> 보존).</p>
+<p><strong>문제 A</strong>(<code>no-tesseract/Dockerfile</code>):</p>
+<pre><code>POST /api/ocr -&gt; HTTP 500  {"detail":"사진에서 글자를 읽는 프로그램이 서버에 없습니다."}
+컨테이너 로그: {"severity": "ERROR", "message": "tesseract 프로그램을 찾을 수 없습니다. 실행 환경에 tesseract 가 설치되어 있지 않습니다."}
+시작 로그는 정상: Application startup complete. / Uvicorn running on http://0.0.0.0:8080</code></pre>
+<p>고장본과 <code>starter/Dockerfile</code>의 차이는 <code>RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-kor &amp;&amp; rm -rf /var/lib/apt/lists/*</code>(주석 포함 5줄) 삭제. 복구본: <code>POST /api/ocr</code> = HTTP 200, <code>{"text":"산책 동아리 10월 일정\n10월 넷째 주 공지\n10월 21일 수요일 19:00 …</code>.</p>
+<p><strong>문제 B</strong>(<code>env-included/dockerignore</code>): <code>docker run --rm friend-agent:broken-b ls -a /app</code> 결과에 <code>.env</code>가 있었다(이 외 <code>.env.example</code>·<code>.gcloudignore</code>·<code>.github</code>·<code>.gitignore</code>·<code>AGENTS.md</code> 등). <code>.env</code> 내용은 열어 보지 않았다. 이미지는 어디에도 올리지 않았다. 원본(HEAD) 대비 차이:</p>
+<pre><code>-.env
+-**/__pycache__/
+-**/*.pyc
++__pycache__/
++*.pyc</code></pre>
+<p>복구본의 <code>/app</code> 목록에는 <code>.env</code>가 없고 <code>.env.example</code>만 있었다. 로컬 폴더에서 git이 무시하는 파일: <code>.env</code>, <code>.pytest_cache/</code>, <code>.venv/</code>, <code>app/__pycache__/</code>, <code>app/store/__pycache__/</code>.</p>
+<p><strong>문제 C</strong>(<code>root-user/Dockerfile</code>): <code>/version</code>·<code>/health</code>(<code>{"status":"ok"}</code>, HTTP 200) 정상, <code>docker run --rm friend-agent:broken-c whoami</code> = <strong><code>root</code></strong>. 차이: 아래 3줄이 없음.</p>
+<pre><code># 5) 관리자(root)가 아닌 사용자로 실행한다.
+RUN useradd --create-home appuser
+USER appuser</code></pre>
+<p>복구본 <code>whoami</code> = <code>appuser</code>, <code>/health</code> = 200.</p>
+<p><strong>문제 D</strong>(<code>port-fixed/Dockerfile</code>): <code>docker ps</code>는 <code>0.0.0.0:8080-&gt;8080/tcp</code> <code>Up</code>, <code>curl http://localhost:8080/health</code> = <code>HTTP 000</code>(curl 종료 코드 52). 로그: <code>INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)</code>. 차이:</p>
+<pre><code>-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
++CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+<p>복구본: 로그 <code>0.0.0.0:8080</code>, <code>/health</code> = 200. <code>-e PORT=9000 -p 9000:9000</code>로도 로그 <code>0.0.0.0:9000</code>, <code>/health</code> = 200.</p>
+<p>고장본에는 이 외에 <code>starter/</code>와 현재 Dockerfile의 <code>poppler-utils</code>를 설치하는 <code>apt-get</code> 줄 1개(−/+ 한 쌍)의 차이가 항상 함께 나온다(고장본이 <code>starter/</code> 기준이라 문제 원인과 무관). 연습용 이미지는 모두 <code>docker image rm</code>으로 지웠고 컨테이너도 남기지 않았다. <code>git status</code>는 깨끗했다(미추적 <code>docs/cleanup-policy.json</code>만).</p>
+<h2 id="8-장애-대응-훈련--다시의-정답표">8. 장애 대응 훈련 — 다시의 정답표</h2>
+<pre><code>for s in friend-agent friend-agent-staging; do
+  rev=$(gcloud run services describe $s --region us-central1 --format "value(status.traffic[0].revisionName)")
+  gcloud run revisions describe $rev --region us-central1 --format 'value(status.imageDigest)'; done
+gcloud artifacts docker tags list us-central1-docker.pkg.dev/&lt;프로젝트 ID&gt;/friend-agent/friend-agent</code></pre>
+<div class="table-scroll"><table><thead><tr><th>리비전</th><th>다이제스트</th><th>이미지 태그(커밋 SHA)</th><th>비고</th></tr></thead><tbody><tr><td><code>friend-agent-00023-8ht</code>(production)</td><td><code>d339e5d333ec</code></td><td><code>8243335d0e64520924c23c92ac0010a8df8cd9ff</code></td><td>트래픽 100%</td></tr><tr><td><code>friend-agent-00022-p9n</code></td><td><code>d9a9f3de8df0</code></td><td><code>def31657453804a041b56586b406808a30592f10</code></td><td>바로 전(2번의 답)</td></tr><tr><td><code>friend-agent-00021-kxd</code></td><td><code>88f6f1871c11</code></td><td><code>3201e13693a37a04737bf873498f849dd812267b</code></td><td></td></tr><tr><td><code>friend-agent-staging-00011-7sm</code>(지금 staging)</td><td><code>c87c9b5279f8</code></td><td><code>1010a7d6228fbd331ffda36f37a3762bc94f5230</code></td><td>main보다 앞섬(3번)</td></tr></tbody></table></div>
+<p>내 답과 시간: 1번 30초(<code>/version</code> <code>commit</code> <code>8243335d…</code>, <code>revision</code> <code>friend-agent-00023-8ht</code>) · 2번 1분 30초(바로 전 리비전의 이미지 주소 <code>…@sha256:d9a9f3de8df079e230122ce1c256e0a8e8f8eddd2f7c52b1d4b2860e2080b9c1</code>) · 3번 1분.</p>
+<h2 id="9-시각-대조표">9. 시각 대조표</h2>
+<div class="table-scroll"><table><thead><tr><th>사건</th><th>시각(KST)</th></tr></thead><tbody><tr><td>PR #24 머지(<code>def3165</code>) → 실행 #18</td><td>10-27 08:40:39 → 08:40:41~08:42:40</td></tr><tr><td>staging 리비전 <code>00009-vgg</code> 생성</td><td>08:41:56</td></tr><tr><td>PR #25 머지(<code>3201e13</code>) → 실행 #19</td><td>08:53:20 → 08:53:22~08:55:19</td></tr><tr><td>production 리비전 <code>00021-kxd</code> 생성</td><td>08:54:47</td></tr><tr><td>손 승격: production 리비전 <code>00022-p9n</code> 생성</td><td>08:58:50</td></tr><tr><td>PR #26 머지(<code>8243335</code>) → 실행 #20</td><td>09:02:07 → 09:02:09~09:04:06</td></tr><tr><td>staging 리비전 <code>00010-zx9</code> 생성</td><td>09:03:34</td></tr><tr><td>PR #27 머지(<code>4ab996a</code>) → 실행 #21(승인 대기 포함)</td><td>09:06:13 → 09:06:15~09:09:12</td></tr><tr><td>production 리비전 <code>00023-8ht</code> 생성</td><td>09:08:51</td></tr><tr><td>PR #28 머지(<code>1010a7d</code>) → 실행 #22</td><td>09:31:04 → 09:31:06~09:33:09</td></tr><tr><td>staging 리비전 <code>00011-7sm</code> 생성</td><td>09:32:37</td></tr></tbody></table></div>
+<p>실행 시각은 <code>gh run list</code>의 <code>createdAt</code>·<code>updatedAt</code>(UTC)을 +9시간 한 값이다.</p>
+<h2 id="10-증거-인덱스">10. 증거 인덱스</h2>
+<p>폴더 <code>강의정리\N051\증거화면\</code>(git 미추적). 01·02·13·15는 프로젝트 ID가, 03·04·05·08~12는 GitHub 계정 이름이 화면에 보인다.</p>
+<div class="table-scroll"><table><thead><tr><th>번호</th><th>파일</th><th>내용</th></tr></thead><tbody><tr><td>01</td><td><code>01_2장훈련_리비전탭.webp</code></td><td>Cloud Run 리비전 목록(00020-clm이 100%)과 상세</td></tr><tr><td>02</td><td><code>02_2장훈련_AR소스배포목록.webp</code></td><td>Artifact Registry <code>cloud-run-source-deploy/friend-agent</code>: 태그는 <code>latest</code> 하나</td></tr><tr><td>03</td><td><code>03_2장훈련_Actions목록.webp</code></td><td>Actions의 deploy 실행 목록(#17 등)</td></tr><tr><td>04</td><td><code>04_PR24_체크통과.webp</code></td><td>PR #24: All checks have passed, 충돌 없음</td></tr><tr><td>05</td><td><code>05_run18_staging_배포중.webp</code></td><td>실행 #18 staging 배포 진행</td></tr><tr><td>06</td><td><code>06_staging_OCR_입력창.webp</code></td><td>staging 화면: 일정표 글자가 입력창에 들어옴, "빌드 def3165"</td></tr><tr><td>07</td><td><code>07_staging_대화_약속저장_거절.webp</code></td><td><code>create_reminder</code> 두 번, 도구 결과 "이미 지난 시각입니다"</td></tr><tr><td>08</td><td><code>08_run19_main_production승인.png</code></td><td>실행 #19: production 승인, success</td></tr><tr><td>09</td><td><code>09_run20_staging_성공.webp</code></td><td>실행 #20(승격 워크플로 PR #26) success</td></tr><tr><td>10</td><td><code>10_run21_main_승인대기.webp</code></td><td>실행 #21: production waiting for review</td></tr><tr><td>11</td><td><code>11_run21_main_승격_성공.webp</code></td><td>실행 #21 success, deploy 46초</td></tr><tr><td>12</td><td><code>12_run22_규칙PR_배포중.webp</code></td><td>실행 #22(PR #28 머지) 진행</td></tr><tr><td>13</td><td><code>13_7장훈련_컨테이너탭.webp</code></td><td>현재 리비전의 컨테이너 탭(이미지 주소가 잘려 보임)</td></tr><tr><td>14</td><td><code>14_7장훈련_리비전탭.webp</code></td><td>리비전 목록 <code>00023-8ht</code>~<code>00018-klq</code></td></tr><tr><td>15</td><td><code>15_7장훈련_AR목록.webp</code></td><td><code>friend-agent/friend-agent</code> 태그가 있는 이미지 4개</td></tr></tbody></table></div>
+<h2 id="11-하지-않은-것--쓰면-안-되는-값">11. 하지 않은 것 · 쓰면 안 되는 값</h2>
+<p><strong>하지 않은 것</strong></p>
+<ul><li>선택 과제 4종(손 롤백 훈련·태그 변경 금지·slim 크기 비교·배포 기록 자동화)</li><li>정리 정책의 <code>--no-dry-run</code> 전환과 드라이런 결과(감사 로그) 확인, "최근 10개" 기준(저장소 전체/이미지별) 확인</li><li>정책 파일 PR, Apple Silicon에서의 <code>linux/amd64</code> 실패 재현</li><li>교안의 5분 타이머를 질문별로 재는 것(2장은 합계 "5분 이내"만 기록)</li></ul>
+<p><strong>쓰면 안 되는 값(공개 문서)</strong>: 프로젝트 ID·프로젝트 번호·서비스 URL(번호 포함)·계정 이메일. 이 부록의 <code>&lt;…&gt;</code>는 그 자리표시자이다.</p>
+
+</main>
+</body>
+</html>

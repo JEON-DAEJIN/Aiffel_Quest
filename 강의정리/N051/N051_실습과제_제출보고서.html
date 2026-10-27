@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[제출 보고서] N051 「한 번 만든 이미지로 배포하기」 실습 과제 수행 결과</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>[제출 보고서] N051 「한 번 만든 이미지로 배포하기」 실습 과제 수행 결과</h1>
+<p><strong>수신</strong>: N051 강의 강사님 · <strong>발신</strong>: 수강생 전대진(DJ)</p>
+<p><strong>실습일</strong>: 2026-10-27</p>
+<p><strong>과제 대상</strong>: N049·N050에서 CI·staging·승인·Dockerfile을 붙인 AI 친구 에이전트 서비스(<code>friend-agent</code>)의 배포를 "배포할 때마다 소스로 이미지를 새로 빌드"하는 방식에서 "Actions에서 이미지를 한 번만 만들어 커밋 SHA 태그를 붙이고, staging에서 확인한 이미지를 그대로 production에 승격"하는 방식으로 바꾸는 실습. 이어서 정리 정책(드라이런), 로컬에서 만든 이미지 시험, 고장 난 Dockerfile 4종 진단, 장애 대응 훈련 재측정까지 했다.</p>
+<p><strong>평가 방법</strong>: 13번 "평가 체크리스트"를 보고 항목별로 점수와 한 줄 의견을 남겨 주세요.</p>
+<div class="callout summary"><p><span class="label">📌 요약</span> — 이 문서는 노션 「강의정리 양식」 구조(한눈에 → 절별 기록 → 사고 표 → 정리 → 궁금했던 것)로 쓴 <strong>한눈에 읽는 보고서</strong>이다. 명령·로그·수치를 있는 그대로 남긴 상세 기록은 같은 폴더의 부록 <code>N051_실습과제_제출보고서_부록_상세기록</code>에 있다. 프로젝트 ID·프로젝트 번호·계정 이메일은 공개 저장소에 올라가므로 <code>&lt;프로젝트 ID&gt;</code>·<code>&lt;프로젝트 번호&gt;</code>처럼 가렸고, 커밋 SHA와 다이제스트는 공개 저장소 값이라 그대로 적었다. 시각은 모두 한국 시각(KST)이다.</p></div>
+<h2 id="0-한눈에">0. 한눈에</h2>
+<div class="diagram-wrap"><svg viewBox="0 0 760 221" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="그림: 오늘의 흐름. 이미지는 staging 브랜치 실행에서 한 번만 만들고, main 실행은 그 이미지를 읽어 그대로 production에 보낸다."><defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="var(--svg-stroke)"/></marker></defs><rect class="svg-box" x="10" y="14" width="190" height="88" rx="10" fill="var(--svg-fill1)"/><text class="svg-text" x="105" y="38" text-anchor="middle" font-size="13" font-weight="700">승격 전</text><text class="svg-text svg-muted" x="105" y="55" text-anchor="middle" font-size="11.5">staging·production이</text><text class="svg-text svg-muted" x="105" y="72" text-anchor="middle" font-size="11.5">이미지를 따로 빌드</text><text class="svg-text svg-muted" x="105" y="89" text-anchor="middle" font-size="11.5">(다이제스트 다름)</text><path class="svg-arrow" d="M204 58 L277 58" marker-end="url(#ah)"/><rect class="svg-box" x="285" y="14" width="190" height="88" rx="10" fill="var(--svg-fill2)"/><text class="svg-text" x="380" y="38" text-anchor="middle" font-size="13" font-weight="700">Actions가 이미지 한 번</text><text class="svg-text" x="380" y="55" text-anchor="middle" font-size="13" font-weight="700">빌드</text><text class="svg-text svg-muted" x="380" y="72" text-anchor="middle" font-size="11.5">커밋 SHA 태그</text><text class="svg-text svg-muted" x="380" y="89" text-anchor="middle" font-size="11.5">PR #24</text><path class="svg-arrow" d="M479 58 L552 58" marker-end="url(#ah)"/><rect class="svg-box" x="560" y="14" width="190" height="88" rx="10" fill="var(--svg-fill3)"/><text class="svg-text" x="655" y="38" text-anchor="middle" font-size="13" font-weight="700">staging에서</text><text class="svg-text svg-muted" x="655" y="55" text-anchor="middle" font-size="11.5">대화·OCR 확인</text><text class="svg-text svg-muted" x="655" y="72" text-anchor="middle" font-size="11.5">(def3165)</text><rect class="svg-box" x="10" y="136" width="190" height="71" rx="10" fill="var(--svg-fill4)"/><text class="svg-text" x="105" y="160" text-anchor="middle" font-size="13" font-weight="700">손으로 승격</text><text class="svg-text svg-muted" x="105" y="177" text-anchor="middle" font-size="11.5">다이제스트 그대로</text><text class="svg-text svg-muted" x="105" y="194" text-anchor="middle" font-size="11.5">(production 00022)</text><path class="svg-arrow" d="M204 171.5 L277 171.5" marker-end="url(#ah)"/><rect class="svg-box" x="285" y="136" width="190" height="71" rx="10" fill="var(--svg-fill1)"/><text class="svg-text" x="380" y="160" text-anchor="middle" font-size="13" font-weight="700">워크플로가 승격</text><text class="svg-text svg-muted" x="380" y="177" text-anchor="middle" font-size="11.5">PR #26·#27</text><text class="svg-text svg-muted" x="380" y="194" text-anchor="middle" font-size="11.5">(production 00023)</text><path class="svg-arrow" d="M479 171.5 L552 171.5" marker-end="url(#ah)"/><rect class="svg-box" x="560" y="136" width="190" height="71" rx="10" fill="var(--svg-fill2)"/><text class="svg-text" x="655" y="160" text-anchor="middle" font-size="13" font-weight="700">두 환경</text><text class="svg-text svg-muted" x="655" y="177" text-anchor="middle" font-size="11.5">같은 다이제스트</text><text class="svg-text svg-muted" x="655" y="194" text-anchor="middle" font-size="11.5">d339e5d333ec</text><path class="svg-arrow" d="M655 102 L655 119 L105 119 L105 132" marker-end="url(#ah)"/></svg><div class="diagram-caption">그림: 오늘의 흐름. 이미지는 staging 브랜치 실행에서 한 번만 만들고, main 실행은 그 이미지를 읽어 그대로 production에 보낸다.</div></div>
+<p>배포한 것과 확인한 것이 같다고 말하려면 이미지를 한 번만 만들어야 한다. 그래서 이미지를 Actions 러너에서 커밋 SHA 태그로 만들어 올리고, production은 staging 리비전의 <strong>다이제스트</strong>를 읽어 그대로 받게 바꿨다.</p>
+<ul><li>저장소: friend-agent (N050에서 이어 사용, 공개 상태)</li><li>오늘 연 PR <strong>5개</strong>(#24~#28), 모두 머지</li><li>배포 워크플로 실행 <strong>5번</strong>(#18~#22): staging <strong>3번</strong>(#18·#20·#22), main <strong>2번</strong>(#19·#21, production 승인은 내가 직접 2번), 모두 success</li><li><strong>같은 다이제스트 확인</strong>: production 리비전 <code>friend-agent-00023-8ht</code>와 staging 리비전 <code>friend-agent-staging-00010-zx9</code>가 모두 <code>sha256:d339e5d333ec…</code>, <code>/version</code>의 commit이 모두 <code>8243335d…</code></li><li>main 실행의 배포 작업 시간: 새로 빌드한 #19 <strong>1분 26초</strong> → 승격한 #21 <strong>46초</strong></li><li>장애 대응 훈련(질문 3개): 2장 <strong>5분 이내(질문별 시간은 못 잼)</strong> → 7장 <strong>3분</strong>(30초 + 1분 30초 + 1분)</li><li>고장 난 Dockerfile 4종(A~D) 모두 증상 → 원본 비교 → <code>git checkout</code> 복구까지 확인</li><li>Artifact Registry 저장 공간: <code>cloud-run-source-deploy</code> <strong>2,217.9MB</strong>(이미지 40개, 무료 0.5GB 초과) · 오늘 만든 <code>friend-agent</code> <strong>316.4MB</strong>(4개)</li><li>정리 정책은 두 저장소에 <code>--dry-run</code>으로만 걸었고 오늘 삭제 후보는 <strong>0개</strong>(실제 결과는 내일 확인)</li></ul>
+<h2 id="1-시작-상태-점검-교안-2장">1. 시작 상태 점검 (교안 2장)</h2>
+<p>교안의 시작 상태 A~F를 조회 명령으로만 확인했다. 서비스 2개(<code>friend-agent</code>, <code>friend-agent-staging</code>), 저장소 변수 4개, GitHub 환경 <code>staging</code>·<code>production</code>, 워크플로 <code>ci.yml</code>·<code>deploy.yml</code>, <code>Dockerfile</code>·<code>.dockerignore</code>가 모두 있었다.</p>
+<ul><li><strong>교재와 다르게 한 것</strong>: 교안의 변수 표에는 <code>BUILD_SA</code>가 있는데 이 저장소에는 없고 템플릿 어디에서도 쓰이지 않는다. 이번 실습에 영향이 없다고 보고 만들지 않았다.</li><li>소스 배포 이미지의 기준선: <code>cloud-run-source-deploy</code>에 이미지 <strong>40개</strong>(<code>friend-agent</code> 26 · <code>friend-agent-staging</code> 12 · <code>load-test</code> 2), 태그는 이미지 이름(패키지)마다 가장 최근 한 개에만 붙은 <code>latest</code>뿐, 저장소 크기 <strong>2,217.9MB</strong>. 소스 배포 이미지에는 커밋이 적혀 있지 않았다.</li><li>두 환경의 <code>/version</code>: production 커밋 <code>21ee625</code>, staging 커밋 <code>9c0a5b3</code>(서로 다른 커밋).</li></ul>
+<h2 id="2-장애-대응-훈련--처음-교안-2장">2. 장애 대응 훈련 — 처음 (교안 2장)</h2>
+<p>production에서 "약속 알림이 이상하다"는 신고가 왔다고 가정하고 세 질문에 답했다. 이 단계는 내가 직접 화면을 열었고, 결과를 조회 명령으로 다시 확인했다.</p>
+<div class="table-scroll"><table><thead><tr><th>질문</th><th>확인한 값</th><th>찾은 곳</th></tr></thead><tbody><tr><td>1. 지금 production은 어느 커밋인가</td><td><code>21ee625</code>, 리비전 <code>friend-agent-00020-clm</code></td><td>production <code>/version</code></td></tr><tr><td>2. 바로 전 정상 버전의 이미지는</td><td>리비전 <code>00019-nlc</code>의 이미지 <code>33ee47ea2f53</code></td><td>리비전 상세는 다이제스트뿐이라 이미지 목록과 <strong>시각으로 맞춰</strong> 찾아야 했다</td></tr><tr><td>3. staging에서 확인한 이미지와 같은가</td><td><strong>다르다</strong> (production <code>735e0e99525f</code>, staging <code>2bf4368fae93</code>)</td><td>staging 이미지는 같은 저장소의 별도 패키지 <code>friend-agent-staging</code>에 있어 화면에 보이지 않아 조회로 확인</td></tr></tbody></table></div>
+<ul><li>5분 안에 세 질문의 답을 모두 확인했다고 기록한다. 다만 <strong>직접 링크를 받아 화면을 찾는 시간이 빠졌고 질문별 시간은 재지 않았다.</strong></li><li>막힌 점: 2번은 이미지에 태그가 없어 만든 시각을 Actions 기록과 맞춰 짐작해야 했고, 3번은 환경마다 이미지를 따로 빌드해 대개 "다르다"가 된다.</li><li>리비전 <code>00018-klq</code>와 <code>00019-nlc</code>는 같은 이미지를 쓴다(설정만 바꾼 리비전). 이미지 수와 리비전 수가 일대일이 아니다.</li></ul>
+<h2 id="3-actions에서-이미지-만들기-교안-3장-pr-24">3. Actions에서 이미지 만들기 (교안 3장, PR #24)</h2>
+<p>저장소 <code>friend-agent</code>를 만들고 배포 계정에 <strong>저장소 하나에만</strong> 쓰기 권한을 주고, 저장소 변수 <code>AR_REPO</code>를 등록했다. 그다음 <code>starter/workflows/deploy-image.yml</code>로 배포 워크플로를 바꾸는 PR을 올렸다.</p>
+<ul><li>명령 3개: <code>gcloud artifacts repositories create friend-agent …</code>, <code>… add-iam-policy-binding … --role roles/artifactregistry.writer</code>(프로젝트 전체가 아니라 <code>repositories</code> 대상), <code>gh variable set AR_REPO …</code></li><li>PR #24의 diff를 교안의 4기준(권한 · 태그에 <code>github.sha</code> · 빌드 단계 시크릿 없음 · 액션 버전 유지)으로 읽었고 모두 통과했다. 바뀐 것은 <code>source: .</code> → <code>image: ${{ env.IMAGE }}</code>, <code>docker build</code>·<code>push</code> 단계와 <code>setup-gcloud</code> 단계 추가, <code>flags:</code>의 <code>--clear-base-image</code> 제거이다.</li><li>머지 후 실행 #18(커밋 <code>def3165</code>)이 성공했고, Actions 로그의 <code>docker push</code> 마지막 줄 다이제스트가 <code>sha256:d9a9f3de8df079e2…</code>였다.</li><li>이 다이제스트가 Artifact Registry(태그 <code>def31657453804a041b56586b406808a30592f10</code>), 리비전 <code>friend-agent-staging-00009-vgg</code>의 이미지 주소, <code>/version</code>의 commit·revision과 모두 같은 값으로 이어졌다.</li><li>앱 화면 왼쪽 아래의 "빌드 <code>def3165</code>" 표시도 같은 커밋이었다.</li><li><strong>교재와 다르게 한 것</strong>: 교안은 <code>deploy-image.yml</code>을 그대로 쓰라고 하는데, 우리 저장소의 이전 <code>deploy.yml</code>에는 <code>--clear-base-image</code>가 있었다. 템플릿이 이 옵션을 빼서 그대로 따랐다(이미지로 배포하면 buildpacks 기본 이미지가 없기 때문으로 이해했다).</li><li>staging에서 OCR과 대화를 확인했다. 일정표 사진의 글자가 입력창에 들어왔고, 보내기 후 하루가 "이미 지난 일정이라 저장할 수 없다"고 답했다(도구 결과 <code>이미 지난 시각입니다</code>). 앱이 설계대로 거절한 것이지 배포 문제가 아니다.</li></ul>
+<h2 id="4-연결표와-이미지-승격-교안-4장-pr-2527">4. 연결표와 이미지 승격 (교안 4장, PR #25~#27)</h2>
+<p>main에 머지하면 새 이미지가 만들어지는지부터 확인했다.</p>
+<div class="table-scroll"><table><thead><tr><th>환경</th><th>커밋</th><th>다이제스트(앞 12자리)</th><th>리비전</th></tr></thead><tbody><tr><td>staging</td><td><code>def3165…</code></td><td><code>d9a9f3de8df0</code></td><td><code>friend-agent-staging-00009-vgg</code></td></tr><tr><td>production(PR #25 머지·승인 뒤)</td><td><code>3201e13…</code></td><td><code>88f6f1871c11</code></td><td><code>friend-agent-00021-kxd</code></td></tr><tr><td>production(손으로 승격한 뒤)</td><td><code>def3165…</code></td><td><code>d9a9f3de8df0</code></td><td><code>friend-agent-00022-p9n</code></td></tr></tbody></table></div>
+<ul><li><strong>손 승격</strong>: staging 리비전의 이미지를 <code>@sha256:</code> 주소 그대로 production에 배포했다. 실행 전에 서비스 이름·다이제스트 주소·<code>--update-env-vars</code>를 확인했고, 실행 후 환경변수 5개(<code>LLM_PROVIDER</code>·<code>LLM_API_KEY</code>·<code>COMMIT_SHA</code>·<code>ENV</code>·<code>OCR_ENABLED</code>)가 남아 있음을 확인했다. <code>COMMIT_SHA</code>도 <code>def31657…</code>로 함께 바꿨다.</li><li><strong>워크플로 승격(PR #26·#27)</strong>: <code>deploy.yml</code>을 세 군데만 고쳤다. ① 이미지 만들기 단계는 <code>if: github.ref_name != 'main'</code>, ② main에서만 staging 리비전의 다이제스트와 <code>COMMIT_SHA</code>를 읽는 단계 추가, ③ 배포 단계가 넘겨받은 값을 사용. 이 PC에는 <code>jq</code>가 없어 워크플로의 <code>jq</code> 식을 못 돌려서 같은 경로를 Python으로 실제 staging 데이터에 적용해 값이 나옴을 확인했다.</li><li><strong>결과</strong>: 실행 #21(main)에서 "이미지 만들기와 올리기 (staging)"는 <strong>skipped</strong>, "staging 이미지 찾기 (production 승격)"는 <strong>success</strong>였고 로그에 <code>staging 리비전 friend-agent-staging-00010-zx9 의 이미지를 승격한다</code>가 찍혔다. 배포 결과의 이미지가 <code>@sha256:d339e5d333ec…</code> 다이제스트 주소였다.</li><li>production 리비전 <code>friend-agent-00023-8ht</code>와 staging 리비전 <code>friend-agent-staging-00010-zx9</code>가 둘 다 <code>d339e5d333ec</code>이고 <code>/version</code>의 commit이 둘 다 <code>8243335d…</code>였다. main의 머지 커밋은 <code>4ab996a</code>지만 <code>/version</code>은 이미지를 만든 staging 쪽 커밋을 보여 준다.</li><li>승인 전에 staging <code>/version</code>의 commit이 <code>8243335…</code>임을 직접 확인한 뒤 production을 승인했다.</li><li>다시 만들지 않은 효과: main 실행의 배포 작업이 새로 빌드한 #19에서 <strong>1분 26초</strong>, 승격한 #21에서 <strong>46초</strong>였다.</li></ul>
+<h2 id="5-로컬에서-만든-이미지-시험-교안-4장-직접-해-보고-싶다면">5. 로컬에서 만든 이미지 시험 (교안 4장 "직접 해 보고 싶다면")</h2>
+<p>시험용 저장소 <code>local-test</code>와 시험용 서비스 <code>local-test</code>를 따로 만들어 로컬 이미지를 올려 보고 지웠다.</p>
+<ul><li>이 PC는 Intel/AMD(<code>x86_64</code>)라 <code>docker image inspect</code>의 아키텍처가 <strong><code>amd64/linux</code></strong>로 나왔고 배포는 <strong>성공</strong>했다. 교안이 말한 Apple Silicon의 <code>linux/amd64</code> 오류는 재현하지 못했다.</li><li>그래도 <code>/version</code>이 <code>"commit":"local"</code>, <code>"env":"local"</code>로 <strong>커밋 SHA가 없었다</strong>(기록·무결성 문제는 그대로). 로그인 없이 호출하면 <code>403</code>이었다(공개되지 않음).</li><li>확인 후 서비스·저장소를 이름 <code>local-test</code>를 다시 확인하고 삭제했고, 로컬 이미지도 지웠다.</li><li>이어서 <code>AGENTS.md</code>의 "배포와 권한"에 "배포용 이미지는 GitHub Actions에서만 만든다. 로컬 환경에서 만든 이미지를 Artifact Registry에 올리거나 배포하지 않는다." 한 줄을 PR #28로 올려 머지했다. 이 시험은 규칙을 넣기 <strong>전에</strong> 했다.</li><li><strong>교재와 다르게 한 것</strong>: Docker Desktop이 꺼져 있어 직접 켰다. 이 시험 중 <code>docker push</code> 결과 마지막 줄 크기가 856으로 나왔는데(이미지 본체가 아니라 매니페스트 목록으로 보임), 원인까지는 확인하지 않았다.</li></ul>
+<h2 id="6-정리-정책-교안-5장">6. 정리 정책 (교안 5장)</h2>
+<p><code>docs/cleanup-policy.json</code>(삭제: 7일 초과, 유지: 최근 10개)을 만들어 <code>friend-agent</code>와 <code>cloud-run-source-deploy</code> 두 저장소에 <strong><code>--dry-run</code></strong>으로 걸었다. 조회로 두 저장소 모두 <code>cleanupPolicyDryRun: true</code>를 확인했다.</p>
+<ul><li>이미지 40개로 시뮬레이션한 삭제 대상: <strong>지금 0개</strong> → 내일(10-28) 6개 → 3일 뒤(10-30) 저장소 전체 기준 20개, 이미지 이름별 기준 16개.</li><li>오늘은 가장 오래된 이미지(10월 20일 06시 UTC)가 아직 7일이 안 돼 지울 것이 없다. 감사 로그를 조회했으나 아직 기록이 없었다.</li><li>롤백 기준 점검: production <code>8243335</code>·staging <code>1010a7d</code>·직전 <code>3201e13</code>·<code>def3165</code>가 모두 <code>friend-agent</code> 저장소의 최근 10개 안이다.</li><li><strong>불확실한 것</strong>: "최근 10개"를 저장소 전체로 세는지 이미지 이름(패키지)별로 세는지는 확인하지 못했다. 드라이런 결과(감사 로그)로 확인할 일이다.</li><li><strong>풀지 못한 것</strong>: 실제 삭제(<code>--no-dry-run</code>) 전환과 드라이런 결과 확인은 하루 뒤로 남겼다. 정책 파일은 작업 폴더의 <code>docs/cleanup-policy.json</code>에 git 미추적 파일로만 있고 PR로 올리지 않았다.</li></ul>
+<h2 id="7-고장-난-dockerfile-4종-교안-6장">7. 고장 난 Dockerfile 4종 (교안 6장)</h2>
+<div class="table-scroll"><table><thead><tr><th>문제</th><th>증상(관찰)</th><th>원인(원본과 비교)</th><th>복구 후</th></tr></thead><tbody><tr><td>A. OCR만 실패</td><td>컨테이너는 정상 시작, 사진을 보내면 500 <code>사진에서 글자를 읽는 프로그램이 서버에 없습니다</code></td><td><code>RUN apt-get install … tesseract-ocr tesseract-ocr-kor</code> 줄 없음</td><td>HTTP 200, 일정표 글자 반환</td></tr><tr><td>B. 이미지 안의 파일</td><td><code>ls -a /app</code>에 <code>.env</code> 보임(서비스는 정상)</td><td><code>.dockerignore</code>에서 <code>.env</code> 줄 없음(<code>**/</code> 패턴도 빠짐)</td><td><code>.env</code> 사라지고 <code>.env.example</code>만</td></tr><tr><td>C. 실행 사용자</td><td>서비스·<code>/health</code> 정상, <code>whoami</code>가 <code>root</code></td><td><code>RUN useradd … appuser</code>·<code>USER appuser</code> 줄 없음</td><td><code>whoami</code> = <code>appuser</code></td></tr><tr><td>D. 접속 안 됨</td><td>컨테이너 <code>Up</code>, <code>localhost:8080</code> 응답 없음(<code>HTTP 000</code>), 로그가 <code>0.0.0.0:8000</code>을 리슨</td><td><code>CMD</code>가 <code>${PORT:-8080}</code> 대신 <code>--port 8000</code> 고정</td><td>8080과 <code>PORT=9000</code>에서 모두 200</td></tr></tbody></table></div>
+<ul><li>문제 A는 내가 먼저 "운영체제 시스템 패키지이고 Dockerfile의 설치 명령에 있을 것 같다"고 짐작했고 맞았다. B~D는 짐작 없이 바로 원본과 비교했다(내 선택).</li><li><strong>교재와 다르게 한 것</strong>: 교안은 <code>cp starter/Dockerfile Dockerfile</code>로 되돌리라고 하는데, 이 저장소의 Dockerfile은 N050에서 PDF용 <code>poppler-utils</code>를 더한 버전이라 <code>starter/</code>로 되돌리면 그 기능이 사라진다. 그래서 <code>git checkout -- Dockerfile</code>·<code>.dockerignore</code>로 되돌렸다.</li><li>Actions 이미지였다면 <strong>드러나지 않았을 문제는 B</strong>(로컬 폴더의 <code>.env</code>는 GitHub에 없음), <strong>서비스가 정상으로 보여 지나쳤을 문제는 C</strong>이다.</li><li>문제 A를 처음 시도했을 때 Docker Desktop이 꺼져 빌드가 실패했다. 그 사이 루트 Dockerfile이 고장 난 상태로 남았으나 데몬을 다시 켠 뒤 진행하고 <code>git checkout</code>으로 되돌렸다(<code>git status</code> 깨끗).</li></ul>
+<h2 id="8-장애-대응-훈련--다시-교안-7장">8. 장애 대응 훈련 — 다시 (교안 7장)</h2>
+<p>같은 세 질문을 production <code>/version</code>, 리비전 상세, Artifact Registry <code>friend-agent</code> 태그만 보고 답했다.</p>
+<div class="table-scroll"><table><thead><tr><th>질문</th><th>2장</th><th>7장</th></tr></thead><tbody><tr><td>1. 어느 커밋인가</td><td><code>/version</code>으로 답함, 이미지에 커밋 없음</td><td><strong>30초</strong> — 커밋 <code>8243335d…</code>, 이미지 태그와 같은 값</td></tr><tr><td>2. 되돌릴 수 있는가</td><td>태그가 없어 시각으로 짐작, 못 찾음</td><td><strong>1분 30초</strong> — 바로 전 리비전 <code>00022-p9n</code>의 다이제스트 <code>d9a9f3de8df0</code>를 목록에서 찾으니 태그 <code>def31657…</code>가 같은 줄에 있고 이미지가 남아 있음</td></tr><tr><td>3. staging과 같은가</td><td>대개 "다르다"</td><td><strong>1분</strong> — production <code>d339e5d333ec</code>(<code>8243335</code>), 지금 staging <code>c87c9b5279f8</code>(<code>1010a7d</code>, PR #28만 머지돼 앞서 있음). 승격한 이미지는 같고 staging이 더 앞서 있다는 이유까지 목록에서 읽힘</td></tr><tr><td>합계</td><td>5분 이내</td><td>3분</td></tr></tbody></table></div>
+<ul><li>7장 2번은 처음에 현재 리비전만 보고 막혔다가(이미지 주소가 잘려 보였음) 안내를 받은 뒤 1분 30초 만에 풀었다.</li><li><strong>회고 — 가장 크게 달라진 질문</strong>: 2번이다. 2장에서는 이미지에 태그가 없어 만든 시각을 Actions 기록과 맞춰 짐작해야 했고 답을 못 찾았다. 7장에서는 리비전 상세의 다이제스트를 Artifact Registry에서 찾으면 같은 줄에 커밋 SHA 태그가 붙어 있어 1분 30초 만에 바로 전 이미지와 그 이미지가 남아 있음을 확인했다.</li><li><strong>회고 — 여전히 사람이 직접 해야 하는 일</strong>: 승인하더라도 staging과 production의 이미지가 다를 수 있으므로(실제로 오늘 staging이 main보다 앞서 있었다) 승인 전에 두 환경의 다이제스트를 비교해 확인하는 것이다.</li></ul>
+<h2 id="9-사고문제-표">9. 사고·문제 표</h2>
+<div class="table-scroll"><table><thead><tr><th>번호</th><th>변경</th><th>결과</th><th>사용자에게 보였을 것</th><th>원인을 찾은 곳</th><th>처리</th></tr></thead><tbody><tr><td>1</td><td>staging·production이 이미지를 따로 빌드(승격 전)</td><td>다이제스트가 다름(<code>d9a9f3de</code> ≠ <code>88f6f187</code>)</td><td>없음</td><td>Cloud Run 리비전의 이미지 주소</td><td>이미지 승격(손 → 워크플로)</td></tr><tr><td>2</td><td>7장 2번에서 현재 리비전만 봄</td><td>이미지 주소가 잘려 바로 전 이미지를 못 찾음</td><td>없음</td><td>리비전 목록에서 바로 전 리비전을 열지 않음</td><td>00022를 열어 다이제스트 확인, 1분 30초</td></tr><tr><td>3</td><td>PR #28을 staging에만 머지</td><td>staging(<code>c87c9b52</code>)이 production(<code>d339e5d3</code>)보다 앞섬</td><td>없음</td><td>Artifact Registry 태그 목록</td><td>정상. 다음 main 머지·승인 때 다시 같아짐</td></tr><tr><td>4</td><td>Docker Desktop이 꺼진 채 문제 A·로컬 시험 시작</td><td><code>dockerDesktopLinuxEngine</code> 파이프 오류</td><td>없음</td><td>명령 오류 메시지</td><td>Docker Desktop을 켠 뒤 재실행</td></tr><tr><td>5</td><td>문제 A에서 <code>cp</code>로 덮어쓴 뒤 빌드 실패</td><td>루트 Dockerfile이 고장 난 상태로 잠깐 남음</td><td>없음</td><td><code>git status</code>·<code>head Dockerfile</code></td><td>데몬 재시작 후 진행, 끝에 <code>git checkout</code>으로 복구</td></tr><tr><td>6</td><td>Intel PC에서 로컬 이미지 배포</td><td>성공(교안의 실패 사례 재현 못함)</td><td>없음</td><td><code>docker image inspect</code> = <code>amd64</code>, <code>/version</code> commit=<code>local</code></td><td>규칙의 근거를 둘째 이유(기록·무결성)로 확인</td></tr><tr><td>7</td><td>정리 정책 드라이런</td><td>오늘 삭제 대상 0개</td><td>없음</td><td>이미지 목록 계산</td><td>내일 감사 로그로 확인</td></tr></tbody></table></div>
+<p>1~3번은 모두 <strong>이미지가 같은지 다른지를 다이제스트로 말할 수 있게 된 뒤</strong>에 의미가 생기는 항목이다. 5번처럼 고장 난 파일을 덮어쓰는 실습은 끝난 뒤 <code>git status</code>로 원상태를 꼭 확인해야 한다.</p>
+<h2 id="10-풀지-못한-것--교재와-달라진-것">10. 풀지 못한 것 · 교재와 달라진 것</h2>
+<p><strong>풀지 못한 것 / 하지 않은 것</strong></p>
+<ul><li>정리 정책의 <strong>실제 삭제 전환과 드라이런 결과 확인</strong>(하루 뒤, 내일). "최근 10개" 기준이 저장소 전체인지 이미지별인지도 그때 확인한다.</li><li>선택 과제 4종(손으로 롤백 훈련·태그 변경 금지·slim 크기 비교·배포 기록 자동화)은 하지 않았다.</li><li>로컬 이미지 시험에서 Apple Silicon 실패는 재현하지 못했다(이 PC는 <code>amd64</code>).</li><li>정리 정책 파일(<code>docs/cleanup-policy.json</code>)은 PR로 올리지 않았다.</li><li>새 리비전으로 바뀌는 순간 사용자가 오류를 보는지는 측정하지 않았다(교안의 남은 숙제).</li></ul>
+<p><strong>교재와 달라진 것</strong></p>
+<ul><li><code>BUILD_SA</code> 변수 없음(템플릿 미사용)</li><li>복구는 <code>cp starter/…</code>가 아니라 <code>git checkout</code>(poppler 보존)</li><li>7장 훈련은 2장과 달리 질문별 시간 비교가 불완전(2장은 합계만)</li><li>오늘 staging이 main보다 앞선 상태가 생겨 7장 3번이 교안 예상("승격 후 같다")과 다르게 "지금은 다르다, 이유는 PR #28"이 됨</li></ul>
+<h2 id="11-정리">11. 정리</h2>
+<ul><li><strong>이미지 이름</strong>은 저장 위치·프로젝트·저장소·이미지 이름·태그이고, 태그는 옮겨 붙을 수 있고 다이제스트는 내용으로 정해진다. 찾아갈 때는 커밋 SHA 태그, 실제로 무엇이 도는지는 다이제스트로 본다.</li><li><strong>연결표 다섯 칸</strong>(커밋 → 태그 → 다이제스트 → 리비전 → <code>/version</code>)이 채워지면 "지금 도는 코드는 어느 커밋인가"에 화면 몇 개로 답한다.</li><li><strong>이미지 승격</strong>: main 머지에서 이미지를 다시 만들지 않고 staging 리비전의 다이제스트와 <code>COMMIT_SHA</code>를 읽어 그대로 보낸다. 승인의 뜻이 "새로 만들어 내보낸다"에서 "확인한 그 이미지를 내보낸다"로 바뀐다.</li><li><strong>로컬에서 만든 이미지는 올리지 않는다</strong>: CPU 아키텍처 문제와 함께, 이 PC에서도 확인한 기록·무결성(<code>/version</code>에 커밋 없음) 문제가 있다.</li><li><strong>정리 정책</strong>은 삭제+유지를 함께, 드라이런 먼저. 롤백에 필요한 이미지를 남긴다.</li><li><strong>고장 난 Dockerfile</strong>: 빌드 성공과 서비스 정상은 다르다. 증상 → 가설 → 확인 → 복구 → 재검증.</li></ul>
+<h2 id="12-궁금했던-것">12. 궁금했던 것</h2>
+<p>아래 질문은 이번 실습의 사고 표에서 뽑은 것이다.</p>
+<p><strong>Q. 태그가 있으면 이미지를 정확히 가리키는 것 아닌가? 왜 다이제스트가 따로 필요한가?</strong></p>
+<ul><li>태그는 같은 이름을 다른 이미지에 다시 붙일 수 있다. 다이제스트는 내용으로 정해져 옮겨 붙지 않는다. Cloud Run도 태그로 배포해도 배포 순간의 다이제스트로 바꿔 기록한다. 오늘 연결표에서 리비전의 이미지 주소가 <code>…@sha256:…</code>로만 보인 것이 그 예다.</li></ul>
+<p><strong>Q. main에 머지하는 커밋이 새로 생기는데 <code>/version</code>의 commit이 <code>4ab996a</code>가 아니라 <code>8243335</code>로 나오는 이유는?</strong></p>
+<ul><li>승격 워크플로는 main에서 이미지를 만들지 않고 staging 리비전의 <code>COMMIT_SHA</code>를 읽어 그대로 넣는다. <code>/version</code>은 이미지를 만든 staging 쪽 커밋을 보여 주므로 커밋에서 이미지까지의 연결이 끊기지 않는다.</li></ul>
+<p><strong>Q. Intel PC에서 로컬 이미지 배포가 성공했는데 왜 규칙이 필요한가?</strong></p>
+<ul><li>아키텍처 때문에 실패하지 않아도 로컬 이미지는 내 폴더의 파일로 만들어져 커밋과 연결되지 않는다. <code>/version</code>의 <code>commit</code>이 <code>local</code>이었고 PR 검토·CI·승인도 건너뛴다.</li></ul>
+<p><strong>Q. 정리 정책을 걸었는데 왜 오늘은 지워진 것이 없나?</strong></p>
+<ul><li>가장 오래된 이미지가 아직 7일이 안 됐고, 정책 반영과 감사 로그 확인에도 하루쯤 걸린다. 그래서 오늘은 드라이런으로 걸고 목록으로 계산한 뒤, 하루 뒤에 결과를 확인하는 것이 순서다.</li></ul>
+<h2 id="13-평가-체크리스트-15점-한-줄-의견">13. 평가 체크리스트 (1~5점, 한 줄 의견)</h2>
+<div class="table-scroll"><table><thead><tr><th>번호</th><th>확인할 것</th><th>근거가 있는 절</th><th>점수</th><th>의견</th></tr></thead><tbody><tr><td>1</td><td>지금 구조에서 세 질문에 답해 보고 막히는 이유(태그 없음·환경마다 다른 이미지)를 찾았는가</td><td>2</td><td></td><td></td></tr><tr><td>2</td><td>Actions에서 이미지를 만들어 커밋 SHA 태그로 올리고 커밋→이미지→리비전→<code>/version</code>을 연결표로 이었는가</td><td>3, 4</td><td></td><td></td></tr><tr><td>3</td><td>staging 이미지를 다이제스트 그대로 production에 승격(손과 워크플로)하고 두 환경의 다이제스트가 같음을 확인했는가</td><td>4</td><td></td><td></td></tr><tr><td>4</td><td>로컬에서 만든 이미지를 시험해 보고 규칙으로 반영했는가</td><td>5</td><td></td><td></td></tr><tr><td>5</td><td>정리 정책을 삭제+유지로 설계하고 드라이런으로 걸어 롤백용 이미지가 남는지 점검했는가</td><td>6</td><td></td><td></td></tr><tr><td>6</td><td>고장 난 Dockerfile 4종을 증상으로 원인을 찾고 복구·재검증했는가</td><td>7</td><td></td><td></td></tr><tr><td>7</td><td>장애 대응 훈련을 두 번 해 비교하고 사람 몫을 적었는가</td><td>2, 8</td><td></td><td></td></tr><tr><td>8</td><td>풀지 못한 것과 교재와 달라진 점을 숨기지 않고 적었는가</td><td>10</td><td></td><td></td></tr></tbody></table></div>
+<p><strong>전체 의견</strong>:</p>
+<h2 id="14-첨부할-증거-화면-notion에-직접-붙여-넣기">14. 첨부할 증거 화면 (Notion에 직접 붙여 넣기)</h2>
+<p>증거는 폴더 <code>강의정리\N051\증거화면\</code>의 15개 파일(PNG·WEBP)이다. 이 폴더는 git에 추적하지 않았다.</p>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 01·02·13·15에는 프로젝트 ID가 화면(주소 표시줄·경로)에 보이고, 03·04·05·08~12에는 GitHub 계정 이름이 보인다. 공개 문서나 노션에 올리기 전에 프로젝트 ID 부분을 가릴지 정한다. 이 보고서 본문은 이미 가렸다.</p></div>
+<div class="table-scroll"><table><thead><tr><th>절</th><th>장면</th><th>파일(번호)</th></tr></thead><tbody><tr><td>2</td><td>처음 훈련: 리비전 탭 · 소스 배포 이미지 목록(태그 없음) · Actions 실행 목록</td><td>01 · 02 · 03</td></tr><tr><td>3</td><td>PR #24 체크 통과 · 실행 #18 staging 배포 중 · staging OCR 입력 · 대화와 약속 저장 거절</td><td>04 · 05 · 06 · 07</td></tr><tr><td>4</td><td>실행 #19(main, 승인) · #20(staging) · #21 승인 대기와 승격 성공</td><td>08 · 09 · 10 · 11</td></tr><tr><td>5</td><td>PR #28 규칙 머지 후 배포 중(실행 #22)</td><td>12</td></tr><tr><td>8</td><td>7장 훈련: 컨테이너 탭(현재 리비전) · 리비전 목록 · Artifact Registry 태그 목록</td><td>13 · 14 · 15</td></tr></tbody></table></div>
+<p>(교안 6장 고장 난 Dockerfile 4종의 화면 증거는 터미널 출력이라 부록 7절에 명령과 출력으로 남겼다.)</p>
+
+</main>
+</body>
+</html>
