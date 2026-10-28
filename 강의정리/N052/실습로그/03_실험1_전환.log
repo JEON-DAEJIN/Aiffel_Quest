@@ -1,0 +1,20 @@
+### 09:16:54 1. 전환 전 확인 (bg-nginx 안에서 green의 /health, /version)
+{"status":"ok"}
+{"commit":"local","revision":"green","env":"local","llm":"fake","model":"fake","storage":"memory","auth":"none","banner":"GREEN"}
+### 09:16:55 2. upstream 줄 blue -> green (PowerShell -replace)
+upstream active_app {
+    zone active_app 64k;
+    server green:8080;
+}
+server {
+    listen 80;
+    location / {
+        proxy_pass http://active_app;
+    }
+}
+### 09:16:56 3. nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+### 09:16:56 3. nginx -s reload
+2026/10/28 00:16:57 [notice] 73#73: signal process started
+### 09:16:57 reload 완료

@@ -1,0 +1,23 @@
+### 09:21:07 docker start green
+green
+bg-nginx Up 5 minutes
+green Up 3 seconds
+blue Up 5 minutes
+### 09:21:21 proxy_connect_timeout 1s 적용
+upstream active_app {
+    zone active_app 64k;
+    server blue:8080 weight=3;
+    server green:8080;
+}
+server {
+    listen 80;
+    location / {
+        proxy_pass http://active_app;
+        proxy_connect_timeout 1s;
+    }
+}
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+2026/10/28 00:21:22 [notice] 145#145: signal process started
+### 09:21:22 reload 완료 (green을 다시 켠 뒤라 이름을 다시 찾게 함)
+{"commit":"local","revision":"blue","env":"local","llm":"fake","model"

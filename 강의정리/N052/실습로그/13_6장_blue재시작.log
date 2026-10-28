@@ -1,0 +1,13 @@
+### 14:24:39 docker restart blue (green이 활성인 동안 blue만 재시작 → blue 메모리 비움)
+blue
+green | Up 11 minutes
+blue | Up Less than a second
+bg-nginx | Up 11 minutes
+### 14:25:01 blue로 롤백: nginx -t, reload
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+2026/10/28 05:25:01 [notice] 83#83: signal process started
+### /version
+{"commit":"local","revision":"blue","env":"local","llm":"fake","model":"fake","storage":"supabase","auth":"supabase","banner":"BLUE"}
+### blue 로그 처음 1줄 (재시작 후에도 storage 유지)
+{"severity": "INFO", "message": "앱을 시작합니다.", "provider": "fake", "model": "fake", "env": "local", "storage": "supabase", "auth": "supabase", "turn_panel": true}

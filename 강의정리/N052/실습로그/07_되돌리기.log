@@ -1,0 +1,10 @@
+### 09:23:34 5-5 되돌리기: docker start green
+green
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+2026/10/28 00:23:41 [notice] 165#165: signal process started
+### 09:23:43 되돌리기 후 상태
+bg-nginx Up 8 minutes
+green Up 9 seconds
+blue Up 8 minutes
+      1 blueblueblueblueblueblue

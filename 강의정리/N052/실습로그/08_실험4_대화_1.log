@@ -1,0 +1,11 @@
+### 0. 시작 상태 (blue 활성)
+[09:24:06] 응답한 쪽(revision)=blue / storage=memory
+  대화 메시지 0개, 약속 0개, 기억 0개
+
+### 1. blue에서 약속 만들기
+[09:24:07] POST /api/chat -> 200
+{"type": "turn", "tools": [{"name": "create_reminder", "label": "약속 저장", "args": {"text": "물 마시기", "due_at": "2026-10-29T08:00:00+09:00"}}], "confidence": 0.75, "reason": "'약속 저장' 관련 표현이 들어 있습니다.", "decided_by": "rule", "action": "answer", "guards": []}
+{"type": "tool", "name": "create_reminder", "label": "약속 저장", "ok": true, "summary": "약속을 저장했습니다: 10월 29일(목) 08:00에 '물 마시기'.", "data": {"id": 2, "
+[09:24:07] 응답한 쪽(revision)=blue / storage=memory
+  대화 메시지 2개, 약속 1개, 기억 0개
+  약속: {"id": 2, "text": "물 마시기", "status": "pending", "due_label": "10월 29일(목) 08:00"}

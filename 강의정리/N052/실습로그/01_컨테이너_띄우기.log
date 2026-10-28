@@ -1,0 +1,40 @@
+### 09:15:23 docker network create bg-lab
+66f3b90004574ccb589bc9b4b410d0bb38758368c10ff6545ca880669ec7f9a9
+### 09:15:23 blue / green / bg-nginx
+0f7804fc12a2e547937260c2e163fbe2252378c75202fc2242ade3052f8a5815
+8c7ff19fe92afffacb06c58bfe2f4667740940108ce499bad161203dcf8eaf24
+Unable to find image 'nginx:1.27-alpine' locally
+1.27-alpine: Pulling from library/nginx
+f18232174bc9: Pulling fs layer
+39c2ddfd6010: Pulling fs layer
+197eb75867ef: Pulling fs layer
+d7e507024086: Pulling fs layer
+61ca4f733c80: Pulling fs layer
+34a64644b756: Pulling fs layer
+b464cfdf2a63: Pulling fs layer
+81bd8ed7ec67: Pulling fs layer
+197eb75867ef: Download complete
+f18232174bc9: Download complete
+d7e507024086: Download complete
+61ca4f733c80: Download complete
+34a64644b756: Download complete
+b464cfdf2a63: Download complete
+81bd8ed7ec67: Download complete
+2a84448aca9c: Download complete
+f18232174bc9: Pull complete
+9261b9aff737: Download complete
+d7e507024086: Pull complete
+61ca4f733c80: Pull complete
+b464cfdf2a63: Pull complete
+81bd8ed7ec67: Pull complete
+197eb75867ef: Pull complete
+34a64644b756: Pull complete
+39c2ddfd6010: Download complete
+39c2ddfd6010: Pull complete
+Digest: sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+Status: Downloaded newer image for nginx:1.27-alpine
+656e8ac77185890e9c6aa014a6a583e2140922794b67e5ffeafc693f9286b69c
+NAMES      IMAGE                STATUS          PORTS
+bg-nginx   nginx:1.27-alpine    Up 1 second     0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+green      friend-agent:local   Up 9 seconds    
+blue       friend-agent:local   Up 10 seconds   

@@ -1,0 +1,27 @@
+### 09:15:47 확인 2: bg-nginx가 보는 설정
+cat: can't open 'C:/Program Files/Git/etc/nginx/conf.d/default.conf': No such file or directory
+### 확인 4: /version
+{"commit":"local","revision":"blue","env":"local","llm":"fake","model":"fake","storage":"memory","auth":"none","banner":"BLUE"}
+### 직접 접근 불가 확인 (blue에는 포트를 열지 않음)
+localhost:8081 -> 000
+### blue 로그 처음 5줄
+{"severity": "INFO", "message": "앱을 시작합니다.", "provider": "fake", "model": "fake", "env": "local", "storage": "memory", "auth": "none", "turn_panel": true}
+INFO:     Started server process [7]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+### nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+### 09:15:58 확인 2 재실행 (MSYS_NO_PATHCONV=1)
+upstream active_app {
+    zone active_app 64k;
+    server blue:8080;
+}
+server {
+    listen 80;
+    location / {
+        proxy_pass http://active_app;
+    }
+}

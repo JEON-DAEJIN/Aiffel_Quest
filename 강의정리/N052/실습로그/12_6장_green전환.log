@@ -1,0 +1,16 @@
+### 14:19:04 green으로 전환 (default.conf를 server green:8080; 으로 편집기로 수정)
+upstream active_app {
+    zone active_app 64k;
+    server green:8080;
+}
+server {
+    listen 80;
+    location / {
+        proxy_pass http://active_app;
+    }
+}
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+2026/10/28 05:19:04 [notice] 63#63: signal process started
+### /version
+{"commit":"local","revision":"green","env":"local","llm":"fake","model":"fake","storage":"supabase","auth":"supabase","banner":"GREEN"}

@@ -1,0 +1,20 @@
+### 09:55:51 두 번째 재기동: docker rm -f blue green
+blue
+green
+### 09:55:52 --env-file .env (값은 출력하지 않음)
+blue 시작
+green 시작
+### reload
+2026/10/28 00:55:59 [notice] 246#246: signal process started
+### blue 로그 처음 5줄
+{"severity": "INFO", "message": "앱을 시작합니다.", "provider": "fake", "model": "fake", "env": "local", "storage": "supabase", "auth": "supabase", "turn_panel": true}
+INFO:     Started server process [7]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+### green 로그 처음 2줄
+{"severity": "INFO", "message": "앱을 시작합니다.", "provider": "fake", "model": "fake", "env": "local", "storage": "supabase", "auth": "supabase", "turn_panel": true}
+INFO:     Started server process [7]
+green Up 6 seconds
+blue Up 7 seconds
+bg-nginx Up 40 minutes

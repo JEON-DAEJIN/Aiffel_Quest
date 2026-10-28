@@ -1,0 +1,5 @@
+### 09:19:28.406 docker stop green (스크립트 시작 약 10초 뒤)
+green
+### 09:19:32 docker stop 끝
+bg-nginx Up 3 minutes
+blue Up 4 minutes

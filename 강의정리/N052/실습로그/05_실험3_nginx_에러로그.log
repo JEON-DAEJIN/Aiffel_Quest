@@ -1,0 +1,2 @@
+2026/10/28 00:20:10 [error] 125#125: *646 connect() failed (113: Host is unreachable) while connecting to upstream, client: <ip>, server: , request: "GET /version HTTP/1.1", upstream: "http://<green-ip>:8080/version", host: "localhost:8080"
+2026/10/28 00:20:10 [warn] 125#125: *646 upstream server temporarily disabled while connecting to upstream, client: <ip>, server: , request: "GET /version HTTP/1.1", upstream: "http://<green-ip>:8080/version", host: "localhost:8080"

@@ -1,0 +1,7 @@
+### 09:17:09 롤백: green -> blue
+    server blue:8080;
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+### 09:17:10 reload
+2026/10/28 00:17:10 [notice] 93#93: signal process started
+### 09:17:10 롤백 reload 완료

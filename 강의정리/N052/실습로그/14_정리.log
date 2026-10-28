@@ -1,0 +1,11 @@
+### 14:33:31 docker rm -f blue green bg-nginx
+blue
+green
+bg-nginx
+### docker network rm bg-lab
+bg-lab
+### 정리 후
+(컨테이너 목록 끝)
+bridge
+host
+none

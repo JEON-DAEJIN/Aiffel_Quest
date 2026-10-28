@@ -1,0 +1,6 @@
+### 2. green으로 전환 (default.conf를 server green:8080; 으로) 09:24:16
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+2026/10/28 00:24:17 [notice] 184#184: signal process started
+[09:24:19] 응답한 쪽(revision)=green / storage=memory
+  대화 메시지 0개, 약속 0개, 기억 0개
