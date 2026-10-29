@@ -1,0 +1,14 @@
+### 시작 2026-10-29 12:12:40 | watch 150s | update env: BANNER=측정3b --startup-probe=httpGet.path=/health,periodSeconds=5,failureThreshold=12,timeoutSeconds=2
+### update 시작 12:12:50.791
+C:\Users\ilove\AppData\Roaming\uv\python\cpython-3.13.14-windows-x86_64-none\python.exe: can't open file 'C:\\c\\Users\\ilove\\AppData\\Local\\Google\\Cloud SDK\\google-cloud-sdk\\lib\\gcloud.py': [Errno 2] No such file or directory
+### update 끝 12:12:51.297
+https://friend-agent-staging-<프로젝트번호>.us-central1.run.app/version 에 0.2초마다 요청합니다. 최대 150초 뒤 멈춥니다. 멈추려면 Ctrl+C.
+12:12:41.180  실패: ConnectTimeout
+12:12:43.470  응답 리비전: friend-agent-staging-00017-g8d
+
+── 요약 ──
+전체 요청 371건, 실패 1건, 걸린 시간 150초
+  friend-agent-staging-00017-g8d: 370건 (100%)
+실패 시각: 처음 12:12:41.180, 마지막 12:12:41.180
+실패가 있으면 그 시각을 배포 단계(콘솔, Actions 로그의 시각)와 맞춰 본다. 내 네트워크 문제도 실패로 잡힐 수 있다.
+### 끝 2026-10-29 12:15:11

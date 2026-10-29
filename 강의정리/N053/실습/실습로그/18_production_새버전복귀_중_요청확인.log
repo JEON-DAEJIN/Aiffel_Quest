@@ -1,0 +1,18 @@
+### 시작 2026-10-29 14:48:25 | 복귀 대상 friend-agent-00028-rum
+### rollback 디스패치 14:48:36.385
+https://github.com/JEON-DAEJIN/friend-agent/actions/runs/40825520483
+### run 40825520483
+### 워크플로 종료 exit=0 14:49:03.489
+friend-agent: 지금 friend-agent-00026-vis 이 트래픽을 받는다. friend-agent-00028-rum 으로 되돌린다
+  100% friend-agent-00028-rum
+[1/15] /version 이 friend-agent-00028-rum (커밋 8d549df71e01309f2bd3d69e0780d2221c0f36d5) 로 바뀌었다. 롤백 명령부터 4초
+https://friend-agent-<프로젝트번호>.us-central1.run.app/version 에 0.2초마다 요청합니다. 최대 100초 뒤 멈춥니다. 멈추려면 Ctrl+C.
+14:48:26.754  응답 리비전: friend-agent-00026-vis
+14:48:56.135  응답 리비전: friend-agent-00028-rum
+
+── 요약 ──
+전체 요청 249건, 실패 0건, 걸린 시간 100초
+  friend-agent-00028-rum: 177건 (71%)
+  friend-agent-00026-vis: 72건 (29%)
+실패가 있으면 그 시각을 배포 단계(콘솔, Actions 로그의 시각)와 맞춰 본다. 내 네트워크 문제도 실패로 잡힐 수 있다.
+### 끝 2026-10-29 14:50:07

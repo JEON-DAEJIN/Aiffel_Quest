@@ -1,6 +1,6 @@
 # N053 · Cloud Run으로 무중단 배포하기
 
-> 버전 1.0 · 2026-10-29 (학습서 + 해설서 통합. 교안 기준이며, 직접 해 본 `[실습 결과]`는 아직 덧붙이지 않았다. 실습을 마치면 v1.1로 개정한다)
+> 버전 1.1 · 2026-10-29 (학습서 + 해설서 통합 + **`[실습 결과]`** 덧붙임. 내 컴퓨터와 Google Cloud에서 직접 해 본 결과를 장마다 덧붙였고, v1.0은 `_판본_v1.0/`에 그대로 보존)
 
 ## 목차
 
@@ -26,11 +26,17 @@
 
 > 📌 **요약** — 안전한 배포는 **준비 상태 확인 + 사전 검증 + 적절한 트래픽 전환 + 빠른 롤백 + 실제 요청 검증**이다. 배포가 성공했다는 것은 Cloud Run이 정한 준비 조건을 통과했다는 뜻일 뿐, 사용자가 오류를 보지 않았다는 뜻이 아니다. 그래서 새 버전을 올리는 자동화가 아니라 **검증되지 않은 버전이 사용자에게 전달되지 않도록 통제하는 자동화**를 만든다.
 
+> 🧪 **예제** — `[실습 결과]` 한 줄 요약: 기본 프로브에서는 준비가 늦은 버전을 배포하자 요청 54건이 503이었고 `/health` 프로브에서는 0건이었다(대신 배포가 오래 걸림, 4장). 새 버전을 0%로 올려 태그 URL로 확인한 뒤 전환하는 흐름을 머지 한 번으로 돌게 만들었고(6장), production 배포 중 요청 752건에 실패 0건을 기록했다(첫 측정은 6건, 7장). 원클릭 롤백은 production에서 명령부터 확인까지 15초였으나 직후 요청 4건이 실패했고(콜드 스타트 **추정**), 일부러 망가뜨린 버전은 CI를 통과했지만 스모크 테스트가 전환을 막았다(요청 735건 실패 0건).
+
 이번 강의는 N046~N052에서 만든 AI 친구 에이전트 서비스(저장소 `friend-agent`, 줄여서 에이전트 서비스)에서 시작한다. 전제는 이 서비스가 PR을 머지할 때 CI(코드를 합칠 때마다 테스트를 자동으로 돌리는 것)를 거쳐 GitHub Actions가 만든 이미지로 staging과 production에 배포되는 상태다. 지난 강의(N052)는 Nginx로 직접 로드밸런서를 세워 블루그린을 해 봤고, 이번에는 그 일을 **Google Cloud의 Cloud Run이 대신 맡아 주는 구조**에서 다시 해 본 뒤, 절차 전체를 **PR 머지 한 번으로 자동으로 돌게** 만든다.
 
 > 💡 **팁** — 문서에서 "학습서"(31쪽)는 실습 교안, "해설서"(36쪽)는 같은 교안을 쉽게 풀어 쓴 책이다. 두 책은 챕터 01~08이 1:1로 대응한다. 학습서에는 명령·수치·"직접 해 보기" 과제가 있고 비유는 거의 없으며, 해설서에는 식당·상담센터·병원·교통경찰 비유와 퀴즈 정답이 있다. 그래서 이 노트는 **비유는 해설서, 명령·수치·표는 학습서 원문**을 따랐다. 학습서 Ch05가 해설서에서 가장 크게 다르게 정리되어 있어 5장에서는 두 책을 한 흐름으로 합쳤다. `[보충 비유]`·`[보충]`이라고 표시한 것만 이 노트에서 덧붙인 설명이다.
 
 > ⚠️ **주의** — PDF에는 세 가지 변환 흔적이 있어 바로잡았다. ① 해설서 Ch05~Ch07 제목 앞의 `/강의정리`는 슬래시 명령 흔적이라 뺐다. ② 해설서·학습서 일부에서 명령 옵션의 이중 하이픈이 하나로 깨져 보인다(`-no-traffic`, `-to-tags`, `-to-revisions`, `-to-latest`, `-remove-tags`). 실제 명령 블록에서 확인한 대로 모두 `--` 두 개가 맞다. ③ 학습서에서 "섹션 N"은 **챕터 N**을 뜻한다. 학습서의 인터랙티브 시각화("움직여 보는 리비전과 트래픽", 웹 전용)는 PDF에 설명 문단만 남아 있어, 이 노트는 그 설명을 근거로 서술한다. 해설서의 비교 그림 출처 캡션(Semaphore, Seagate 등)은 외부 이미지 표기라 옮기지 않았다.
+
+> 💡 **팁** — 버전 1.1은 v1.0(교안 기준)에 **`[실습 결과]`**를 덧붙인 판이다. 2026-10-29에 Windows 11 · PowerShell과 Git Bash · `gcloud` · `gh` 환경에서 3~7장을 직접 했고, 원본 기록은 `실습/N053_실습_진행기록.md`와 `실습/실습로그/`(원본 로그 12개)에 있다. 터미널 명령·측정·워크플로 작성·PR 생성은 AI 코딩 도우미(Claude)가 했고, Supabase 대시보드, Secret Manager 값 입력, PR 머지, production 승인, `rollback` 버튼, 브라우저 확인은 직접 했다. `[실습 결과]`가 붙지 않은 부분은 여전히 교안 기준이다. 교안과 **다른** 결과가 나온 곳은 그렇게 표시했다. 이 저장소는 공개라서 프로젝트 ID·프로젝트 번호·주소 해시·키 값·사용자 ID는 적지 않았고, 실습 로그는 주소의 프로젝트 번호와 해시를 마스킹한 사본이다.
+
+> ⚠️ **주의** — 이번 실습에서 **하지 않은 것**: 선택 과제(알림, 카나리 자동 승격), 스키마 변경 시험(7-6), 짝과 서로 보여주기(7-7), 6장·7장의 "가장 오래 막힌 곳" 개인 회고. `/health`가 항상 실패하는 버전(교안 방식)도 하지 않고, CI를 통과하는 `/version` 커밋 불일치 방식으로 대신했다(7-4).
 
 > 🧪 **예제** — 해설서의 "사용자님"은 전부 이 강의를 듣는 본인을 가리키는 개인화 문구다. 비개발자·1인 사업 관점으로 읽기 쉽게, 이 노트는 "1인 AI 사업(My-Story-Maker, 뉴스레터 에이전트, AI 컨설팅 서비스)에 적용하면"으로 옮겼다.
 
@@ -287,6 +293,8 @@ grep -n "docker build" .github/workflows/deploy.yml
 
 > ⚠️ **주의** — 학습서 PDF의 이 표는 열이 풀려 나와 순서대로 복원한 것이다. 문서의 A~I 항목 이름은 템플릿의 `docs/start-states.md`를 직접 열어 확인한다. 이 노트는 항목 이름 자체를 옮기지 않았다.
 
+> 🧪 **예제** — `[실습 결과]` **시작 상태 점검**(읽기만 함): 두 서비스 모두 환경변수에 `STORAGE`·`AUTH`·`SUPABASE_*`가 없었고(`/version`도 `storage: memory`), 스타트업 프로브는 기본(포트 확인)이었으며, Secret Manager에는 `llm-api-key`·`llm-api-key-staging` 둘뿐이었다. N052에서 만든 Supabase `friend-agent-staging`은 활성이었고 `friend-agent-production`은 없었다. 그래서 3장을 처음부터 했다. 트래픽은 둘 다 `latestRevision: true` 100%(고정 아님). 원본: 진행기록 1절.
+
 ### 3-4. production용 Supabase 프로젝트 만들기
 
 학습서는 직접 확인할 곳을 다섯 단계로 안내한다(대시보드 작업은 직접 한다).
@@ -343,6 +351,10 @@ gcloud run services update friend-agent-staging --region us-central1 --update-en
 
 > 🧪 **예제** — 결과 해석(학습서): 새 리비전은 새 인스턴스로 시작했지만 대화는 그대로 보인다. 대화가 인스턴스 메모리가 아니라 Supabase의 `messages` 테이블에 있고, 새 인스턴스도 같은 테이블을 읽기 때문이다. 다른 브라우저에서 앞의 대화가 보이지 않은 것은 브라우저마다 다른 게스트 사용자로 로그인하고, 서버가 모든 조회에 그 사용자의 ID 조건을 붙이기 때문이다. 이제 두 리비전이 함께 요청을 받아도 같은 대화를 보게 되었고, 대신 **두 리비전이 같은 테이블을 함께 쓰므로 한쪽이 테이블 구조를 바꾸면 다른 쪽이 바로 영향을 받는다**(7장에서 다시 만난다).
 
+> 🧪 **예제** — `[실습 결과]` **staging 연결과 막힌 곳**(원본: 진행기록 3절). 첫 시도는 `<…>` 자리 표시를 통째로 바꾸지 않았고 PowerShell에서 쉼표가 든 값을 따옴표로 감싸지 않아 `unrecognized arguments`로 실패했다. 교안의 한 줄 명령은 macOS·Linux 기준이라 PowerShell에서는 값을 변수에 넣고 큰따옴표로 감싸야 한다. 두 번째 시도는 연결에는 성공했지만 화면에 **"로그인을 시작하지 못했습니다"**가 떴다. 서비스에 저장된 키의 글자 구조를 값은 보지 않고 확인하니 길이가 61이고 `sb_publishable_`이 두 번 이어져 있었다(복사한 값에 이미 있는 접두사를 한 번 더 씀). 같은 키로 Supabase에 익명 가입을 요청하면 401이었다. 키를 다시 넣고 길이 46을 확인한 뒤 재실행해 해결했다.
+
+> 🧪 **예제** — `[실습 결과]` **3-6의 확인 4단계**: ② `messages`에 오늘 새 `user_id`로 5행이 쌓였다(인사, 날씨 질문, 답, "고마워…", 답). ③ `BANNER=저장확인`으로 새 리비전을 만든 뒤 일반 창을 새로고침하자 노란 띠에 `저장확인`이 보이고 대화가 그대로 남았다. ④ 시크릿 창은 `캐릭터 만들기`로 시작했다(다른 게스트). ① "게스트로 사용 중"은 캡처가 잘려 "…용 중"만 보여 전체 글자는 확인하지 못했다.
+
 ### 3-7. production 연결과 권한의 한계
 
 staging 확인이 끝나면 production 서비스에 같은 방식으로 연결한다. production은 실제 사용자가 쓰므로 명령의 서비스 이름이 `friend-agent`이고 값이 모두 production 프로젝트 것인지 한 번 더 확인한다.
@@ -362,6 +374,8 @@ gcloud run services update friend-agent --region us-central1 \
 > 📌 **요약** — 무중단 배포를 제대로 하려면 대화 기록을 인스턴스 메모리에서 공용 데이터베이스로 옮기고, 사용자 인증과 환경별 비밀 키 관리로 **데이터의 지속성과 보안을 함께** 확보해야 한다.
 
 ---
+
+> 🧪 **예제** — `[실습 결과]` **production 연결**: 변수 `$PURL`·`$PKEY`에 넣고 `$PKEY.Length`가 46인지 먼저 확인한 뒤 실행해 한 번에 성공했다(리비전 `friend-agent-00024-62j`). 환경변수 이름 5개가 추가됐고 시크릿은 `supabase-secret-production`을 참조하며, 키 길이 46·접두사 1회, staging과 다른 프로젝트 URL, 익명 가입 요청 200을 확인했다. 코드는 그대로라 커밋은 `8243335`다. 권한은 런타임 서비스 계정에 두 시크릿 **각각에 대해서만** 읽기 권한(`secretAccessor`)을 줬고 정책을 다시 조회해 확인했다. 이 장의 한계(두 환경이 같은 런타임 서비스 계정을 씀)는 그대로 남아 있다.
 
 ## 4. 요청 확인 스크립트로 배포 중 실패를 숫자로 보기
 
@@ -417,6 +431,18 @@ gcloud run services update friend-agent-staging --region us-central1 \
 
 이 숫자들은 교안의 예상 결과다. 해설서도 "실제 측정 결과는 실행 환경과 요청 타이밍에 따라 달라질 수 있으므로, 교안의 예상 결과와 직접 관찰한 결과를 비교하는 것이 중요하다"고 한다.
 
+> 🧪 **예제** — `[실습 결과]` **세 실험**(staging, 원본 `실습로그/08~12`). 실험마다 스크립트를 먼저 켜고 10초 뒤 새 리비전을 만들었고, 시작 전에 `/version`을 한 번 불러 콜드 스타트를 피했다.
+
+| 실험 | 프로브 | 시작 지연 | 전체 요청 | 실패 | 배포 명령 시간 |
+|---|---|---|---|---|---|
+| ① 기본 배포 | 기본(포트) | 없음 | 285 | 3 (`ReadTimeout`) | 27초 |
+| ② 준비가 늦은 버전 | 기본(포트) | 30초 | 295 | 54 (전부 503) | 37초 |
+| ③ `/health` 프로브 | `/health`, 5초, 12회, 2초 | 30초 | 377 | 0 | 약 84초 |
+
+> 🧪 **예제** — `[실습 결과]` **해석**: ①의 실패 3건은 새 리비전으로 트래픽이 옮겨 가는 막바지(12:05:36~12:05:40, KST)에 몰렸고 교안의 "0건이거나 아주 적음"에 해당한다(콜드 스타트로 **추정**). ②는 배포 명령이 성공으로 끝난 뒤에도 약 19초 더 503이 이어졌다(12:08:07~12:08:28). 교안은 "30초 가까이"라 했지만 실제는 약 21초였고, 지연이 컨테이너 시작부터 세어진다는 것은 **추정**이다. ③은 같은 조건에서 실패 0건이었다. 이전 리비전이 12:17:11까지 답한 뒤 새 리비전으로 바뀌었고, 배포가 교안의 "30초쯤"보다 훨씬 오래 걸린 이유는 확인하지 못했다.
+
+> ⚠️ **주의** — `[실습 결과]` ③을 **세 번** 돌렸다. 첫 번째는 Git Bash가 `--startup-probe=httpGet.path=/health`의 `/health`를 윈도 경로로 바꿔 서비스에 저장된 프로브 경로가 `C:/Program Files/Git/health`가 됐다(조회해서 발견, 그 실행의 값은 근거로 쓰지 않음). 두 번째는 `MSYS_NO_PATHCONV=1`로 변환을 전부 끄자 `gcloud`의 bash 래퍼가 자기 파일 경로를 못 찾아 **배포가 실행되지 않았다**. 세 번째는 `MSYS2_ARG_CONV_EXCL="--startup-probe"`로 그 옵션 하나만 제외했고 저장된 값이 `/health`인 것을 조회로 확인했다. 실행 뒤 **저장된 값을 조회해 확인**하는 습관이 필요하다(PowerShell에서는 이 문제가 없다).
+
 ### 4-5. 프로브 설정값 읽기
 
 | 설정 | 뜻 |
@@ -451,6 +477,8 @@ gcloud run services update friend-agent-staging --region us-central1 --remove-en
 > 📌 **요약** — 무중단 배포는 새 버전을 만드는 것만으로 완성되지 않으며, 실제 요청을 측정하고 **애플리케이션이 준비된 뒤 트래픽을 전환**하도록 해야 사용자 오류를 줄일 수 있다.
 
 ---
+
+> 🧪 **예제** — `[실습 결과]` **프로브를 자동 배포에 남기기**: 브랜치에서 `deploy.yml`의 `flags` 줄 **한 줄만** 바꿔(`--startup-probe=httpGet.path=/health,periodSeconds=5,failureThreshold=12,timeoutSeconds=2` 추가, `--service-account`는 그대로) PR #29(→ `staging`)를 만들었다. CI가 통과해 머지했고 staging 배포가 성공했으며(리비전 `00020-dc2`, 커밋 `55734e4`) 저장된 프로브가 `/health`임을 조회로 확인했다. 이어 `staging → main` PR #30을 머지하고 production 승인까지 마쳐 production도 같은 프로브가 됐다(리비전 `friend-agent-00025-txp`, 커밋 `55734e4`로 승격). staging의 실습용 값(`SLOW_START_SECONDS`, `BANNER`)은 지우고 프로브는 남겼다.
 
 ## 5. 트래픽 0%로 새 리비전 올리기
 
@@ -499,6 +527,8 @@ gcloud run services update friend-agent-staging --region us-central1 --update-en
 
 > ⚠️ **주의** — 태그 URL은 서비스 주소와 호스트 이름이 달라 브라우저가 로그인 정보를 따로 보관하므로 **새 게스트 사용자로 시작**한다. 원래 주소에서 나눈 대화가 보이지 않는 것은 이 때문이고, 데이터베이스가 달라서가 아니다. 또 트래픽 0%는 일반 트래픽을 보내지 않는다는 뜻이지, 새 버전이 자동으로 검증되었다는 뜻이 아니다. 태그 URL을 이용한 시험과 스모크 테스트를 별도로 해야 한다.
 
+> 🧪 **예제** — `[실습 결과]` **0% 배포**: 시작은 `friend-agent-staging-00020-dc2`가 `latestRevision: true` 100%였다. `--update-env-vars "BANNER=GREEN" --no-traffic --tag green`으로 새 리비전 `00021-fup`을 0%로 올렸다. 태그 URL의 `/version`은 `00021-fup`·`banner: GREEN`, 원래 서비스 주소는 `00020-dc2`·`banner: ""`이고 태그 URL의 `/health`는 200이었다. 태그 URL은 조회가 돌려준 `https://green---<서비스>-<해시>-uc.a.run.app` 형식과, 서비스 주소 앞에 `green---`만 붙인 주소가 **둘 다** 열렸다. 그리고 배포 직후 100% 줄에서 `latestRevision: true`가 사라져 **트래픽이 `00020`에 고정**됐다(`--no-traffic`의 부수 효과, 6장 자동화에서 반드시 풀어야 한다).
+
 ### 5-3. 한 번에 전환하고 롤백하기
 
 요청 확인 스크립트를 켜 두고 트래픽 100%를 `green`으로 옮긴다. 그다음 문제가 생겼다고 가정하고 처음 적어 둔 리비전으로 되돌린다. 버튼을 누르듯 명령 하나로 끝나는 시간을, 코드를 되돌려 다시 빌드하고 배포하는 시간과 비교해 본다.
@@ -513,6 +543,15 @@ gcloud run services update-traffic friend-agent-staging --region us-central1 --t
 ```
 
 > 🧪 **예제** — 결과 해석(교안): 요약에 두 리비전의 응답이 함께 찍히고 실패는 0건이다. 전환과 롤백 모두 새 인스턴스를 켜거나 이미지를 만들지 않고 트래픽 설정만 바꾸므로 몇 초 안에 끝난다. 같은 브라우저 탭을 새로고침하면 배너가 GREEN이 되었다가 롤백 뒤 사라지고, 대화는 그대로 남는다. 두 리비전이 같은 Supabase 테이블을 보기 때문이다. 롤백이 빨랐던 이유는 이전 리비전을 지우지 않고 남겨 두었기 때문이다.
+
+> 🧪 **예제** — `[실습 결과]` **전환과 롤백**(요청 281건, 실패 4건, 원본 `실습로그/13`):
+
+| 동작 | 명령 | 시각(KST) | 결과 |
+|---|---|---|---|
+| 전환 | `update-traffic --to-tags green=100` | 12:41:19 ~ 12:41:37 (명령 18.5초) | 첫 `00021` 응답 12:41:35, 전환 중 **실패 0건** |
+| 롤백 | `update-traffic --to-revisions 00020-dc2=100` | 12:42:13 ~ 12:42:24 (명령 11.5초) | `ReadTimeout` **4건**(12:42:22~12:42:29), `00020`의 첫 응답 12:42:32 |
+
+> ⚠️ **주의** — `[실습 결과]` 교안은 전환·롤백 모두 "실패 0건, 몇 초"를 예상했지만 롤백에서 4건이 났고 명령도 더 걸렸다. 이전 리비전이 약 35초 동안 트래픽을 못 받아 인스턴스가 줄었다가 다시 켜진 **콜드 스타트로 추정**한다(인스턴스 수는 확인하지 않았다). 명령 시간이 교안보다 긴 이유도 확인하지 못했다.
 
 ### 5-4. 카나리 — 10%, 50%, 100%
 
@@ -531,6 +570,8 @@ gcloud run services update-traffic friend-agent-staging --region us-central1 --t
 
 리비전별 숫자는 콘솔에서 이렇게 본다. Cloud Run 서비스의 측정항목 탭에 있는 요청 수 그래프는 응답 코드(2xx, 4xx, 5xx)별로만 나뉜다. 리비전별로 보려면 Cloud Monitoring의 Metrics Explorer에서 Cloud Run Revision의 Request Count를 고르고 `service_name`으로 서비스를 거른 뒤 `revision_name`으로 묶는다. staging에서는 스크립트가 보낸 요청이 거의 전부라 숫자가 작지만, production이라면 이 화면이 판단의 근거가 된다.
 
+> 🧪 **예제** — `[실습 결과]` **카나리**(요청 503건, 실패 0건, 원본 `실습로그/14`): `green=10`이면 `00020` 90% / `00021` 10%, `green=50`이면 50 / 50, `green=100`이면 `00021` 100%였다. 응답 수는 `00020` 280건(56%), `00021` 223건(44%)이고, 각 단계에 머문 시간(0%·10%·50%·100% 순으로 24·66·65·44초)으로 계산한 기대값 약 42%와 비슷하다. 다만 스크립트는 응답 리비전이 **바뀔 때만** 한 줄씩 찍어 **단계별** 새 리비전 응답 수는 직접 세지 못했다. 교안의 "10%가 8%·13%로 나온다"를 이번 로그로 증명한 것은 아니다.
+
 ### 5-5. 트래픽 고정 직접 확인하고 풀기
 
 지금은 트래픽이 `green` 태그에 정해져 있다. 이 상태에서 새 리비전을 하나 더 만들어 2장의 트래픽 고정을 실제로 본다.
@@ -546,6 +587,8 @@ gcloud run services update friend-agent-staging --region us-central1 --remove-en
 ```
 
 > 🧪 **예제** — 결과 해석(교안): `BANNER=고정확인`으로 만든 리비전은 명령이 성공으로 끝났는데도 **트래픽 0%로 남고**, 서비스 주소는 여전히 `green` 리비전이 답한다. 트래픽을 태그에 정해 둔 설정이 남아 있기 때문이다. 자동 배포가 이 상태에서 돌면 워크플로는 초록색으로 끝나도 사용자는 새 버전을 받지 못한다. `--to-latest`를 실행한 뒤 다시 조회하면 트래픽이 가장 최근 리비전 100%로 바뀐다. 6장에서 전환과 롤백을 자동화할 때 이 동작을 고려해야 한다.
+
+> 🧪 **예제** — `[실습 결과]` **트래픽 고정 재현**: 카나리 끝에 트래픽이 `green` 태그(`00021`) 100%로 고정된 상태에서 `--update-env-vars "BANNER=고정확인"`을 실행했다. 명령은 성공으로 끝났지만 출력이 서비스 중인 `00021-fup`을 가리켜 **새 리비전이 안 생긴 것처럼** 보였다. 조회하니 `00022-tvw`가 만들어졌고 Ready지만 트래픽 0%·`Retired`(인스턴스 없음)였으며, 서비스 주소 `/version`은 여전히 `banner: GREEN`(`00021`)이었다. 배포는 성공했는데 사용자는 옛 리비전을 본 것이다. `update-traffic --to-latest`로 100%가 `00022-tvw`로 옮겨졌고(`banner: 고정확인`), `--remove-tags green`과 `--remove-env-vars BANNER` 뒤 `latestRevision: true` 100%로 돌아왔다.
 
 ### 5-6. 언제 되돌릴까 — 롤백 신호 다섯 가지
 
@@ -648,6 +691,8 @@ flowchart LR
 
 단계마다 "워크플로가 대신할 수 있는 일인지, 그때 필요한 정보(리비전 이름, 태그 URL, 이번 커밋)를 어디서 얻을지" 짚어 본다. 특히 손으로 할 때 "지금 트래픽을 받는 리비전이 무엇인지"를 콘솔에서 눈으로 확인한 순간이 있었는가? **워크플로는 콘솔을 볼 수 없다.** 같은 정보를 명령으로 알아내는 방법을 찾아야 한다.
 
+> 🧪 **예제** — `[실습 결과]` **스테이지 0**: 5장에서 손으로 한 순서(현재 리비전 기록 → `--no-traffic --tag green` → 태그 URL 확인 → 전환 → `--to-latest`로 정리)가 이 스테이지의 답이다. 워크플로가 대신 못 하는 것은 콘솔에서 눈으로 "지금 트래픽을 받는 리비전"을 보는 일이어서, `gcloud run services describe --format json`으로 같은 정보를 조회하는 단계로 바꿨다.
+
 ### 6-4. 스테이지 1 — 머지하면 0%로 배포되게
 
 배포 단계를 "새 리비전을 트래픽 0%로 올리고 태그를 붙이는" 동작으로 바꾼다. 생각할 것은 세 가지다. 지금 쓰는 배포 액션에 "트래픽 없이 배포"와 "태그"에 해당하는 설정이 있을까? 태그를 배포할 때마다 같은 이름으로 붙이면 이전 리비전에 붙어 있던 같은 이름의 태그는 어떻게 될까? 그리고 지금 `deploy.yml`의 배포 단계는 하나뿐이라 staging 브랜치에서는 `friend-agent-staging`에, main에서는 `friend-agent`에 배포하도록 **두 환경이 같이 쓴다.** 이 단계를 바꾸면 두 환경이 함께 바뀌므로, 0% 배포를 두 환경 모두에 적용할지 production에만 적용할지 먼저 정한다. 두 환경 모두에 적용하면 같은 흐름이 staging에서 먼저 돌아 보고 production에서 다시 돌고, production에만 적용하면 뒤에 넣을 스모크 테스트와 전환 단계에도 같은 조건을 계속 붙여야 한다.
@@ -655,6 +700,8 @@ flowchart LR
 **클리어 확인**: ① 작업 브랜치에서 PR을 열기만 했을 때는 production에 아무 일도 일어나지 않는다. ② staging을 거쳐 main에 머지하고 배포를 승인한다. ③ Cloud Run > `friend-agent` > 리비전 탭에서 새 리비전이 트래픽 0%이고 태그가 붙어 있다. ④ 원래 서비스 주소의 `/version`은 이전 커밋, 태그 URL의 `/version`은 새 커밋이다.
 
 > 💡 **팁** — 힌트 1: 배포 액션의 설정 목록(README의 inputs)에서 "트래픽", "태그"라는 단어가 들어간 항목을 찾아보자. 코딩 에이전트에게는 "이 액션에서 트래픽 없이 배포하고 태그를 붙이는 설정이 무엇인지 공식 문서 근거와 함께 찾아 줘"라고 물어볼 수 있다. **태그는 서비스 안에서 이름이 겹칠 수 없다.** 같은 이름을 새 리비전에 붙이면 이전 리비전에서는 어떻게 되는지 콘솔에서 두 번 배포해 보며 확인한다.
+
+> 🧪 **예제** — `[실습 결과]` **스테이지 1**: 사용자가 "staging과 production **둘 다**에 적용, 전환은 `--to-latest`, 태그는 고정 이름 `green`"으로 하는 설계를 확인했고, `deploy.yml`에 **67줄만 추가**했다(기존 줄은 그대로). 배포 단계에 `no_traffic: true`와 `tag: green`을 더했고 `concurrency` 그룹으로 같은 서비스의 배포가 겹치지 않게 했다. 푸시 전에 YAML 문법과 모든 `run:` 블록의 `bash -n`을 검사했다. 배포 액션 v3의 `no_traffic`·`tag` 입력은 공식 `action.yml`에서 확인했다(힌트 1의 답).
 
 ### 6-5. 스테이지 2 — 스모크 테스트
 
@@ -670,11 +717,15 @@ flowchart LR
 
 > 💡 **팁** — `[보충 비유]` 납품받은 부품을 쓰기 전에 샘플 검수를 하는데, 검수한 것이 **납품된 신제품이 아니라 창고에 있던 옛 재고**였다면 검수는 통과해도 아무것도 증명하지 못한다.
 
+> 🧪 **예제** — `[실습 결과]` **스테이지 2**: 스모크 테스트는 조회로 받은 태그 URL의 `/health`와 `/version` 커밋을 6초 간격 최대 10번 확인한다. PR #31을 staging에 머지한 첫 실행(run #25)에서 1번째 시도에 통과했다(`/health` 정상, `/version` 커밋 일치). 스모크 테스트가 새 리비전이 아니라 원래 주소를 봤다면 이전 리비전이 답했을 것이다.
+
 ### 6-6. 스테이지 3 — 통과하면 한 번에 전환
 
 스모크 테스트를 통과하면 새 리비전으로 트래픽 100%를 한 번에 옮긴다. 블루그린 전환이다. 해설서는 전환 **전에 현재 트래픽을 받던 리비전 이름을 로그에 남겨야 한다**고 짚는다. 롤백할 때 필요한 정보이기 때문이다. 생각할 것: 전환할 때 리비전 이름으로 옮길까, 태그로 옮길까? 전환한 뒤 트래픽이 특정 리비전이나 태그에 묶여 있으면 다음 배포의 0% 단계에 어떤 영향이 있을까? 5장에서 트래픽 고정을 확인하고 풀 때 무엇을 했는지 떠올려 본다.
 
 **클리어 확인**: ① 머지와 승인 뒤 손대지 않고 기다린다. ② Cloud Run > `friend-agent` > 리비전 탭에서 새 리비전이 100%다. ③ 서비스 주소의 `/version`이 새 커밋이다. ④ **같은 작업을 두 번 연속 해도** 매번 새 리비전이 0%로 올라온 뒤 전환된다.
+
+> 🧪 **예제** — `[실습 결과]` **스테이지 3**: 전환 전에 **최신 준비 리비전이 방금 테스트한 리비전과 같은지** 확인하고(다르면 전환하지 않음) `update-traffic --to-latest`로 100%를 옮긴다. 리비전 이름이나 태그로 옮기면 트래픽이 고정돼 이후 배포나 손으로 한 배포가 사용자에게 가지 않기 때문이다. 전환 전에 트래픽을 받던 리비전 이름은 로그에 남기고, 전환 뒤 서비스 주소 `/version` 커밋도 확인한다. 로그에 `0% 00031-wod` → `100% LATEST (currently 00031-wod)`가 찍혔다. 두 번 이상 연속 배포해도 매번 `0% → 100% LATEST`였다(staging run #25·#27·#30, production run #26·#28).
 
 ### 6-7. 자동화에서 점검할 여섯 가지
 
@@ -694,6 +745,8 @@ flowchart LR
 > 📌 **요약** — 안전한 배포 자동화는 새 버전을 올리는 자동화가 아니라, **검증되지 않은 버전이 사용자에게 전달되지 않도록 통제하는 자동화**다. 6장의 질문에 "어디서 정보를 얻을지"가 계속 나오는 이유는, 워크플로가 사람의 눈(콘솔)을 대신할 수 없어서 눈으로 보던 것을 명령 출력으로 바꿔야 하기 때문이다.
 
 ---
+
+> 🧪 **예제** — `[실습 결과]` **production 반영**: `staging → main` PR #32(run #26)를 머지하고 production 승인을 마쳤다. 단계(승격, 기록, 배포, 스모크 테스트, 전환, 전환 확인)가 모두 성공했고 이미지 빌드는 건너뛰었다(staging 이미지를 다이제스트 그대로 승격). production 리비전 `friend-agent-00026-vis`가 `latestRevision: true` 100%였고 `/version` 커밋 `1a4819e`가 staging과 같았다.
 
 ## 7. 무중단 증명과 원클릭 롤백
 
@@ -726,6 +779,15 @@ python scripts/watch_requests.py https://<production 서비스 주소>
 
 > ⚠️ **주의** — 해설서의 단서: 이것만으로 모든 사용자의 무중단을 완벽히 증명하는 것은 아니다. 요청 수가 충분한지, 실제 핵심 기능도 정상인지, 실패가 네트워크 문제인지 배포 문제인지 함께 살펴봐야 한다. 워크플로가 성공했다는 것은 작업이 정상 종료되었다는 뜻이지 사용자에게 장애가 없었다는 뜻이 아니다.
 
+> 🧪 **예제** — `[실습 결과]` **스테이지 4 — 무중단 증명**: 승인으로 `deploy` 작업이 시작되는 순간 production 주소에 5분간 요청을 보냈다(원본 `실습로그/15`, `16`).
+
+| 측정 | 전체 요청 | 실패 | 응답 리비전 |
+|---|---|---|---|
+| 첫 측정(run #26) | 723 | **6** (`ReadTimeout`, 감시 시작 후 15초 안) | 이전 `00025` 152건 → 새 `00026` 565건 |
+| 재측정(run #28, 감시 전에 production을 깨워 둠) | 752 | **0** | 이전 `00026` 195건 → 새 `00028` 557건 (전환 14:29:32 KST) |
+
+> ⚠️ **주의** — `[실습 결과]` 첫 측정의 6건은 새 리비전이 트래픽을 받기 약 1분 전, 감시를 켠 직후에 몰려 배포 전환이 원인은 아니다. 감시 전에 production을 깨워 두지 않아 생긴 콜드 스타트로 **추정**했고, 깨워 둔 재측정에서 0건이 나온 것이 그 추정과 일관되지만 원인을 직접 확인한 것은 아니다. 첫 측정은 지우지 않고 그대로 기록에 남겼다. 스테이지 4의 조건("이전·새 리비전 응답이 모두 보이고 실패 0건")은 재측정으로 충족했다.
+
 ### 7-3. 스테이지 5 — 원클릭 롤백 워크플로
 
 지난 챕터에서는 롤백 명령을 직접 쳤다. 이번에는 그 명령을 별도의 `.github/workflows/rollback.yml` 파일에 넣어 필요할 때 실행할 수 있게 한다. 버튼 한 번으로 롤백한다고 해서 **원클릭 롤백**이라 부른다. 해설서는 세 단계로 그린다. ① 새 버전에서 문제 발생(오류 증가, 핵심 기능 실패) → ② GitHub Actions에서 Run workflow 버튼으로 롤백 작업을 시작 → ③ 트래픽 100%를 지정한 리비전으로 옮기고 `/version`으로 확인.
@@ -744,6 +806,17 @@ python scripts/watch_requests.py https://<production 서비스 주소>
 
 > 💡 **팁** — 힌트 5: 버튼으로 실행하는 워크플로는 GitHub 문서의 `workflow_dispatch` 이벤트를 찾아본다. 입력 칸을 만드는 방법도 같은 문서에 있다.
 
+> 🧪 **예제** — `[실습 결과]` **스테이지 5 — 원클릭 롤백**: `.github/workflows/rollback.yml`을 새로 만들었다. 입력은 서비스(`staging`/`production`)와 되돌아갈 리비전 이름(직접 입력, 필수)이고, 단계는 ① 이름 형식(`서비스-5자리-3글자`)·서비스 소속·Ready 검사 ② `update-traffic --to-revisions 리비전=100` ③ 서비스 주소 `/version` 확인과 걸린 초를 실행 요약에 표로 남김이다. **production 승인은 거치지 않기로** 했다(저장소의 승인자이자 실행자가 한 명이라 승인 절차는 보호보다 지연이 크다고 판단, 대신 입력 검사를 안전장치로 둠). 입력값은 셸에 직접 끼워 넣지 않고 환경변수로만 넘겼다. `workflow_dispatch` 버튼은 기본 브랜치(main)에 있어야 보여서 staging을 거쳐 main까지 두 번 머지했다.
+
+| # | 대상 | 되돌아갈 리비전 | 실행자 | 롤백 명령부터 확인까지 |
+|---|---|---|---|---|
+| #1 | staging | `00031-wod` | 에이전트(`gh workflow run`) | 32초 |
+| #2 | staging | `00033-bas` (새 버전으로 복귀) | 에이전트 | 21초 |
+| #3 | **production** | `00026-vis` | **사용자(버튼)** | 15초 (워크플로 전체 33초) |
+| #4 | production | `00028-rum` (새 버전으로 복귀) | 에이전트 | 4초 |
+
+> ⚠️ **주의** — `[실습 결과]` #3 직후 production 요청 확인(원본 `실습로그/17`)은 357건 중 **실패 4건**(`ReadTimeout`, 롤백 직후 약 9초)이었다. #4(`실습로그/18`)는 249건에 실패 0건이었다. 되돌아간 리비전이 한동안 트래픽을 못 받으면 인스턴스가 줄어 있다가 다시 켜지는 **콜드 스타트로 추정**하며(#4의 대상은 6분 전까지 트래픽을 받던 리비전), 롤백은 스타트업 프로브를 다시 돌리지 않아 막아 주지 못한다(교안의 설명과 일치). 확인 단계의 첫 시도가 "아직 없음 이 응답 중"으로 찍히는 것도 같은 구간의 재시도다.
+
 ### 7-4. 스테이지 6 — 일부러 망가진 버전으로 시험
 
 안전장치는 정상 상황에서만 확인해서는 부족하고, **실제로 장애를 막아내는지 시험**해야 한다. `/health`가 항상 실패하도록 바꾼 PR을 main에 머지하고 승인한다. 워크플로는 실패로 끝나야 하고, 서비스 주소는 계속 이전 버전으로 답해야 한다. 어느 단계에서 멈췄는지도 본다. 스타트업 프로브를 `/health`로 설정해 두었다면 Cloud Run이 새 리비전을 준비 완료로 보지 않아 **배포 단계에서 먼저** 멈출 수 있고, 그렇지 않다면 스테이지 2의 스모크 테스트 단계에서 멈춘다. 어느 쪽이든 전환 단계까지 가지 않았으면 클리어다. 확인한 뒤에는 GitHub의 Revert 버튼으로 revert 커밋을 만들어 망가진 변경을 되돌린다.
@@ -759,6 +832,8 @@ python scripts/watch_requests.py https://<production 서비스 주소>
 
 > ⚠️ **주의** — 실제 production에서 고장 난 버전을 시험하기보다는 격리된 staging 환경에서 먼저 검증하는 것이 안전하다고 해설서는 권한다. 그리고 망가진 버전인데 워크플로가 초록이고 `/version`이 새 커밋이라면, 스모크 테스트가 원래 서비스 주소를 보았거나 스모크 테스트 실패가 단계 실패로 이어지지 않았다고 의심한다(부록 G 문제 5).
 
+> 🧪 **예제** — `[실습 결과]` **스테이지 6 — 망가진 버전**(방식 A, staging에서만): 교안의 "`/health`가 항상 실패"는 `test_health`가 `/health`를 검사하고 `staging` 브랜치가 `test` 체크 필수(관리자 적용)라 그 PR이 CI에서 막힌다. `/version`은 테스트가 없어 `/version`이 `"broken-" + 커밋 앞 7글자`를 돌려주게 바꿨다(PR #35, 로컬 `pytest` 15개 통과). 머지 후 run #29: `test` 통과 → 이미지 빌드 → 0% 배포(`/health` 정상이라 프로브 통과) → **스모크 테스트 실패**(기대 커밋 `b50cc5c…`, 10번 모두 `broken-b50cc5c`) → 전환·전환 확인·배포 결과는 건너뜀. staging은 이전 리비전 `00033-bas`가 100% 그대로였고, 그동안 요청 확인(원본 `실습로그/19`) **735건 실패 0건**이었다. 병합 커밋을 `git revert -m 1`로 되돌린 PR #36을 머지하자 run #30이 전 단계 성공했고(스모크 1번째 통과, `0% 00038-veg` → `100% LATEST`) 롤백으로 고정돼 있던 staging 트래픽도 풀렸다.
+
 ### 7-5. 선택 과제 — 머지 한 번 배포를 내 손으로 넓히기
 
 | 구분 | 과제 | 접근 힌트 | 성공하면 |
@@ -767,6 +842,8 @@ python scripts/watch_requests.py https://<production 서비스 주소>
 | 도전 | 카나리 자동 승격 배포 | 10%로 전환한 뒤 정한 시간만큼 기다리고 5장의 롤백 신호(오류율, 지연 시간)를 숫자로 확인해 통과하면 50%, 100%로 올린다. 통과하지 못하면 이전 리비전으로 롤백하고 워크플로를 실패로 끝낸다 | 요청 확인 스크립트의 리비전별 응답 수가 10%, 50%, 100% 순서로 바뀌고, 망가진 버전은 10%에서 롤백된다 |
 
 > ⚠️ **주의** — 카나리 자동 승격은 블루그린보다 구현 난도가 높다. 특히 요청 수가 적으면 오류율과 지연 시간 통계가 불안정할 수 있으므로, 충분한 관측량과 명확한 판정 기준을 먼저 마련해야 한다. 무엇을 언제 어떻게 판단할지는 내가 정하고, 에이전트는 그 구조대로 워크플로를 고치게 한다.
+
+> 🧪 **예제** — `[실습 결과]` 선택 과제(Discord·Slack 알림, 카나리 자동 승격)는 **하지 않았다.**
 
 ### 7-6. 생각해 보기 — 스키마 변경이 있는 배포
 
@@ -788,6 +865,8 @@ python scripts/watch_requests.py https://<production 서비스 주소>
 > 💡 **팁** — `[보충 비유]` 업무 양식을 개정할 때 구 양식·신 양식을 병행 접수하는 기간을 두는 것과 같다. 어느 날 갑자기 구 양식을 받지 않으면 처리 중이던 건이 반려된다. 구 양식 접수가 완전히 끝난 것을 확인한 뒤에 폐지한다(N052 2장 "확장-축소 패턴"과 같은 이야기).
 
 > ⚠️ **주의** — 해설서 원문은 "확장 → 코드 전환 → 정리"라는 세 단어인데 번호 목록은 4단계(호환 코드 배포가 따로 있다)다. 이 노트는 번호 목록을 따랐다.
+
+> 🧪 **예제** — `[실습 결과]` 스키마 변경 배포(`reminders` 열 이름 변경)는 생각해 보기만 하고 **직접 시험하지 않았다.** 위의 확장 → 호환 코드 → 코드 전환 → 정리 순서는 해설서 근거다.
 
 ### 7-7. 서로 보여주기와 자가 점검
 
@@ -813,6 +892,12 @@ python scripts/watch_requests.py https://<production 서비스 주소>
 > 📌 **요약** — 안전한 AI 서비스 운영은 새 버전을 배포하는 기술만이 아니라, **장애를 감지하고, 전환을 통제하고, 빠르게 복구하며, 그 결과를 숫자로 증명하는 체계**를 만드는 것이다. 1인 사업에서는 처음부터 감지, 복구, 증명 세 가지를 마련한다.
 
 ---
+
+> 🧪 **예제** — `[실습 결과]` **자가 점검**(근거는 진행기록 11절): ① 워크플로 파일(`deploy.yml`, `rollback.yml`)에 키 패턴이 없고 값은 `${{ vars.* }}`로만 읽는다 ✓ ② 트리거가 `push`(`staging`·`main`)뿐이라 PR을 열기만 하면 배포되지 않는다(PR #29~#37을 열어 둔 동안 배포 실행이 생기지 않았다) ✓ ③ 스모크 테스트 실패 시 전환 안 됨(run #29) ✓ ④ 연속 배포마다 `0% → 100% LATEST` ✓ ⑤ 배포 중 실패 0건(production 752건) ✓ ⑥ 버튼 하나로 롤백(production 15초) ✓ ⑦ 액션 버전은 시작 전 판본과 같고 새로 준 권한은 런타임 서비스 계정의 시크릿 단위 읽기 권한 2개뿐 ✓(제한적) ⑧ 각 단계를 남에게 설명할 수 있는가는 **본인 몫**이다.
+
+> ⚠️ **주의** — `[실습 결과]` 마지막 점검 "배포 서비스 계정의 역할이 오늘 아침과 같은지"는 **비교하지 못했다.** 아침의 역할 목록을 기록해 두지 않았다(시작 때 스냅샷을 남기지 않은 누락). 지금 상태는 프로젝트 수준 역할 `roles/run.sourceDeveloper`·`roles/serviceusage.serviceUsageConsumer`, Artifact Registry 저장소 `artifactregistry.writer`, 런타임 서비스 계정에 대한 `iam.serviceAccountUser`이고 소유자·편집자 같은 넓은 역할은 없다.
+
+> 🧪 **예제** — `[실습 결과]` **가장 오래 걸린 곳**(기록 기준): 실험 ③을 세 번 돌린 일(Git Bash 경로 변환)과 연결 후 로그인이 실패한 일(키 접두사 중복)이 가장 시간을 썼다. 둘 다 "명령이 성공했다"는 출력이 아니라 **저장된 값을 조회**하고서야 원인이 보였다. 본인 회고(무엇을 보고 막힌 줄 알았고, 원인을 어디서 찾고, 어떻게 풀었는지)는 직접 덧붙이는 자리다.
 
 ## 8. 오늘 배운 것
 
@@ -871,6 +956,8 @@ N052는 "Nginx로 직접 해 보는 무중단 배포"였고, N053은 "같은 일
 1. 배포가 성공했다는 것과 사용자가 오류를 보지 않았다는 것은 다르다. 그래서 **측정**한다.
 2. 새 버전을 올리는 일과 사용자에게 보내는 일은 다르다. 그래서 0%로 올려 **확인한 뒤** 전환한다.
 3. 자동화는 명령을 자동으로 치는 일이 아니라, 검증 실패 시 다음 단계가 실행되지 않게 **통제**하는 일이다.
+
+`[실습 결과]`를 덧붙이며 하나를 더 배웠다. 숫자는 **나온 대로** 적어야 한다. 첫 production 측정은 실패 6건이었고, 깨워 둔 재측정은 0건이었다. 둘 다 기록에 남겼고 원인은 추정이라 적었다. 롤백은 배포보다 **준비 확인 없이 곧바로 트래픽을 옮기므로** 되돌아간 직후 몇 초가 가장 약하다는 점도 숫자로 보였다.
 
 ---
 
@@ -985,6 +1072,193 @@ gcloud run services update friend-agent-staging --region us-central1 --remove-en
 | 실패 0건 | 관측한 요청에서는 끊김이 없었다(요청 수가 충분해야 의미) |
 | 실패 시각이 배포와 무관하게 드문드문 | 내 네트워크 문제일 수 있다. 한 번 더 측정하고 Actions 로그 단계 시각과 비교 |
 
+### A-7. 실습에서 만든 워크플로 `[실습 결과]`
+
+저장소 `friend-agent`의 `.github/workflows/`에 실제로 들어간 내용이다(키·주소 값은 `${{ vars.* }}`로만 읽는다). 아래는 `deploy.yml`에 **추가한 단계**(배포 단계의 `no_traffic: true`와 `tag: green` 두 줄은 기존 `deploy-cloudrun` 단계의 `with:` 안에 더했다)이다.
+
+```yaml
+      # 롤백할 때 돌아갈 곳. 배포로 트래픽이 바뀌기 전에 적어 둔다
+      - name: 지금 트래픽을 받는 리비전 기록
+        run: |
+          set -euo pipefail
+          PREV=$(gcloud run services describe "${{ vars.SERVICE }}" --region us-central1 --format json | jq -r '.status.traffic | max_by(.percent) | .revisionName')
+          echo "PREV_REVISION=$PREV" >> "$GITHUB_ENV"
+          echo "지금 ${{ vars.SERVICE }} 의 트래픽을 받는 리비전: $PREV (문제가 생기면 여기로 롤백한다)"
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: ${{ vars.SERVICE }}
+          region: us-central1
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          image: ${{ env.IMAGE }}
+          env_vars: |
+            COMMIT_SHA=${{ env.COMMIT }}
+            ENV=${{ vars.ENV }}
+          flags: --service-account=${{ vars.RUNTIME_SA }} --startup-probe=httpGet.path=/health,periodSeconds=5,failureThreshold=12,timeoutSeconds=2
+          # 새 리비전은 트래픽 0%로 올리고 green 태그를 붙인다. 사용자에게는 아직 보내지 않는다
+          no_traffic: true
+          tag: green
+
+      # 0%인 새 리비전은 원래 서비스 주소로는 안 보인다(이전 리비전이 답한다). 그래서 태그 URL로 확인한다
+      - name: 스모크 테스트 (태그 URL)
+        run: |
+          set -euo pipefail
+          INFO=$(gcloud run services describe "${{ vars.SERVICE }}" --region us-central1 --format json)
+          TAG_URL=$(echo "$INFO" | jq -r '.status.traffic[] | select(.tag=="green") | .url')
+          NEW_REV=$(echo "$INFO" | jq -r '.status.traffic[] | select(.tag=="green") | .revisionName')
+          if [ -z "$TAG_URL" ] || [ "$TAG_URL" = "null" ]; then echo "green 태그 URL을 찾지 못했다"; exit 1; fi
+          echo "NEW_REVISION=$NEW_REV" >> "$GITHUB_ENV"
+          echo "확인 대상: $TAG_URL (리비전 $NEW_REV), 기대하는 커밋: $COMMIT"
+          GOT=""
+          for i in $(seq 1 10); do
+            if curl -fsS -m 5 "$TAG_URL/health" > /dev/null && GOT=$(curl -fsS -m 5 "$TAG_URL/version" | jq -r '.commit') && [ "$GOT" = "$COMMIT" ]; then
+              echo "[$i/10] 통과: /health 정상, /version 커밋 $GOT"
+              exit 0
+            fi
+            echo "[$i/10] 아직 아님 (받은 커밋: ${GOT:-없음}). 6초 뒤 다시 확인한다"
+            sleep 6
+          done
+          echo "스모크 테스트 실패. 전환하지 않는다. 사용자는 계속 $PREV_REVISION 을 쓴다"
+          exit 1
+
+      # 위 단계가 실패하면 이 단계는 실행되지 않는다(기본 동작)
+      - name: 전환 (스모크 테스트를 통과했을 때만)
+        run: |
+          set -euo pipefail
+          LATEST=$(gcloud run services describe "${{ vars.SERVICE }}" --region us-central1 --format='value(status.latestReadyRevisionName)')
+          if [ "$LATEST" != "$NEW_REVISION" ]; then
+            echo "테스트한 리비전($NEW_REVISION)이 최신 준비 리비전($LATEST)과 다르다. 전환하지 않는다"
+            exit 1
+          fi
+          echo "전환 전에 트래픽을 받던 리비전: $PREV_REVISION"
+          # 리비전 이름이나 태그로 옮기면 트래픽이 거기에 고정돼 다음 배포가 막힌다. 그래서 최신 리비전을 따라가게 한다
+          gcloud run services update-traffic "${{ vars.SERVICE }}" --region us-central1 --to-latest
+          echo "$NEW_REVISION 으로 트래픽 100% 전환 완료"
+
+      - name: 전환 확인 (서비스 주소)
+        run: |
+          set -euo pipefail
+          URL='${{ steps.deploy.outputs.url }}'
+          for i in $(seq 1 10); do
+            GOT=$(curl -fsS -m 5 "$URL/version" | jq -r '.commit') || GOT=""
+            if [ "$GOT" = "$COMMIT" ]; then
+              echo "[$i/10] 서비스 주소의 /version 커밋이 $GOT 로 바뀌었다"
+              exit 0
+            fi
+            echo "[$i/10] 아직 이전 커밋이 응답 중 (받은 커밋: ${GOT:-없음}). 3초 뒤 다시 확인한다"
+            sleep 3
+          done
+          echo "전환했는데 서비스 주소가 새 커밋으로 바뀌지 않았다. 롤백하려면 $PREV_REVISION 으로 되돌린다"
+          exit 1
+```
+
+새 파일 `rollback.yml` 전체는 다음과 같다.
+
+```yaml
+# 버튼 하나로 이전 리비전으로 되돌린다 (원클릭 롤백).
+# 사용법: GitHub > Actions > rollback > Run workflow 에서 서비스(staging/production)와 되돌아갈 리비전 이름을 넣는다.
+# 되돌아갈 리비전 이름은 Cloud Run 콘솔의 리비전 탭이나, 배포 로그의 "지금 트래픽을 받는 리비전" 줄에서 확인한다.
+# production 승인은 거치지 않는다. 대신 입력 형식과 리비전 상태를 먼저 검사하고, 실행할 수 있는 사람은 저장소에 쓰기 권한이 있는 사람뿐이다.
+name: rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 되돌릴 서비스
+        type: choice
+        options: [staging, production]
+        default: staging
+      revision:
+        description: 되돌아갈 리비전 이름 (예 friend-agent-00025-txp)
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    # 같은 서비스의 배포와 겹치지 않게 deploy.yml 과 같은 그룹 이름을 쓴다
+    concurrency:
+      group: deploy-${{ inputs.target == 'production' && 'main' || 'staging' }}
+      cancel-in-progress: false
+    # 입력값은 셸에 직접 끼워 넣지 않고 환경변수로만 넘긴다
+    env:
+      TARGET: ${{ inputs.target }}
+      REVISION: ${{ inputs.revision }}
+    steps:
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SA }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: 입력과 리비전 확인
+        run: |
+          set -euo pipefail
+          case "$TARGET" in
+            production) SERVICE=friend-agent ;;
+            staging) SERVICE=friend-agent-staging ;;
+            *) echo "서비스는 staging 또는 production 이어야 한다"; exit 1 ;;
+          esac
+          # 서비스 이름 + 5자리 번호 + 3글자 꼴만 받는다. 그래서 staging 리비전을 production 에 쓰는 실수도 막힌다
+          if ! [[ "$REVISION" =~ ^${SERVICE}-[0-9]{5}-[a-z0-9]{3}$ ]]; then
+            echo "리비전 이름이 $SERVICE 의 것이 아니다: $REVISION"
+            exit 1
+          fi
+          INFO=$(gcloud run revisions describe "$REVISION" --region us-central1 --format json)
+          OWNER=$(echo "$INFO" | jq -r '.metadata.labels["serving.knative.dev/service"]')
+          READY=$(echo "$INFO" | jq -r '.status.conditions[] | select(.type=="Ready") | .status')
+          if [ "$OWNER" != "$SERVICE" ] || [ "$READY" != "True" ]; then
+            echo "되돌아갈 수 없는 리비전이다 (서비스: $OWNER, Ready: $READY)"
+            exit 1
+          fi
+          CURRENT=$(gcloud run services describe "$SERVICE" --region us-central1 --format json | jq -r '.status.traffic | max_by(.percent) | .revisionName')
+          echo "SERVICE=$SERVICE" >> "$GITHUB_ENV"
+          echo "CURRENT=$CURRENT" >> "$GITHUB_ENV"
+          echo "$SERVICE: 지금 $CURRENT 이 트래픽을 받는다. $REVISION 으로 되돌린다"
+
+      - name: 롤백 (트래픽 100%를 그 리비전으로)
+        run: |
+          set -euo pipefail
+          echo "STARTED=$(date +%s)" >> "$GITHUB_ENV"
+          gcloud run services update-traffic "$SERVICE" --region us-central1 --to-revisions "$REVISION=100"
+
+      - name: 확인 (서비스 주소의 /version)
+        run: |
+          set -euo pipefail
+          URL=$(gcloud run services describe "$SERVICE" --region us-central1 --format='value(status.url)')
+          for i in $(seq 1 15); do
+            VER=$(curl -fsS -m 5 "$URL/version" || echo '{}')
+            GOT=$(echo "$VER" | jq -r '.revision // "없음"')
+            if [ "$GOT" = "$REVISION" ]; then
+              SECS=$(( $(date +%s) - STARTED ))
+              COMMIT=$(echo "$VER" | jq -r '.commit')
+              echo "[$i/15] /version 이 $REVISION (커밋 $COMMIT) 로 바뀌었다. 롤백 명령부터 ${SECS}초"
+              {
+                echo "### 롤백 결과"
+                echo "| 항목 | 값 |"
+                echo "|---|---|"
+                echo "| 서비스 | $SERVICE |"
+                echo "| 이전 | $CURRENT |"
+                echo "| 이후 | $REVISION (커밋 \`$COMMIT\`) |"
+                echo "| 롤백 명령부터 확인까지 | ${SECS}초 |"
+              } >> "$GITHUB_STEP_SUMMARY"
+              echo "참고: 트래픽이 이 리비전에 고정됐다. 다음 정상 배포의 전환 단계가 풀어 준다. 새 버전으로 돌아가려면 같은 버튼에 새 리비전 이름을 넣는다"
+              exit 0
+            fi
+            echo "[$i/15] 아직 $GOT 이 응답 중. 3초 뒤 다시 확인한다"
+            sleep 3
+          done
+          echo "롤백했는데 /version 이 $REVISION 으로 바뀌지 않았다"
+          exit 1
+```
+
 ---
 
 ## 부록 B · 트러블슈팅 표
@@ -1006,6 +1280,14 @@ gcloud run services update friend-agent-staging --region us-central1 --remove-en
 | 실패가 배포와 무관하게 드문드문 찍힌다 | 내 네트워크 문제 | 한 번 더 측정하고 실패 시각을 Actions 로그 단계 시각과 비교 |
 | 새 태그를 붙였는데 이전 리비전에서 태그가 사라진다 | 태그는 서비스 안에서 이름이 겹칠 수 없다 | 콘솔에서 두 번 배포해 확인. 배포마다 고유한 태그 이름을 쓴다 |
 | 롤백했는데 이전 리비전이 오류를 낸다 | 새 버전이 테이블 구조를 바꿨다. 롤백은 코드만 되돌리고 데이터 구조는 되돌리지 않는다 | 확장 → 코드 전환 → 정리 순서로 스키마를 바꾼다 |
+| `[실습 결과]` 연결 명령이 `unrecognized arguments: 프로젝트 / URL>`로 실패 | `<…>` 자리 표시를 통째로 바꾸지 않았고, PowerShell에서 쉼표가 든 값을 따옴표로 감싸지 않아 배열로 쪼개짐 | 값을 `$URL`·`$KEY` 변수에 넣고 `"…"`로 감싸 실행. `<>`는 글자와 함께 지운다 |
+| `[실습 결과]` 연결은 성공했는데 화면에 "로그인을 시작하지 못했습니다" | publishable key 앞에 `sb_publishable_`이 두 번 들어감(저장 길이 61, Supabase 응답 401). 익명 로그인 설정 문제가 아니었다 | 복사한 값 전체만 넣고 `$KEY.Length`가 46인지 확인한 뒤 다시 실행 |
+| `[실습 결과]` 저장된 프로브 경로가 `C:/Program Files/Git/health` | Git Bash가 `/`로 시작하는 옵션 값을 윈도 경로로 바꿈 | 실행 뒤 저장된 값을 조회해 확인하고, 그 옵션만 `MSYS2_ARG_CONV_EXCL="--startup-probe"`로 변환에서 제외(PowerShell에는 없는 문제) |
+| `[실습 결과]` `MSYS_NO_PATHCONV=1` 뒤 `gcloud`가 `C:\c\Users\…\gcloud.py`를 못 찾음 | 변환을 전부 끄면 `gcloud`의 bash 래퍼가 자기 경로를 못 찾아 배포 명령 자체가 실행되지 않음 | 변환 전체가 아니라 문제 옵션 하나만 제외 |
+| `[실습 결과]` 고정된 상태에서 환경변수를 바꿨는데 새 리비전이 안 생긴 것처럼 보임 | 트래픽이 태그·리비전에 고정돼 새 리비전은 Ready·0%로 남고, 출력은 서비스 중인 리비전을 가리킴 | `describe`로 리비전 목록과 트래픽을 조회하고 `update-traffic --to-latest`로 해제 |
+| `[실습 결과]` 배포 중 요청 확인 첫 15초에 실패 6건 | 감시 전에 production을 깨워 두지 않아 이전 리비전의 콜드 스타트로 추정(새 리비전은 1분 뒤에야 트래픽을 받음) | 깨워 둔 뒤 재측정(실패 0건). 첫 측정은 지우지 않고 기록 |
+| `[실습 결과]` 롤백 직후 요청 4건 실패(약 9초) | 되돌아갈 리비전이 한동안 트래픽을 못 받아 인스턴스가 줄었다가 다시 켜진 콜드 스타트로 추정. 롤백은 스타트업 프로브를 다시 돌리지 않음 | 확인 단계가 재시도하며 기다림. 롤백 대상이 최근에 트래픽을 받았는지에 따라 달라짐(#4는 0건) |
+| `[실습 결과]` 실습 로그를 공개 저장소에 올리려는데 서비스 주소에 프로젝트 번호가 들어 있음 | 서비스 주소·태그 URL에 번호와 해시가 포함돼 로그에 그대로 찍힘 | 커밋 전에 `<프로젝트번호>`·`<해시>`로 마스킹하고 패턴 검색으로 0건 확인 |
 
 ---
 

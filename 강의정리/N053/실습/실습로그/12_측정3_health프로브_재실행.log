@@ -1,0 +1,17 @@
+### 시작 2026-10-29 12:15:51 | watch 150s | update env: BANNER=측정3b --startup-probe=httpGet.path=/health,periodSeconds=5,failureThreshold=12,timeoutSeconds=2
+### update 시작 12:16:01.799
+Routing traffic.....done
+Done.
+Service [friend-agent-staging] revision [friend-agent-staging-00018-ts2] has been deployed and is serving 100 percent of traffic.
+Service URL: https://friend-agent-staging-<프로젝트번호>.us-central1.run.app
+### update 끝 12:17:25.971
+https://friend-agent-staging-<프로젝트번호>.us-central1.run.app/version 에 0.2초마다 요청합니다. 최대 150초 뒤 멈춥니다. 멈추려면 Ctrl+C.
+12:15:52.197  응답 리비전: friend-agent-staging-00017-g8d
+12:17:11.855  응답 리비전: friend-agent-staging-00018-ts2
+
+── 요약 ──
+전체 요청 377건, 실패 0건, 걸린 시간 150초
+  friend-agent-staging-00017-g8d: 200건 (53%)
+  friend-agent-staging-00018-ts2: 177건 (47%)
+실패가 있으면 그 시각을 배포 단계(콘솔, Actions 로그의 시각)와 맞춰 본다. 내 네트워크 문제도 실패로 잡힐 수 있다.
+### 끝 2026-10-29 12:18:22
