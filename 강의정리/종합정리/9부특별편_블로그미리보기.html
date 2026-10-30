@@ -1,0 +1,402 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9가지 착각 특별편</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;800&family=IBM+Plex+Sans+KR:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 한 줄 읽기 칼럼, 위에 배포 콘솔 같은 상태 띠, 본문은 블로그 글 그대로 */
+:root{
+  --bg:#f5f7f8; --paper:#ffffff; --ink:#1c2328; --muted:#5d6a73; --line:#d9e0e4;
+  --accent:#0f6e7a; --accent-soft:#e3f1f2; --warn:#b4560f; --ok:#1f7a45; --code:#eef2f4;
+  --display:"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171a; --paper:#192024; --ink:#e3e9ec; --muted:#9aa8b0; --line:#2c373d;
+  --accent:#5cc3cd; --accent-soft:#1d3236; --warn:#f0a258; --ok:#5fcf8c; --code:#222b30; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171a; --paper:#192024; --ink:#e3e9ec; --muted:#9aa8b0; --line:#2c373d;
+  --accent:#5cc3cd; --accent-soft:#1d3236; --warn:#f0a258; --ok:#5fcf8c; --code:#222b30; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.85;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:44rem;margin:0 auto}
+.preview{font-family:var(--mono);font-size:12.5px;color:var(--muted);border-bottom:1px dashed var(--line);padding-block:14px;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between}
+.preview b{color:var(--warn);font-weight:500}
+header{padding-block:40px 28px;display:grid;gap:14px}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.04em;color:var(--accent)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,5.4vw,40px);line-height:1.3;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.dek{color:var(--muted);margin:0;font-size:16px}
+.console{font-family:var(--mono);font-size:14px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:4px;overflow-x:auto}
+.console .ok{color:var(--ok)} .console .bad{color:var(--warn)}
+article{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px clamp(18px,4vw,40px) 32px}
+article h2{font-family:var(--display);font-weight:800;font-size:23px;line-height:1.45;margin:2.4em 0 .6em;text-wrap:balance}
+article h2:first-child{margin-top:1.2em}
+article p{margin:0 0 1.05em}
+article strong{font-weight:600;color:var(--ink);background:linear-gradient(transparent 62%,var(--accent-soft) 62%)}
+article a{color:var(--accent);text-underline-offset:3px}
+article a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+article code{font-family:var(--mono);font-size:.86em;background:var(--code);padding:.1em .38em;border-radius:4px}
+article blockquote{margin:1.6em 0;padding:14px 18px;border-left:3px solid var(--warn);background:var(--code);border-radius:0 6px 6px 0}
+article blockquote p{margin:0;font-size:18px}
+article hr{border:0;border-top:1px solid var(--line);margin:2.6em 0}
+article ul,article ol{padding-left:1.3em;margin:0 0 1.2em} article li{margin:.3em 0}
+.daylink{font-size:14.5px;padding:10px 14px;background:var(--accent-soft);border-radius:6px}
+.daylink a{text-decoration:none} .daylink a:hover{text-decoration:underline}
+.tbl{overflow-x:auto;margin:1.2em 0 1.6em;border:1px solid var(--line);border-radius:6px}
+.tbl table{border-collapse:collapse;width:100%;font-size:15px;line-height:1.6;font-variant-numeric:tabular-nums}
+.tbl th{background:var(--code);font-weight:600;text-align:left;white-space:nowrap}
+.tbl th,.tbl td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+figure{margin:1.8em 0;overflow-x:auto}
+figure svg{color:var(--ink);display:block;min-width:560px}
+figcaption{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.7}
+footer{font-size:13px;color:var(--muted);margin-top:24px;font-family:var(--mono)}
+@media (max-width:520px){body{font-size:16px} article h2{font-size:20px}}
+</style>
+<div class="wrap">
+  <div class="preview"><span><b>미리보기</b> · 아직 블로그에 공개하지 않은 원고</span><span>jeon-daejin.github.io/blog · 회고</span></div>
+  <header>
+    <div class="eyebrow">아이펠 9부 특별편 · N045~N053 · 2026-10-30</div>
+    <h1>AI 서비스를 세상에 내놓으며 깨진 9가지 착각 — 50대 기획자의 아이펠 배포·운영 특별편</h1>
+    <p class="dek">‘배포 성공’, ‘상태 코드 200’, ‘CI 통과’가 떠도 사용자는 실패를 겪을 수 있다. AI 친구 서비스 하나를 열하루 동안 설계부터 무중단 배포까지 키우며 확인한 아홉 번의 착각.</p>
+    <div class="console" aria-label="N053 실습 장면"><span class="ok">$ deploy  ✓ 배포 성공 (37초)</span><span class="bad">$ watch   ✗ 요청 295건 중 54건 실패 · 503 · 약 21초</span></div>
+  </header>
+  <article>
+<blockquote>
+<p>터미널에는 <strong>배포 성공</strong>이라고 떴습니다. 같은 시각, 옆 창의 측정 스크립트는 <strong>실패 54건</strong>을 세고 있었습니다.</p>
+</blockquote>
+<p>2026년 10월 29일, 아이펠 N053 실습 중에 본 장면입니다. 준비가 30초쯤 늦는 버전을 기본 설정으로 배포했더니 배포 명령은 깔끔하게 성공으로 끝났는데, 그 사이 약 21초 동안 사용자 요청 295건 중 54건이 <code>503</code> 오류를 받았습니다. 제가 화면만 봤다면 “잘 끝났다”고 보고했을 겁니다.</p>
+<p>28년을 신규사업 기획과 경영으로 살면서 “보고서상 완료”와 “현장에서 실제로 된 것”이 다르다는 말은 수없이 했습니다. 그런데 이번 열하루 동안, 그 말을 <strong>아홉 번</strong> 다른 모양으로 다시 배웠습니다.</p>
+<p>이 글은 아이펠 9부 「서비스화·배포·운영」(N045~N053) 아홉 강의를 마치고 쓰는 특별편입니다. 개발을 모르는 분도 읽을 수 있게, 각 착각을 <strong>“내가 믿은 것 → 실제로 본 숫자 → 남은 교훈”</strong> 순서로 적었습니다.</p>
+<h2 id="먼저-무엇을-했나">먼저, 무엇을 했나</h2>
+<p>열하루(10월 19일~29일) 동안 <strong>AI 친구 에이전트 서비스 하나</strong>(<code>friend-agent</code>, 대화하고 약속을 기억해 주는 챗봇)를 붙잡고, 매일 한 단계씩 키웠습니다. 아홉 강의는 네 구간으로 묶입니다. 세상에 <strong>내보내고</strong>, 배포를 <strong>자동화해 거르고</strong>, 확인한 것과 <strong>같은 것을 보내고</strong>, 바꾸는 동안 <strong>끊기지 않게</strong> 하는 순서입니다.</p>
+<figure>
+<svg viewBox="0 0 680 452" role="img" aria-label="9부 아홉 강의의 흐름. 내보내기(N045~N047), 자동화와 게이트(N048~N049), 같은 것을 보내기(N050~N051), 끊기지 않게(N052~N053) 네 구간으로 이어지고, 강의마다 그날 깨진 착각이 하나씩 있다" style="max-width:100%;height:auto;">
+<p><defs> <marker id="flowarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"> <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/> </marker> </defs> <text x="10" y="22" font-size="13" fill="currentColor">같은 서비스 하나를 키운 순서 — 10월 19일부터 29일까지</text></p>
+<p><rect x="6" y="38" width="668" height="88" rx="8" fill="currentColor" fill-opacity="0.04"/> <text x="16" y="74" font-size="13" font-weight="bold" fill="currentColor">① 내보내기</text> <text x="16" y="93" font-size="11" fill="currentColor" opacity="0.7">N045~N047</text> <rect x="140" y="44" width="160" height="76" rx="6" fill="none" stroke="currentColor"/> <text x="152" y="64" font-size="11" fill="currentColor" opacity="0.7">N045 · 10-19</text> <text x="152" y="86" font-size="13.5" font-weight="bold" fill="currentColor">서비스 설계</text> <text x="152" y="107" font-size="11.5" fill="#e8a33d">1차 사용자는 PD였다</text> <line x1="300" y1="82" x2="324" y2="82" stroke="currentColor" marker-end="url(#flowarrow)"/> <rect x="326" y="44" width="160" height="76" rx="6" fill="none" stroke="currentColor"/> <text x="338" y="64" font-size="11" fill="currentColor" opacity="0.7">N046 · 10-20</text> <text x="338" y="86" font-size="13.5" font-weight="bold" fill="currentColor">첫 배포</text> <text x="338" y="107" font-size="11.5" fill="#e8a33d">원인은 로그에 있었다</text> <line x1="486" y1="82" x2="510" y2="82" stroke="currentColor" marker-end="url(#flowarrow)"/> <rect x="512" y="44" width="160" height="76" rx="6" fill="none" stroke="currentColor"/> <text x="524" y="64" font-size="11" fill="currentColor" opacity="0.7">N047 · 10-21</text> <text x="524" y="86" font-size="13.5" font-weight="bold" fill="currentColor">운영</text> <text x="524" y="107" font-size="11.5" fill="#e8a33d">200인데 답이 잘렸다</text> <path d="M592,120 L592,130 L220,130 L220,138" fill="none" stroke="currentColor" marker-end="url(#flowarrow)"/></p>
+<p><rect x="6" y="134" width="668" height="88" rx="8" fill="currentColor" fill-opacity="0.04"/> <text x="16" y="170" font-size="13" font-weight="bold" fill="currentColor">② 자동화·게이트</text> <text x="16" y="189" font-size="11" fill="currentColor" opacity="0.7">N048~N049</text> <rect x="140" y="140" width="160" height="76" rx="6" fill="none" stroke="currentColor"/> <text x="152" y="160" font-size="11" fill="currentColor" opacity="0.7">N048 · 10-22</text> <text x="152" y="182" font-size="13.5" font-weight="bold" fill="currentColor">자동 배포</text> <text x="152" y="203" font-size="11.5" fill="#e8a33d">8시 약속이 17시로</text> <line x1="300" y1="178" x2="324" y2="178" stroke="currentColor" marker-end="url(#flowarrow)"/> <rect x="326" y="140" width="160" height="76" rx="6" fill="none" stroke="currentColor"/> <text x="338" y="160" font-size="11" fill="currentColor" opacity="0.7">N049 · 10-23</text> <text x="338" y="182" font-size="13.5" font-weight="bold" fill="currentColor">CI · staging · 승인</text> <text x="338" y="203" font-size="11.5" fill="#e8a33d">CI는 막지 못했다</text> <path d="M406,216 L406,226 L220,226 L220,234" fill="none" stroke="currentColor" marker-end="url(#flowarrow)"/></p>
+<p><rect x="6" y="230" width="668" height="88" rx="8" fill="currentColor" fill-opacity="0.04"/> <text x="16" y="266" font-size="13" font-weight="bold" fill="currentColor">③ 같은 것 보내기</text> <text x="16" y="285" font-size="11" fill="currentColor" opacity="0.7">N050~N051</text> <rect x="140" y="236" width="160" height="76" rx="6" fill="none" stroke="currentColor"/> <text x="152" y="256" font-size="11" fill="currentColor" opacity="0.7">N050 · 10-26</text> <text x="152" y="278" font-size="13.5" font-weight="bold" fill="currentColor">Dockerfile</text> <text x="152" y="299" font-size="11.5" fill="#e8a33d">내 PC는 되고 서버는 500</text> <line x1="300" y1="274" x2="324" y2="274" stroke="currentColor" marker-end="url(#flowarrow)"/> <rect x="326" y="236" width="160" height="76" rx="6" fill="none" stroke="currentColor"/> <text x="338" y="256" font-size="11" fill="currentColor" opacity="0.7">N051 · 10-27</text> <text x="338" y="278" font-size="13.5" font-weight="bold" fill="currentColor">이미지 승격</text> <text x="338" y="299" font-size="11.5" fill="#e8a33d">같은 코드, 다른 이미지</text> <path d="M406,312 L406,322 L220,322 L220,330" fill="none" stroke="currentColor" marker-end="url(#flowarrow)"/></p>
+<p><rect x="6" y="326" width="668" height="88" rx="8" fill="currentColor" fill-opacity="0.04"/> <text x="16" y="362" font-size="13" font-weight="bold" fill="currentColor">④ 끊기지 않게</text> <text x="16" y="381" font-size="11" fill="currentColor" opacity="0.7">N052~N053</text> <rect x="140" y="332" width="160" height="76" rx="6" fill="none" stroke="currentColor"/> <text x="152" y="352" font-size="11" fill="currentColor" opacity="0.7">N052 · 10-28</text> <text x="152" y="374" font-size="13.5" font-weight="bold" fill="currentColor">무중단 원리</text> <text x="152" y="395" font-size="11.5" fill="#e8a33d">실패 0건, 대화는 0개</text> <line x1="300" y1="370" x2="324" y2="370" stroke="currentColor" marker-end="url(#flowarrow)"/> <rect x="326" y="332" width="160" height="76" rx="6" fill="none" stroke="#3fb872" stroke-width="1.5"/> <text x="338" y="352" font-size="11" fill="currentColor" opacity="0.7">N053 · 10-29</text> <text x="338" y="374" font-size="13.5" font-weight="bold" fill="#3fb872">Cloud Run 무중단</text> <text x="338" y="395" font-size="11.5" fill="#e8a33d">배포 성공, 503 54건</text> <text x="510" y="364" font-size="11" fill="currentColor" opacity="0.8">→ 머지 한 번으로</text> <text x="510" y="380" font-size="11" fill="currentColor" opacity="0.8">검증·전환·롤백까지</text></p>
+<circle cx="16" cy="438" r="4" fill="#e8a33d"/> <text x="26" y="442" font-size="11" fill="currentColor" opacity="0.8">주황색 줄 = 그날 깨진 착각 (아래 착각 1~9와 같은 순서)</text>
+</svg>
+<figcaption>
+그림 1. 9부 아홉 강의의 흐름. 앞 강의가 남긴 한계를 다음 강의가 받는다. 각 상자의 주황색 줄이 이 글에서 다룰 착각이다.
+</figcaption>
+</figure>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th style="text-align: center;">날짜</th>
+<th style="text-align: center;">강의</th>
+<th style="text-align: left;">한 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">10-19</td>
+<td style="text-align: center;">N045</td>
+<td style="text-align: left;">코드 없이 서비스 설계하기 (PRD·아키텍처)</td>
+</tr>
+<tr>
+<td style="text-align: center;">10-20</td>
+<td style="text-align: center;">N046</td>
+<td style="text-align: left;">구글 클라우드(Cloud Run)에 처음 배포하기</td>
+</tr>
+<tr>
+<td style="text-align: center;">10-21</td>
+<td style="text-align: center;">N047</td>
+<td style="text-align: left;">배포한 서비스 운영하기 (타임아웃·비용·로그)</td>
+</tr>
+<tr>
+<td style="text-align: center;">10-22</td>
+<td style="text-align: center;">N048</td>
+<td style="text-align: left;">GitHub Actions로 자동 배포하기</td>
+</tr>
+<tr>
+<td style="text-align: center;">10-23</td>
+<td style="text-align: center;">N049</td>
+<td style="text-align: left;">자동 테스트(CI)와 시험 서버(staging) 붙이기</td>
+</tr>
+<tr>
+<td style="text-align: center;">10-26</td>
+<td style="text-align: center;">N050</td>
+<td style="text-align: left;">Dockerfile로 서버 환경 정하기</td>
+</tr>
+<tr>
+<td style="text-align: center;">10-27</td>
+<td style="text-align: center;">N051</td>
+<td style="text-align: left;">한 번 만든 이미지를 그대로 옮겨 배포하기</td>
+</tr>
+<tr>
+<td style="text-align: center;">10-28</td>
+<td style="text-align: center;">N052</td>
+<td style="text-align: left;">로드밸런서로 끊김 없이 바꾸는 원리 익히기</td>
+</tr>
+<tr>
+<td style="text-align: center;">10-29</td>
+<td style="text-align: center;">N053</td>
+<td style="text-align: left;">Cloud Run에서 무중단 배포하기</td>
+</tr>
+</tbody>
+</table></div>
+<p>그리고 열하루 내내, 같은 일이 반복됐습니다. <strong>“성공했다”는 표시가 뜬 바로 그 순간에, 사용자 쪽에서는 무언가 실패하고 있었습니다.</strong></p>
+<hr />
+<h2 id="착각-1.-이-서비스는-작가를-위한-것이다-n045">착각 1. “이 서비스는 작가를 위한 것이다” — N045</h2>
+<p><strong>믿은 것.</strong> 제가 구상하던 ASP(AI Story Partner)는 웹소설 작가가 쓰는 도구라고 생각했습니다. 스토리위즈 대표 시절 “이거 뜨겠습니까?”라는 질문에 근거를 대지 못했던 경험에서 나온 아이디어였으니까요.</p>
+<p><strong>실제로 본 것.</strong> N045는 PRD(기획서)를 쓰기 전에 <strong>사용 맥락 분석부터</strong> 하라고 순서를 정해 줍니다. 그 순서대로 PD 인터뷰 4문항과 자료 조사 2건을 해 보니, 이 서비스를 가장 먼저 쓸 사람은 작가가 아니라 <strong>PD</strong>였습니다.</p>
+<p><strong>교훈.</strong> 기획서부터 썼다면 처음부터 다시 만들 뻔했습니다. 순서를 지키는 것 자체가 리스크 관리입니다.</p>
+<p class="daylink">→ <a href="https://jeon-daejin.github.io/blog/posts/순서를-지키지-않았다면-처음부터-다시-만들-뻔한-하루_20261019/">그날의 기록: 순서를 지키지 않았다면 처음부터 다시 만들 뻔한 하루</a></p>
+<h2 id="착각-2.-오류-메시지가-원인을-알려-준다-n046">착각 2. “오류 메시지가 원인을 알려 준다” — N046</h2>
+<p><strong>믿은 것.</strong> 배포가 실패하면 화면에 뜬 메시지를 보고 고치면 된다고 생각했습니다.</p>
+<p><strong>실제로 본 것.</strong> 일부러 API 키 없이 배포해 보니, 터미널은 “포트를 열지 못했다”고 했습니다. 그 말만 믿었다면 엉뚱하게 포트 설정을 뒤졌을 겁니다. 컨테이너 로그를 열어 보니 진짜 원인은 한 줄, <strong><code>LLM_API_KEY</code> 누락</strong>이었습니다. 그날 일지에 저는 이렇게 적었습니다. “단순 연결 불가가 아니라 키가 없음이었는데, 로그를 찾지 않았더라면 모를 뻔한 이야기.”</p>
+<p><strong>교훈.</strong> 터미널 메시지는 결과이고, 원인은 로그에 있습니다. 키는 코드가 아니라 Secret Manager(비밀 금고)에 두고 이름으로만 연결합니다.</p>
+<p class="daylink">→ <a href="https://jeon-daejin.github.io/blog/posts/로그를-찾지-않았다면-키가-없다는-것을-몰랐을-하루_20261020/">그날의 기록: 로그를 찾지 않았다면 키가 없다는 것을 몰랐을 하루</a></p>
+<h2 id="착각-3.-200이면-정상이고-서버를-늘리면-버틴다-n047">착각 3. “200이면 정상이고, 서버를 늘리면 버틴다” — N047</h2>
+<p><strong>믿은 것.</strong> HTTP 상태 코드 <code>200</code>(성공)이면 사용자는 제대로 답을 받은 것이고, 최대 서버 수를 늘리면 사람이 몰려도 버틴다고 생각했습니다.</p>
+<p><strong>실제로 본 것.</strong> 두 가지 모두 깨졌습니다.</p>
+<ul>
+<li>평소 4.1초 걸리는 요청에 타임아웃을 3초로 걸자, AI 친구의 <strong>답이 문장 중간에서 잘렸습니다. 그런데 상태 코드는 200</strong>이었습니다.</li>
+<li>부하 테스트에서 서버 한 대가 요청을 하나씩만 받게 해 두고, 최대 서버 수를 3대로 둔 설정과 20대로 둔 설정을 비교했습니다. 결과는 <strong>똑같이 50건 중 15건만 성공</strong>했습니다. 로그에는 <code>no available instance</code>가 지연 0초로 찍혔습니다. 서버 수 상한이 아니라 <strong>서버를 새로 띄우는 속도</strong>가 먼저 막힌 것이었습니다. 교안에 없던, 직접 재서 알게 된 사실입니다.</li>
+</ul>
+<p><strong>교훈.</strong> 상태 코드만 보는 모니터링은 품질 문제를 못 잡습니다. 그리고 “최대 서버 수”는 처리 능력의 보증도, 비용의 상한도 아닙니다.</p>
+<p class="daylink">→ <a href="https://jeon-daejin.github.io/blog/posts/최대-인스턴스를-늘려도-달라지지-않았던-이유_20261021/">그날의 기록: 최대 인스턴스를 늘려도 달라지지 않았던 이유</a></p>
+<h2 id="착각-4.-자동-배포가-성공했으면-문제없다-n048">착각 4. “자동 배포가 성공했으면 문제없다” — N048</h2>
+<p><strong>믿은 것.</strong> 사람이 손으로 하던 배포를 GitHub Actions에 맡기고, 배포가 초록불로 끝나면 안심해도 된다고 생각했습니다.</p>
+<p><strong>실제로 본 것.</strong> 일부러 사고 두 건을 머지해 봤습니다.</p>
+<div class="tbl"><table>
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 38%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">사고</th>
+<th style="text-align: center;">자동 배포 결과</th>
+<th style="text-align: left;">사용자에게 일어난 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">환경변수 이름 오타</td>
+<td style="text-align: center;"><strong>실패</strong></td>
+<td style="text-align: left;">아무 일도 없음 — 이전 버전이 계속 응답</td>
+</tr>
+<tr>
+<td style="text-align: left;">시간대 처리 오류</td>
+<td style="text-align: center;"><strong>성공</strong></td>
+<td style="text-align: left;">“내일 아침 8시” 약속이 <strong>오후 5시(17:00)로 저장</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>배포가 실패한 사고는 오히려 안전했고, <strong>배포가 성공한 사고가 사용자에게 피해를 줬습니다.</strong></p>
+<p><strong>교훈.</strong> 자동 배포는 서비스가 “켜지는지”만 확인합니다. 제대로 “동작하는지”는 확인하지 않습니다.</p>
+<p class="daylink">→ <a href="https://jeon-daejin.github.io/blog/posts/권한을-줬는데도-거절당한-이유_20261022/">그날의 기록: 권한을 줬는데도 거절당한 이유</a></p>
+<h2 id="착각-5.-테스트가-빨간불이면-알아서-막아-준다-n049">착각 5. “테스트가 빨간불이면 알아서 막아 준다” — N049</h2>
+<p><strong>믿은 것.</strong> 자동 테스트(CI)를 붙이면 실패한 변경은 들어오지 못한다고 생각했습니다.</p>
+<p><strong>실제로 본 것.</strong> 어제의 시간대 버그는 서버와 같은 조건(<code>TZ=UTC</code>)으로 테스트를 돌리자 17:00 실패로 정확히 잡혔습니다. 그런데 테스트가 빨간불인 변경도 <strong>그대로 머지가 됐습니다</strong>(<code>UNSTABLE</code>). 머지를 실제로 막은 것은 테스트가 아니라 <strong>브랜치 보호 규칙</strong>이었습니다(<code>BLOCKED</code>). 또 하나, 보내기 버튼을 숨긴 변경은 <strong>모든 자동 검사를 통과</strong>했고, 시험 서버(staging)를 직접 열어 본 사람만 발견했습니다.</p>
+<p><strong>교훈.</strong> CI는 알려 줄 뿐 막지는 못합니다. 막는 것은 규칙이고, 화면과 말투는 여전히 사람이 봐야 합니다.</p>
+<p class="daylink">→ <a href="https://jeon-daejin.github.io/blog/posts/CI는-알려-줄-뿐-막지-못한다는-것을-배운-하루_20261023/">그날의 기록: CI는 알려 줄 뿐 막지 못한다는 것을 배운 하루</a></p>
+<h2 id="착각-6.-내-컴퓨터에서-되면-서버에서도-된다-n050">착각 6. “내 컴퓨터에서 되면 서버에서도 된다” — N050</h2>
+<p><strong>믿은 것.</strong> 사진 속 글자를 읽는 기능(OCR)이 제 PC에서 잘 돌았으니, 서버에서도 될 거라 생각했습니다.</p>
+<p><strong>실제로 본 것.</strong> staging에 올리자 사진 요청이 <strong>500 오류</strong>. 로그에는 <code>tesseract 프로그램을 찾을 수 없습니다</code>. 코드는 같았지만 <strong>서버에 그 프로그램이 깔려 있지 않았던</strong> 겁니다. Dockerfile에 “이 프로그램을 설치하라”는 줄을 적자, 같은 사진이 내 PC·내 PC의 컨테이너·staging·production <strong>네 곳 모두에서 200, 153글자, 똑같은 결과</strong>를 냈습니다. 다음에 PDF 읽기를 붙일 때는 서버에 올리기 전, 내 PC의 컨테이너에서 같은 문제를 먼저 잡았습니다.</p>
+<p><strong>교훈.</strong> 코드만이 아니라 <strong>실행 환경도 코드로 적어 둬야</strong> 같은 결과를 약속할 수 있습니다.</p>
+<p class="daylink">→ <a href="https://jeon-daejin.github.io/blog/posts/내-컴퓨터와-같은-환경이-서버에서는-보장되지-않는다는-것을-배운-하루_20261026/">그날의 기록: 내 컴퓨터와 같은 환경이 서버에서는 보장되지 않는다는 것을 배운 하루</a></p>
+<h2 id="착각-7.-같은-코드로-만들면-같은-것이다-n051">착각 7. “같은 코드로 만들면 같은 것이다” — N051</h2>
+<p><strong>믿은 것.</strong> staging과 production이 같은 코드에서 각각 빌드되니, 둘은 같은 것이라고 생각했습니다.</p>
+<p><strong>실제로 본 것.</strong> 전날(N050) 같은 Dockerfile로 두 번 빌드했을 때, 설치된 패키지는 같은데 <strong>이미지 ID가 달랐습니다.</strong> staging에서 확인한 것과 production에 나간 것이 엄밀히는 다른 물건이었던 셈입니다. 그래서 이미지를 <strong>한 번만</strong> 만들고, staging에서 확인한 그 이미지의 지문(다이제스트)을 그대로 production으로 옮기게 바꿨습니다. 두 환경 모두 <code>sha256:d339e5d333ec…</code>로 일치했고, 덤으로 production 배포 시간이 1분 26초에서 <strong>46초</strong>로 줄었습니다.</p>
+<p><strong>교훈.</strong> “확인한 것을 배포했다”고 말하려면, 다시 만들지 말고 <strong>옮겨야</strong> 합니다.</p>
+<p class="daylink">→ <a href="https://jeon-daejin.github.io/blog/posts/한-번-만든-이미지를-그대로-옮겨야-같은-이미지라고-말할-수-있다는-것을-배운-하루_20261027/">그날의 기록: 한 번 만든 이미지를 그대로 옮겨야 같은 이미지라고 말할 수 있다는 것을 배운 하루</a></p>
+<h2 id="착각-8.-요청이-하나도-안-끊겼으면-무중단이다-n052">착각 8. “요청이 하나도 안 끊겼으면 무중단이다” — N052</h2>
+<p><strong>믿은 것.</strong> 서버 두 벌(blue·green)을 띄우고 로드밸런서로 갈아 끼우면서 실패한 요청이 0건이면 “무중단 배포 성공”이라고 생각했습니다.</p>
+<p><strong>실제로 본 것.</strong> 전환·롤백하는 70초 동안 요청 341건, <strong>실패 0건</strong>. 완벽해 보였습니다. 그런데 green으로 전환하고 대화창을 열자 <strong>대화가 0개</strong>였습니다. 대화가 각 서버의 메모리에만 있었기 때문입니다. 대화를 서버 밖 데이터베이스(Supabase)로 옮기자, 같은 전환과 재시작 뒤에도 대화 3개가 그대로 남았습니다.</p>
+<p><strong>교훈.</strong> 요청이 안 끊겨도 <strong>사용자가 하던 일은 끊길 수 있습니다.</strong> 전환 성공은 곧 무중단이 아닙니다.</p>
+<p class="daylink">→ <a href="https://jeon-daejin.github.io/blog/posts/전환에-성공해도-무중단이-아닐-수-있다는-것을-배운-하루_20261028/">그날의 기록: 전환에 성공해도 무중단이 아닐 수 있다는 것을 배운 하루</a></p>
+<h2 id="착각-9.-배포가-성공했으면-사용자도-괜찮다-n053">착각 9. “배포가 성공했으면 사용자도 괜찮다” — N053</h2>
+<p><strong>믿은 것.</strong> 이 글 첫 장면의 그 믿음입니다.</p>
+<p><strong>실제로 본 것.</strong> Cloud Run은 기본적으로 “포트가 열렸는지”만 보고 새 버전이 준비됐다고 판단합니다. 그래서 앱이 아직 준비 중인데도 트래픽이 넘어가 <strong>503이 54건</strong> 났습니다. 준비 확인 경로를 <code>/health</code>로 바꾸자 같은 조건에서 <strong>0건</strong>. 대신 배포 시간은 27초에서 약 84초로 늘었습니다. 사용자가 오류를 보는 것보다 배포가 1분 늦는 편이 낫다고 판단했습니다.</p>
+<p>마지막으로 이 절차를 자동화했습니다. 새 버전을 <strong>트래픽 0%로 먼저 올리고 → 전용 주소로 점검(스모크 테스트)하고 → 통과해야 사용자에게 전환</strong>합니다. 일부러 망가진 버전을 머지해 보니, 자동 테스트는 통과했지만 스모크 테스트가 전환을 막았고, 그 사이 사용자 요청 <strong>735건은 하나도 실패하지 않았습니다.</strong></p>
+<p><strong>교훈.</strong> 배포 성공은 “사용자가 오류를 보지 않았다”는 증거가 아닙니다. 그리고 하나 더, 버튼 하나로 되돌리는 롤백조차 직후 몇 초 동안 4건이 실패했습니다. <strong>롤백은 배포보다 약했습니다.</strong></p>
+<p class="daylink">→ <a href="https://jeon-daejin.github.io/blog/posts/배포가-성공해도-받을-준비가-된-것은-아니라는-것을-배운-하루_20261029/">그날의 기록: 배포가 성공해도 받을 준비가 된 것은 아니라는 것을 배운 하루</a></p>
+<hr />
+<h2 id="아홉-착각을-한-표로">아홉 착각을 한 표로</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th style="text-align: left;">화면이 말한 것</th>
+<th style="text-align: left;">사용자 쪽에서 실제로 일어난 일</th>
+<th style="text-align: center;">강의</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">기획서 완성</td>
+<td style="text-align: left;">1차 사용자를 잘못 짚음</td>
+<td style="text-align: center;">N045</td>
+</tr>
+<tr>
+<td style="text-align: left;">“포트를 열지 못했다”</td>
+<td style="text-align: left;">진짜 원인은 키 누락</td>
+<td style="text-align: center;">N046</td>
+</tr>
+<tr>
+<td style="text-align: left;">상태 코드 200</td>
+<td style="text-align: left;">답이 문장 중간에서 잘림</td>
+<td style="text-align: center;">N047</td>
+</tr>
+<tr>
+<td style="text-align: left;">자동 배포 성공</td>
+<td style="text-align: left;">8시 약속이 17시로 저장</td>
+<td style="text-align: center;">N048</td>
+</tr>
+<tr>
+<td style="text-align: left;">자동 검사 모두 통과</td>
+<td style="text-align: left;">보내기 버튼이 사라짐</td>
+<td style="text-align: center;">N049</td>
+</tr>
+<tr>
+<td style="text-align: left;">내 PC에서 정상</td>
+<td style="text-align: left;">서버에서 500</td>
+<td style="text-align: center;">N050</td>
+</tr>
+<tr>
+<td style="text-align: left;">같은 코드로 빌드</td>
+<td style="text-align: left;">다른 이미지가 나감</td>
+<td style="text-align: center;">N051</td>
+</tr>
+<tr>
+<td style="text-align: left;">전환 실패 0건</td>
+<td style="text-align: left;">대화가 사라짐</td>
+<td style="text-align: center;">N052</td>
+</tr>
+<tr>
+<td style="text-align: left;">배포 성공</td>
+<td style="text-align: left;">503 54건</td>
+<td style="text-align: center;">N053</td>
+</tr>
+</tbody>
+</table></div>
+<p>왼쪽 열은 모두 <strong>시스템이 스스로 내리는 판정</strong>이고, 오른쪽 열은 모두 <strong>사용자가 겪는 일</strong>입니다. 9부 아홉 강의는 결국 이 두 열 사이의 간격을 하나씩 재고, 장치를 하나씩 끼워 넣어 좁히는 과정이었습니다.</p>
+<h2 id="열하루-뒤-내-손에-남은-배포-라인">열하루 뒤, 내 손에 남은 배포 라인</h2>
+<p>처음엔 터미널에 명령 한 줄을 쳐서 배포했습니다. 열하루 뒤에는 이런 라인이 됐습니다.</p>
+<figure>
+<svg viewBox="0 0 680 290" role="img" aria-label="코드 변경부터 production 승격과 롤백까지, 9부 강의마다 하나씩 더해진 배포 라인" style="max-width:100%;height:auto;">
+<defs> <marker id="p9arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"> <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/> </marker> </defs> <text x="10" y="22" font-size="13" fill="currentColor">① 들어오는 문 — 잘못된 변경을 거른다</text> <rect x="10" y="36" width="140" height="48" rx="6" fill="none" stroke="currentColor"/> <text x="80" y="58" font-size="12" fill="currentColor" text-anchor="middle">코드 변경</text> <text x="80" y="74" font-size="10.5" fill="currentColor" text-anchor="middle" opacity="0.7">Pull Request</text> <line x1="150" y1="60" x2="178" y2="60" stroke="currentColor" marker-end="url(#p9arrow)"/> <rect x="180" y="36" width="140" height="48" rx="6" fill="none" stroke="currentColor"/> <text x="250" y="58" font-size="12" fill="currentColor" text-anchor="middle">자동 테스트(CI)</text> <text x="250" y="74" font-size="10.5" fill="#e8a33d" text-anchor="middle">N049</text> <line x1="320" y1="60" x2="348" y2="60" stroke="currentColor" marker-end="url(#p9arrow)"/> <rect x="350" y="36" width="140" height="48" rx="6" fill="none" stroke="currentColor"/> <text x="420" y="58" font-size="12" fill="currentColor" text-anchor="middle">통과해야 머지</text> <text x="420" y="74" font-size="10.5" fill="#e8a33d" text-anchor="middle">N049 브랜치 보호</text> <line x1="490" y1="60" x2="518" y2="60" stroke="currentColor" marker-end="url(#p9arrow)"/> <rect x="520" y="36" width="150" height="48" rx="6" fill="none" stroke="currentColor"/> <text x="595" y="58" font-size="12" fill="currentColor" text-anchor="middle">이미지 딱 한 번 빌드</text> <text x="595" y="74" font-size="10.5" fill="#e8a33d" text-anchor="middle">N050 · N051</text> <path d="M595,84 L595,104 L68,104 L68,144" fill="none" stroke="currentColor" marker-end="url(#p9arrow)"/> <text x="80" y="128" font-size="13" fill="currentColor">② 나가는 문 — 사용자에게 보내기 전에 확인한다</text> <rect x="10" y="146" width="116" height="48" rx="6" fill="none" stroke="currentColor"/> <text x="68" y="168" font-size="12" fill="currentColor" text-anchor="middle">staging</text> <text x="68" y="184" font-size="10.5" fill="#e8a33d" text-anchor="middle">0% 배포 · N053</text> <line x1="126" y1="170" x2="144" y2="170" stroke="currentColor" marker-end="url(#p9arrow)"/> <rect x="146" y="146" width="116" height="48" rx="6" fill="none" stroke="currentColor"/> <text x="204" y="168" font-size="12" fill="currentColor" text-anchor="middle">스모크 테스트</text> <text x="204" y="184" font-size="10.5" fill="#e8a33d" text-anchor="middle">태그 주소 · N053</text> <line x1="262" y1="170" x2="280" y2="170" stroke="currentColor" marker-end="url(#p9arrow)"/> <rect x="282" y="146" width="116" height="48" rx="6" fill="none" stroke="currentColor"/> <text x="340" y="168" font-size="12" fill="currentColor" text-anchor="middle">사람의 승인</text> <text x="340" y="184" font-size="10.5" fill="#e8a33d" text-anchor="middle">N049</text> <line x1="398" y1="170" x2="416" y2="170" stroke="currentColor" marker-end="url(#p9arrow)"/> <rect x="418" y="146" width="116" height="48" rx="6" fill="none" stroke="#3fb872"/> <text x="476" y="168" font-size="12" fill="#3fb872" text-anchor="middle">production</text> <text x="476" y="184" font-size="10.5" fill="#3fb872" text-anchor="middle">같은 지문 승격 · N051</text> <line x1="534" y1="170" x2="552" y2="170" stroke="currentColor" marker-end="url(#p9arrow)"/> <rect x="554" y="146" width="116" height="48" rx="6" fill="none" stroke="currentColor" stroke-dasharray="4 3"/> <text x="612" y="168" font-size="12" fill="currentColor" text-anchor="middle">원클릭 롤백</text> <text x="612" y="184" font-size="10.5" fill="#e8a33d" text-anchor="middle">N053</text> <text x="10" y="232" font-size="13" fill="currentColor">③ 바닥에 깔린 것</text> <rect x="10" y="244" width="210" height="36" rx="6" fill="none" stroke="currentColor" stroke-dasharray="4 3" opacity="0.8"/> <text x="115" y="267" font-size="11" fill="currentColor" text-anchor="middle">키는 비밀 금고에 · N046</text> <rect x="235" y="244" width="210" height="36" rx="6" fill="none" stroke="currentColor" stroke-dasharray="4 3" opacity="0.8"/> <text x="340" y="267" font-size="11" fill="currentColor" text-anchor="middle">키 파일 없는 자동 배포 · N048</text> <rect x="460" y="244" width="210" height="36" rx="6" fill="none" stroke="currentColor" stroke-dasharray="4 3" opacity="0.8"/> <text x="565" y="267" font-size="11" fill="currentColor" text-anchor="middle">대화는 서버 밖 DB에 · N052</text>
+</svg>
+<figcaption>
+그림 2. 9부가 끝난 시점의 배포 라인. 주황색 글씨는 그 장치를 배운 강의다. 자동 배포(N048)는 “빠르게 내보내는 장치”였고, 그 위에 “걸러 내는 장치”와 “끊기지 않게 하는 장치”가 차례로 얹혔다.
+</figcaption>
+</figure>
+<p>경영 언어로 바꾸면 이것은 <strong>신규 매장 오픈 매뉴얼</strong>과 닮았습니다.</p>
+<ul>
+<li>간판 불이 켜진 것(배포 성공)과 손님이 불편 없이 주문하고 나간 것(사용자 경험)은 다릅니다.</li>
+<li>본점에서 검수한 레시피는 지점에서 새로 만들지 말고 <strong>그대로</strong> 보내야 합니다(이미지 승격).</li>
+<li>교대할 때 인수인계 노트가 없으면 앞 근무자가 받은 주문이 사라집니다(메모리에만 있던 대화).</li>
+<li>가오픈(0% 배포)과 철수 기준(롤백)은 <strong>오픈 전에</strong> 정해 둡니다.</li>
+</ul>
+<h2 id="내-ai-서비스를-내놓기-전에-던질-9가지-질문">내 AI 서비스를 내놓기 전에 던질 9가지 질문</h2>
+<p>이번 열하루를 질문 아홉 개로 압축했습니다. 개발자가 아니어도, AI로 무언가를 만들어 남에게 보여 줄 계획이라면 한 번쯤 써먹을 수 있을 겁니다.</p>
+<ol type="1">
+<li><strong>이 서비스를 가장 먼저 쓸 사람은 정말 내가 생각한 그 사람인가?</strong> 한 명이라도 직접 물어봤나? (N045)</li>
+<li><strong>오류가 나면 원인을 어디서 볼 것인가?</strong> 화면 메시지 말고 로그를 볼 줄 아는가? (N046)</li>
+<li><strong>“성공” 응답 안의 내용은 멀쩡한가?</strong> 답이 잘려도 200일 수 있다. (N047)</li>
+<li><strong>배포가 성공한 뒤, 실제로 한 번 써 봤는가?</strong> 자동 배포는 켜지는지만 본다. (N048)</li>
+<li><strong>실패한 테스트가 머지를 정말 막는가?</strong> 아니면 알려 주기만 하는가? (N049)</li>
+<li><strong>서버에 필요한 프로그램이 내 PC에만 있는 건 아닌가?</strong> (N050)</li>
+<li><strong>확인한 것과 내보낸 것이 같은 물건인가?</strong> (N051)</li>
+<li><strong>버전을 바꿔도 사용자가 하던 일(대화·장바구니·작성 중인 글)이 남는가?</strong> (N052)</li>
+<li><strong>망가진 버전이 나가려 할 때, 사용자에게 닿기 전에 멈추는 장치가 있는가? 되돌리는 데 몇 초 걸리는가?</strong> (N053)</li>
+</ol>
+<h2 id="아직-못-한-것">아직 못 한 것</h2>
+<p>솔직하게 남겨 둡니다.</p>
+<ul>
+<li><strong>배포 알림</strong>(성공·실패·롤백을 메신저로 받기)은 N047부터 계속 다음으로 미뤄졌고, N053에서 선택 과제로 나왔지만 이번에도 하지 못했습니다.</li>
+<li>오류율을 보고 새 버전 비율을 자동으로 올리거나 되돌리는 <strong>카나리 자동 승격</strong>, <strong>데이터베이스 구조가 바뀌는 배포</strong>는 아직 이론으로만 압니다.</li>
+<li>롤백 직후 4건이 실패한 원인은 서버가 식어 있었던 것(콜드 스타트)으로 <strong>추정</strong>만 할 뿐 확인하지 못했습니다.</li>
+<li>이 라인을 제 서비스(My-Story-Maker 등)에 옮기는 일이 다음 숙제입니다.</li>
+</ul>
+<h2 id="용어-정리">용어 정리</h2>
+<div class="tbl"><table>
+<colgroup>
+<col style="width: 55%" />
+<col style="width: 44%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">용어</th>
+<th style="text-align: left;">쉬운 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">배포</td>
+<td style="text-align: left;">내 컴퓨터의 코드를 서버에 올려 다른 사람이 쓸 수 있게 하는 일</td>
+</tr>
+<tr>
+<td style="text-align: center;">Cloud Run</td>
+<td style="text-align: left;">구글 클라우드의 서버 대여 서비스. 요청이 오면 서버를 띄우고, 없으면 줄인다</td>
+</tr>
+<tr>
+<td style="text-align: center;">리비전</td>
+<td style="text-align: left;">배포할 때마다 생기는 서비스의 한 벌. 이전 리비전으로 트래픽을 돌리면 롤백</td>
+</tr>
+<tr>
+<td style="text-align: center;">상태 코드</td>
+<td style="text-align: left;">서버가 요청에 붙이는 결과 번호. 200은 성공, 500·503은 서버 쪽 실패</td>
+</tr>
+<tr>
+<td style="text-align: center;">콜드 스타트</td>
+<td style="text-align: left;">한동안 쉬던 서비스에 첫 요청이 오면 서버를 새로 띄우느라 느려지는 현상</td>
+</tr>
+<tr>
+<td style="text-align: center;">CI</td>
+<td style="text-align: left;">코드가 바뀔 때마다 자동으로 테스트를 돌리는 장치</td>
+</tr>
+<tr>
+<td style="text-align: center;">브랜치 보호</td>
+<td style="text-align: left;">테스트를 통과해야만 코드를 합칠(머지) 수 있게 막는 규칙</td>
+</tr>
+<tr>
+<td style="text-align: center;">staging</td>
+<td style="text-align: left;">사용자에게 내보내기 전에 먼저 써 보는 시험 서버</td>
+</tr>
+<tr>
+<td style="text-align: center;">Dockerfile</td>
+<td style="text-align: left;">서버에 깔아야 할 프로그램과 실행 방법을 적은 설계도. 이걸로 만든 결과물이 이미지</td>
+</tr>
+<tr>
+<td style="text-align: center;">다이제스트</td>
+<td style="text-align: left;">이미지의 지문. 지문이 같으면 같은 물건이다</td>
+</tr>
+<tr>
+<td style="text-align: center;">승격</td>
+<td style="text-align: left;">staging에서 확인한 이미지를 다시 만들지 않고 그대로 production으로 옮기는 일</td>
+</tr>
+<tr>
+<td style="text-align: center;">블루그린</td>
+<td style="text-align: left;">서버 두 벌을 두고 트래픽을 한 번에 옮겨 바꾸는 방식</td>
+</tr>
+<tr>
+<td style="text-align: center;">카나리</td>
+<td style="text-align: left;">새 버전에 트래픽을 10%, 50%, 100%처럼 조금씩 옮기는 방식</td>
+</tr>
+<tr>
+<td style="text-align: center;">스타트업 프로브</td>
+<td style="text-align: left;">새 서버가 정말 요청을 받을 준비가 됐는지 묻는 검사. 기본값은 포트만 본다</td>
+</tr>
+<tr>
+<td style="text-align: center;">스모크 테스트</td>
+<td style="text-align: left;">새 버전을 사용자에게 보내기 전에 핵심 기능만 빠르게 점검하는 시험</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="맺으며">맺으며</h2>
+<p>53개 강의를 지나오며 저는 AI를 <strong>쓰는 사람</strong>에서, AI를 <strong>아는 사람</strong>, AI에게 일을 <strong>설계해 맡기는 사람</strong>을 거쳐, 이번 9부에서 그 일을 <strong>서비스로 운영하는 사람</strong>의 문턱에 섰습니다.</p>
+<p>돌아보면 9부가 가르친 기술은 매번 달랐지만 질문은 하나였습니다. <strong>“시스템이 성공이라고 말할 때, 사용자는 정말 괜찮은가?”</strong> 그리고 그 질문에 답하는 방법도 하나였습니다. 화면을 믿지 말고 <strong>사용자 쪽에서 숫자를 재는 것.</strong> 503 54건, 잘린 답, 17시로 저장된 8시 약속, 사라진 대화. 모두 화면이 아니라 측정이 보여 준 것들입니다.</p>
+<p>28년 동안 “현장에 가 봐라”는 말을 귀에 못이 박히도록 듣고, 또 했습니다. 클라우드에도 현장이 있었습니다. 로그와 측정 스크립트가 그곳이었습니다.</p>
+  </article>
+  <footer>원고 파일: projects/blog/_posts/2026-10-30-… · 그림 1 추가본 · push 전</footer>
+</div>
+
+</html>

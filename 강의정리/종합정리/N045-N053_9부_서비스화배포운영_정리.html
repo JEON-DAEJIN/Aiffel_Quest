@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N045~N053 9부 서비스화·배포·운영 정리 노트</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>N045~N053 9부 서비스화·배포·운영 정리</h1>
+<p class="footer-note" style="text-align:left;margin:0 0 24px">버전 1.0 · 2026-10-30 · 근거: <code>강의정리/N045~N053</code> 강의노트·제출보고서·실습 진행기록, <code>종합정리/N001-N049_학습흐름_종합보고서</code>(N045~N049 부분)</p>
+<nav class="toc" id="목차"><h2>목차</h2><ol><li><a href="#1-한-장-요약">1. 한 장 요약</a></li><li><a href="#2-사슬--한계에서-다음-강의로">2. 사슬 — 한계에서 다음 강의로</a></li><li><a href="#3-강의별-핵심">3. 강의별 핵심</a></li><li><a href="#4-숫자로-남은-실측-교훈">4. 숫자로 남은 실측 교훈</a></li><li><a href="#5-9부를-관통하는-네-가지-원칙">5. 9부를 관통하는 네 가지 원칙</a></li><li><a href="#6-남은-숙제-n053-시점">6. 남은 숙제 (N053 시점)</a></li><li><a href="#7-산출물-위치">7. 산출물 위치</a></li><li><a href="#8-자료-사용상의-주의">8. 자료 사용상의 주의</a></li></ol></nav>
+<h2 id="1-한-장-요약">1. 한 장 요약</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — 9부 아홉 강의는 <strong>AI 기능 하나를 "남이 쓰는 서비스"로 바꾸는 과정</strong>입니다. 같은 서비스(AI 친구 에이전트 <code>friend-agent</code>)를 설계(N045) → 첫 배포(N046) → 운영(N047) → 자동 배포(N048) → 품질 게이트(N049) → 실행 환경 고정(N050) → 이미지 승격(N051) → 무중단 원리(N052) → Cloud Run 무중단(N053) 순서로 키웠습니다. 앞 강의가 남긴 한계를 다음 강의가 받아서 푸는 사슬이 49개 강의 중 가장 선명한 구간입니다.</p></div>
+<p>아홉 강의를 관통하는 한 문장은 이것입니다.</p>
+<p><strong>"성공했다"는 표시와 "사용자가 아무 문제 없이 썼다"는 사실은 다르다.</strong> 상태 코드 200, 배포 성공, CI 통과, 전환 성공이 뜬 순간에도 사용자 쪽에서는 답이 잘리고(N047), 시각이 9시간 어긋나고(N048), 기능이 500을 내고(N050), 대화가 사라지고(N052), 요청이 503으로 끊겼습니다(N053). 9부는 그 차이를 하나씩 <strong>숫자로 확인하고 장치로 막는</strong> 과정이었습니다.</p>
+<div class="table-scroll"><table><thead><tr><th>구간</th><th>강의</th><th>핵심 질문</th><th>대표 장치</th></tr></thead><tbody><tr><td>내보내기</td><td>N045~N047</td><td>어떻게 설계해서 세상에 공개하고, 공개한 뒤 무엇을 지켜보나?</td><td>PRD, Cloud Run 리비전·롤백, Secret Manager, 타임아웃·인스턴스 설정, 로그</td></tr><tr><td>자동화와 게이트</td><td>N048~N049</td><td>사람이 손으로 하던 배포를 어떻게 자동화하고, 잘못된 변경을 어떻게 걸러 내나?</td><td>GitHub Actions + WIF, pytest CI, 브랜치 보호, staging, 배포 승인</td></tr><tr><td>같은 것을 보내기</td><td>N050~N051</td><td>확인한 것과 배포한 것이 정말 같은가?</td><td>Dockerfile, <code>.dockerignore</code>, 커밋 SHA 태그, 다이제스트 승격</td></tr><tr><td>끊기지 않게</td><td>N052~N053</td><td>새 버전으로 바꾸는 동안 사용자는 끊기지 않는가?</td><td>블루그린·카나리, 외부 DB(Supabase), <code>/health</code> 프로브, 0% 배포·스모크 테스트, 원클릭 롤백</td></tr></tbody></table></div>
+<h2 id="2-사슬--한계에서-다음-강의로">2. 사슬 — 한계에서 다음 강의로</h2>
+<div class="diagram-wrap"><svg viewBox="0 0 1777 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="그림 1. 9부의 사슬. 각 강의가 남긴 한계를 다음 강의가 받는다."><defs><marker id="ah38" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="var(--svg-stroke)"/></marker></defs><rect class="svg-box" x="10" y="14" width="165" height="62" rx="10" fill="var(--svg-fill1)"/><text class="svg-text" x="92.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">N045 설계</text><text class="svg-text svg-muted" x="92.5" y="60" text-anchor="middle" font-size="11">PRD·아키텍처</text><path class="svg-arrow" d="M179 45 L205 45" marker-end="url(#ah38)"/><rect class="svg-box" x="209" y="14" width="165" height="62" rx="10" fill="var(--svg-fill2)"/><text class="svg-text" x="291.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">N046 첫 배포</text><text class="svg-text svg-muted" x="291.5" y="60" text-anchor="middle" font-size="11">Cloud Run·시크릿</text><path class="svg-arrow" d="M378 45 L404 45" marker-end="url(#ah38)"/><rect class="svg-box" x="408" y="14" width="165" height="62" rx="10" fill="var(--svg-fill2)"/><text class="svg-text" x="490.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">N047 운영</text><text class="svg-text svg-muted" x="490.5" y="60" text-anchor="middle" font-size="11">타임아웃·로그</text><path class="svg-arrow" d="M577 45 L603 45" marker-end="url(#ah38)"/><rect class="svg-box" x="607" y="14" width="165" height="62" rx="10" fill="var(--svg-fill3)"/><text class="svg-text" x="689.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">N048 자동 배포</text><text class="svg-text svg-muted" x="689.5" y="60" text-anchor="middle" font-size="11">Actions·WIF</text><path class="svg-arrow" d="M776 45 L802 45" marker-end="url(#ah38)"/><rect class="svg-box" x="806" y="14" width="165" height="62" rx="10" fill="var(--svg-fill3)"/><text class="svg-text" x="888.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">N049 게이트</text><text class="svg-text svg-muted" x="888.5" y="60" text-anchor="middle" font-size="11">CI·staging·승인</text><path class="svg-arrow" d="M975 45 L1001 45" marker-end="url(#ah38)"/><rect class="svg-box" x="1005" y="14" width="165" height="62" rx="10" fill="var(--svg-fill4)"/><text class="svg-text" x="1087.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">N050 실행 환경</text><text class="svg-text svg-muted" x="1087.5" y="60" text-anchor="middle" font-size="11">Dockerfile</text><path class="svg-arrow" d="M1174 45 L1200 45" marker-end="url(#ah38)"/><rect class="svg-box" x="1204" y="14" width="165" height="62" rx="10" fill="var(--svg-fill4)"/><text class="svg-text" x="1286.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">N051 승격</text><text class="svg-text svg-muted" x="1286.5" y="60" text-anchor="middle" font-size="11">한 번 빌드</text><path class="svg-arrow" d="M1373 45 L1399 45" marker-end="url(#ah38)"/><rect class="svg-box" x="1403" y="14" width="165" height="62" rx="10" fill="var(--svg-fill1)"/><text class="svg-text" x="1485.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">N052 무중단 원리</text><text class="svg-text svg-muted" x="1485.5" y="60" text-anchor="middle" font-size="11">블루그린·DB</text><path class="svg-arrow" d="M1572 45 L1598 45" marker-end="url(#ah38)"/><rect class="svg-box" x="1602" y="14" width="165" height="62" rx="10" fill="var(--svg-fill1)"/><text class="svg-text" x="1684.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">N053 Cloud Run 무중단</text><text class="svg-text svg-muted" x="1684.5" y="60" text-anchor="middle" font-size="11">프로브·롤백</text></svg><div class="diagram-caption">그림 1. 9부의 사슬. 각 강의가 남긴 한계를 다음 강의가 받는다.</div></div>
+<div class="table-scroll"><table><thead><tr><th>강의 (실습일)</th><th>한 일</th><th>드러난 한계</th><th>다음 강의가 한 일</th></tr></thead><tbody><tr><td><strong>N045</strong> 서비스 설계 (10-19)</td><td>ASP에 PRD·시퀀스·아키텍처·데이터 모델을 코드 없이 설계. PD 인터뷰 4문항으로 "1차 사용자는 작가가 아니라 PD" 발견</td><td>배포·키·비용·장애는 아직 없음</td><td>N046: 실제로 배포</td></tr><tr><td><strong>N046</strong> 첫 배포 (10-20)</td><td>Cloud Run에 공개. 배포 한 줄 뒤 5단계(빌드→이미지→리비전→인스턴스→URL) 확인, 리비전·롤백·50:50 분할, 키 없이 배포해 로그로 원인 찾기, Secret Manager 연결</td><td>공개 주소가 내 LLM 키로 요금 소비, 메모리 저장은 배포 때 소멸</td><td>N047: 응답 시간·비용·로그</td></tr><tr><td><strong>N047</strong> 운영 (10-20~21)</td><td>타임아웃 3초에서 답이 잘렸는데 상태 코드 200. 콜드 스타트, 최대 인스턴스 2 × 동시성 80, 로그 3종, 부하 테스트</td><td>배포는 여전히 사람이 <code>gcloud</code>로 수동</td><td>N048: 배포 자동화</td></tr><tr><td><strong>N048</strong> 자동 배포 (10-22)</td><td>GitHub Actions + WIF로 키 파일 0개 자동 배포. 사고 2건 재현</td><td>환경변수 오류는 막았지만 <strong>시간대 버그는 배포 성공과 함께 통과</strong></td><td>N049: 걸러 내는 장치</td></tr><tr><td><strong>N049</strong> CI·staging (10-23)</td><td>pytest <code>11 passed</code>, 브랜치 보호, staging, 배포 승인의 세 겹 게이트. 시간대 버그가 <code>TZ=UTC pytest</code>에서 실패로 잡힘</td><td>서버의 운영체제 프로그램은 테스트가 못 봄</td><td>N050: 실행 환경을 코드로</td></tr><tr><td><strong>N050</strong> Dockerfile (10-26)</td><td>로컬에서 되던 사진 읽기(OCR)가 staging에서 500 → Dockerfile에 설치 줄 → 네 곳 같은 결과</td><td>같은 Dockerfile도 빌드할 때마다 이미지 ID가 다름</td><td>N051: 한 번만 빌드</td></tr><tr><td><strong>N051</strong> 이미지 승격 (10-27)</td><td>Actions에서 이미지를 한 번 만들어 커밋 SHA 태그, staging에서 확인한 다이제스트를 그대로 production에 승격</td><td>이미지를 바꿔 끼우는 순간 사용자가 끊기는지는 모름</td><td>N052: 무중단 원리</td></tr><tr><td><strong>N052</strong> 무중단 원리 (10-28)</td><td>로컬 Docker에 blue·green + Nginx. 전환 실패 0건인데 메모리 대화는 사라짐 → Supabase로 옮겨 유지</td><td>손으로 Nginx 설정을 고치는 방식, 클라우드 아님</td><td>N053: Cloud Run에서 자동으로</td></tr><tr><td><strong>N053</strong> Cloud Run 무중단 (10-29)</td><td><code>/health</code> 프로브, 0% 배포·태그 URL·스모크 테스트, 블루그린·카나리·트래픽 고정, 머지 한 번 배포, 원클릭 롤백</td><td>알림, 카나리 자동 승격, 스키마 변경 배포는 미착수</td><td>(다음) 알림·자동 승격·스키마 변경, 내 앱에 적용</td></tr></tbody></table></div>
+<pre><code> 코드 변경 ─▶ PR ─▶ [CI] pytest ─▶ [보호] 통과해야 머지 ─▶ Actions가 이미지 1번 빌드(SHA 태그)
+    N049          N049                 N049                     N050·N051
+ ─▶ staging 0% 배포 ─▶ 태그 URL 스모크 테스트 ─▶ 전환 ─▶ [승인] ─▶ production에 같은 다이제스트 승격 ─▶ 문제 시 원클릭 롤백
+        N053                 N053               N053     N049              N051                              N053</code></pre>
+<div class="callout tip"><p><span class="label">💡 팁</span> — 9부가 끝난 시점의 배포 흐름입니다. N048 맺음말의 "빠르게 내보내는 장치"(자동 배포) 위에 N049~N053이 "걸러 내는 장치"와 "끊기지 않게 하는 장치"를 차례로 얹었습니다.</p></div>
+<h2 id="3-강의별-핵심">3. 강의별 핵심</h2>
+<h3>N045 AI 기능을 서비스로 설계하기</h3>
+<ul><li><strong>배운 것:</strong> 사용 맥락 → 처리 방식과 오류 대응 → 코드 없이 검증 → 시퀀스·아키텍처·데이터 모델 → PRD 순서로 설계한다. 순서를 건너뛰면 처음부터 다시 만들게 된다.</li><li><strong>직접 한 것:</strong> ASP(AI Story Partner)에 적용. PD 인터뷰와 데스크 리서치 2건으로 1차 사용자가 PD임을 발견, 7개 평가 기준 시스템 프롬프트로 기성 AI 도구 프로토타입 시험, PRD 7항목 완성.</li><li><strong>남는 것:</strong> 코드보다 먼저 "누가 쓰는가"를 확인해야 한다.</li></ul>
+<h3>N046 AI 서비스 인 프로덕션</h3>
+<ul><li><strong>배운 것:</strong> Cloud Run 배포 한 줄 뒤에는 빌드·이미지·리비전·인스턴스·URL 다섯 단계가 있다. 배포마다 리비전이 생기므로 롤백은 트래픽을 되돌리는 일이다. 키는 코드가 아니라 Secret Manager에 둔다.</li><li><strong>직접 한 것:</strong> 첫 배포 403(빌드 계정 역할 하나로 해결), 리비전 롤백·50:50 분할, 키 없이 배포한 리비전의 컨테이너 로그에서 <code>LLM_API_KEY</code> 누락 확인 후 시크릿 연결.</li><li><strong>남는 것:</strong> 실패 원인은 화면이 아니라 로그에 있다.</li></ul>
+<h3>N047 Cloud Run에서 AI 서비스 운영하기</h3>
+<ul><li><strong>배운 것:</strong> 타임아웃·인스턴스 수·동시성·콜드 스타트·로그가 운영의 기본 손잡이다.</li><li><strong>직접 한 것:</strong> 평소 4.1초 걸리는 요청에 타임아웃 3초를 걸자 <strong>답이 문장 중간에서 잘렸는데 상태 코드는 200</strong>. 쉬었다 오면 첫 요청이 느린 것은 LLM이 아니라 콜드 스타트(404도 7.8초). 부하 테스트에서 동시성 1일 때 최대 인스턴스 3이든 20이든 똑같이 50건 중 15건만 성공 → <strong>최대 인스턴스 숫자보다 순간 스케일업 속도가 먼저 병목</strong>(교안에 없던 발견).</li><li><strong>남는 것:</strong> 최대 인스턴스는 비용 상한이 아니고, 상태 코드만 보는 모니터링은 품질 문제를 못 잡는다.</li></ul>
+<h3>N048 GitHub Actions로 자동 배포하기</h3>
+<ul><li><strong>배운 것:</strong> WIF(워크로드 아이덴티티 연동)로 키 파일 없이 GitHub이 Google Cloud에 배포한다. 권한은 최소로.</li><li><strong>직접 한 것:</strong> 서비스 계정 2개·풀·공급자·저장소 변수 4개를 키 파일 0개로 구성. 저장소 문서에 없던 "빌드 계정을 대신 행동할 권한" 함정을 발견해 해결. 사고 재현 2건: 환경변수 이름 오류는 <strong>배포 실패, 이전 리비전이 계속 응답</strong>, 시간대 오류는 <strong>배포 성공, 08:00 약속이 17:00으로 저장</strong>.</li><li><strong>남는 것:</strong> 자동 배포는 "켜지는지"만 확인한다.</li></ul>
+<h3>N049 CI 테스트와 staging 환경 만들기</h3>
+<ul><li><strong>배운 것:</strong> CI(자동 테스트), 브랜치 보호(통과해야 머지), staging(사람이 먼저 써 봄), 배포 승인의 세 겹 게이트.</li><li><strong>직접 한 것:</strong> 시간대 버그가 <code>TZ=UTC pytest</code>에서 17:00 실패로 잡힘. 브랜치 보호가 없으면 CI가 빨간불이어도 머지가 된다는 것을 확인 — <strong>CI는 알려 줄 뿐 막지는 못한다.</strong> 비공개 저장소에서는 승인자·보호가 유료라 저장소를 공개로 전환.</li><li><strong>남는 것:</strong> 테스트는 화면·말투·실제 LLM 답은 못 잡는다.</li></ul>
+<h3>N050 Dockerfile로 실행 환경 정하기</h3>
+<ul><li><strong>배운 것:</strong> 코드가 같아도 서버에 운영체제 프로그램이 없으면 기능이 안 된다. <code>pip</code>가 아니라 Dockerfile에 적어 실행 환경을 직접 정한다.</li><li><strong>직접 한 것:</strong> 로컬에서 되던 OCR이 staging에서 500(서버에 tesseract 없음, Cloud Run 로그로 확인) → Dockerfile에 설치 줄 → 같은 사진이 로컬·로컬 컨테이너·staging·production <strong>네 곳 모두 200·153글자·같은 결과 해시</strong>. <code>.dockerignore</code>가 하위 폴더에 안 먹어 이미지에 <code>.pyc</code> 17개가 들어간 것을 발견해 수정. PDF 읽기(poppler)는 staging에 가기 전 <strong>로컬 컨테이너에서 먼저</strong> 잡음.</li><li><strong>남는 것:</strong> 같은 Dockerfile을 두 번 빌드하면 패키지는 같아도 이미지 ID가 다르다.</li></ul>
+<h3>N051 한 번 만든 이미지로 배포하기</h3>
+<ul><li><strong>배운 것:</strong> "확인한 것을 배포했다"고 말하려면 이미지를 한 번만 만들고, 그 다이제스트를 그대로 옮겨야(승격) 한다.</li><li><strong>직접 한 것:</strong> 승격 전에는 staging·production이 각자 빌드해 다이제스트가 달랐다. Actions가 커밋 SHA 태그로 한 번 빌드 → production이 staging 리비전의 다이제스트를 읽어 그대로 배포 → 두 환경 모두 <code>sha256:d339e5d333ec…</code>. main 배포 시간 1분 26초 → 46초, 장애 대응 훈련 세 질문 5분 이내 → 3분. Artifact Registry가 2,217.9MB(무료 0.5GB 초과)라 정리 정책을 드라이런으로 검.</li><li><strong>남는 것:</strong> 승인 버튼을 누르기 전에 다이제스트를 확인해야 한다.</li></ul>
+<h3>N052 로드밸런서로 무중단 배포 구성하기</h3>
+<ul><li><strong>배운 것:</strong> 서버 두 벌(blue·green) 앞에 로드밸런서를 두고 설정만 바꿔 전환·롤백한다. 그러나 사용자 데이터가 서버 메모리에 있으면 전환이 곧 데이터 소멸이다.</li><li><strong>직접 한 것:</strong> 전환·롤백 341건 실패 0건, 가중치 3:1에서 75%·25%. 서버 하나를 멈추자 기본값에서는 13건 실패(Nginx가 알아채는 데 약 38초, 교안은 60초), 연결 대기 1초로 바꾸자 0건. 그런데 메모리 저장에서는 <strong>전환하자 대화 0개</strong> → Supabase로 옮기자 전환·재시작 뒤에도 대화 3개 유지.</li><li><strong>남는 것:</strong> 전환 성공은 곧 무중단이 아니다.</li></ul>
+<h3>N053 Cloud Run으로 무중단 배포하기</h3>
+<ul><li><strong>배운 것:</strong> 새 버전을 올리는 일과 사용자에게 보내는 일을 나누고(0% 배포), 보내기 전에 검증하고(태그 URL 스모크 테스트), 문제가 생기면 바로 되돌린다(원클릭 롤백). 준비 여부는 스타트업 프로브로 정한다.</li><li><strong>직접 한 것:</strong> 준비가 늦은 버전을 기본 프로브로 배포하자 <strong>배포 명령은 성공인데 요청 54건이 503</strong>, <code>/health</code> 프로브로 바꾸자 0건(대신 배포 27초 → 약 84초). 롤백 직후 4건 실패(콜드 스타트 추정). <code>deploy.yml</code>에 0% 배포 → 스모크 테스트 → 전환을 넣고, 일부러 망가진 버전을 머지하자 스모크 테스트가 전환을 막아 요청 735건 실패 0건.</li><li><strong>남는 것:</strong> 배포 성공은 "사용자가 오류를 안 봤다"는 증거가 아니다. 롤백은 배포보다 약하다.</li></ul>
+<h2 id="4-숫자로-남은-실측-교훈">4. 숫자로 남은 실측 교훈</h2>
+<div class="table-scroll"><table><thead><tr><th>강의</th><th>실측 사실</th><th>교훈</th></tr></thead><tbody><tr><td>N047</td><td>타임아웃 3초 → 답이 잘렸는데 상태 코드 200</td><td>상태 코드만으로는 품질을 못 본다</td></tr><tr><td>N047</td><td>동시성 1이면 최대 인스턴스 3이든 20이든 50건 중 15건 성공</td><td>최대 숫자보다 스케일업 속도가 먼저 막힌다</td></tr><tr><td>N048</td><td>시간대 버그: 배포 성공, 08:00 → 17:00 저장</td><td>자동 배포는 "켜지는지"만 본다</td></tr><tr><td>N049</td><td><code>TZ=UTC pytest</code>에서 같은 버그가 실패로 잡힘</td><td>테스트 조건을 서버와 맞춰야 잡힌다</td></tr><tr><td>N050</td><td>로컬 200 / staging 500 → Dockerfile 뒤 네 곳 200·153글자·같은 해시</td><td>실행 환경도 코드로 고정한다</td></tr><tr><td>N050</td><td>같은 Dockerfile 두 번 빌드: 패키지 같음, 이미지 ID 다름</td><td>다시 빌드한 것은 같은 것이 아니다</td></tr><tr><td>N051</td><td>승격 뒤 두 환경 다이제스트 <code>d339e5d333ec</code> 일치, 배포 1분 26초 → 46초</td><td>한 번 만들고 옮기면 더 빠르고 확실하다</td></tr><tr><td>N052</td><td>전환 실패 0건인데 메모리 대화 0개</td><td>요청이 안 끊겨도 사용자 일은 끊길 수 있다</td></tr><tr><td>N052</td><td>서버 정지 감지 기본 약 38초·실패 13건 → 연결 대기 1초·실패 0건</td><td>기본값은 내 서비스에 맞지 않을 수 있다</td></tr><tr><td>N053</td><td>기본 프로브 503 54건 → <code>/health</code> 프로브 0건</td><td>사용자가 오류를 보는 것보다 배포가 늦는 편이 낫다</td></tr><tr><td>N053</td><td>망가진 버전: CI 통과, 스모크 테스트에서 멈춤, 요청 735건 실패 0건</td><td>검증은 사용자에게 가기 전 새 버전을 봐야 한다</td></tr></tbody></table></div>
+<h2 id="5-9부를-관통하는-네-가지-원칙">5. 9부를 관통하는 네 가지 원칙</h2>
+<div class="table-scroll"><table><thead><tr><th>원칙</th><th>9부에서 나타난 곳</th></tr></thead><tbody><tr><td><strong>성공 표시를 믿지 말고 사용자 쪽을 잰다</strong></td><td>N047 200인데 잘린 답, N048 성공한 배포의 시간대 버그, N052 전환 성공·대화 소멸, N053 배포 성공·503</td></tr><tr><td><strong>되돌릴 수 있어야 안전하다</strong></td><td>N046 리비전 롤백, N048 revert, N049 staging, N053 원클릭 롤백(단, 롤백은 배포보다 약했다)</td></tr><tr><td><strong>권한과 승인은 설계의 일부다</strong></td><td>N046 Secret Manager, N048 WIF·최소 권한, N049 브랜치 보호·배포 승인, N053 시크릿 단위 읽기 권한</td></tr><tr><td><strong>확인한 것과 보낸 것이 같아야 한다</strong></td><td>N049 staging에서 먼저 써 봄, N050 네 곳 같은 결과, N051 다이제스트 승격, N053 태그 URL 스모크 테스트</td></tr></tbody></table></div>
+<div class="callout tip"><p><span class="label">💡 팁</span> — 28년 기획·경영에 빗대면, 9부는 <strong>신규 매장 오픈 매뉴얼</strong>과 같았습니다. 간판 불이 켜진 것(배포 성공)과 손님이 불편 없이 주문하고 나간 것(사용자 경험)은 다르고, 본점에서 검수한 레시피를 지점에 그대로 보내야 하고(승격), 교대 근무에서 인수인계 노트가 없으면 손님 주문이 사라지며(메모리 저장), 가오픈(0% 배포)과 철수 기준(롤백)은 오픈 전에 정해 둡니다.</p></div>
+<h2 id="6-남은-숙제-n053-시점">6. 남은 숙제 (N053 시점)</h2>
+<ol><li><strong>배포 알림</strong>(성공·실패·롤백을 메신저로) — N047부터 계속 이월. N053 선택 과제로 나왔지만 하지 않음</li><li><strong>카나리 자동 승격</strong> — 오류율·지연(p95)을 숫자로 보고 올릴지 되돌릴지 자동 판단</li><li><strong>스키마가 바뀌는 배포</strong> — 확장 → 호환 코드 → 전환 → 정리 순서는 아직 이론</li><li><strong>롤백 직후 약한 구간</strong> 줄이기(최소 인스턴스, 롤백 전 사전 호출 비교)</li><li><strong>환경별 서비스 계정 분리</strong>, staging과 production이 같은 수업 키를 쓰는 문제</li><li><strong>비용 총량 통제</strong> — 공개 서비스의 요청당 LLM 비용, Artifact Registry 2.2GB(정리 정책은 드라이런 상태)</li><li><strong>브라우저(UI) 자동 테스트</strong>와 시간대·날짜 경계 테스트</li><li><strong>내 앱에 적용</strong> — My-Story-Maker, 뉴스레터 에이전트, AI 컨설팅 서비스</li></ol>
+<div class="callout warning"><p><span class="label">⚠️ 주의</span> — 실습 자원 정리도 남아 있습니다. <code>friend-agent</code>(공개, 요청마다 키 비용)·<code>friend-agent-staging</code> 서비스, 공개 저장소 <code>JEON-DAEJIN/friend-agent</code>, Supabase <code>friend-agent-production</code>(무료 체험 2026-10-29 기준 6일 남음)을 둘지 정리할지 정해야 합니다.</p></div>
+<h2 id="7-산출물-위치">7. 산출물 위치</h2>
+<div class="table-scroll"><table><thead><tr><th>강의</th><th>강의노트</th><th>제출보고서</th><th>그 밖</th></tr></thead><tbody><tr><td>N045</td><td><code>N045/N045_AI_기능을_서비스로_설계하기(service-design)</code></td><td><code>N045_실습과제_제출보고서</code></td><td>방법론 문서(<code>AI_기능을_서비스로_설계하는_법</code>)</td></tr><tr><td>N046·N047</td><td><code>N046/…(ai-in-production)</code>, <code>N047/…(cloud-run-operations)</code></td><td>각 폴더</td><td>방법론 문서(<code>Cloud_Run에_AI_서비스를_배포하고_운영하는_법</code>)</td></tr><tr><td>N048</td><td><code>N048/N048_GitHub_Actions_자동배포(cicd)</code></td><td><code>N048_실습과제_제출보고서</code></td><td>실습 모션 요약 mp4</td></tr><tr><td>N049</td><td><code>N049/N049_CI테스트와_staging환경(ci-staging)</code></td><td>보고서 + 부록 상세기록</td><td>방법론 문서(<code>AI_서비스에_품질_게이트를_붙이는_법</code>)</td></tr><tr><td>N050</td><td><code>N050/N050_Dockerfile로_실행환경_정하기(dockerfile)</code> v1.1</td><td>보고서 + 부록</td><td>방법론 문서, 한눈에 흐름도</td></tr><tr><td>N051</td><td><code>N051/N051_한_번_만든_이미지로_배포하기(image-deploy)</code></td><td>보고서 + 부록</td><td>노션용 본문, 흐름도</td></tr><tr><td>N052</td><td><code>N052/N052_로드밸런서로_무중단_배포_구성하기(load-balancer)</code> v1.1</td><td><code>N052_실습과제_제출보고서</code></td><td>실습 진행기록, 원본 로그 24개</td></tr><tr><td>N053</td><td><code>N053/N053_Cloud_Run으로_무중단_배포하기(cloud-run)</code> v1.1</td><td><code>N053_실습과제_제출보고서</code></td><td>오늘 학습정리, 실습 진행기록, 원본 로그 12개</td></tr></tbody></table></div>
+<ul><li>비개발자용 실습 설명자료: <code>강의정리/설명자료모음/N0XX_실습_설명자료</code></li><li>날마다 쓴 블로그 글: N045(10-19)부터 N053(10-29)까지 수업일지 9편이 <code>jeon-daejin.github.io/blog</code>에 게시되어 있습니다.</li></ul>
+<h2 id="8-자료-사용상의-주의">8. 자료 사용상의 주의</h2>
+<ul><li>N045~N049 부분은 <code>N001-N049_학습흐름_종합보고서</code> 4장을 바탕으로 했고, N050~N053은 이번에 각 강의 제출보고서에서 새로 정리했습니다.</li><li>숫자는 모두 실습 기록에 있는 값입니다. 기록이 "추정"이라 한 것(N053 롤백 직후 4건의 원인 등)은 여기서도 추정으로 적었습니다.</li><li>강의 사이의 연결 중 N045→N046, N046→N047, N048→N049는 강의 본문이 직접 다음 강의를 지목한 것이고, N049→N050부터는 각 실습이 앞 실습의 저장소·서비스를 이어 쓴 흐름으로 이었습니다.</li></ul>
+
+</main>
+</body>
+</html>
