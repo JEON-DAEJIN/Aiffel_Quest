@@ -1,0 +1,1599 @@
+{
+ "router-full-before-v3-1": {
+  "T41": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T40": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "우산 챙기기",
+       "due_at": "2026-10-13T07:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder"
+   ]
+  },
+  "T39": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     },
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather,get_air_quality"
+   ]
+  },
+  "T38": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "cancel_reminder",
+      "args": {
+       "query": "엄마한테 전화"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: cancel_reminder"
+   ]
+  },
+  "T37": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "list_reminders",
+      "args": {}
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: list_reminders"
+   ]
+  },
+  "T36": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "list_reminders",
+      "args": {}
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: list_reminders"
+   ]
+  },
+  "T35": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "약 먹기",
+       "due_at": "2026-10-12T17:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder"
+   ]
+  },
+  "T34": {
+   "tools_right": 1,
+   "exact": 0,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "일찍 자기",
+       "due_at": "2026-10-16T21:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": [
+     "약속 날짜가 2026-10-15로 잡혀 메시지의 날짜 표현(2026-10-16)과 달라 고쳤습니다."
+    ]
+   },
+   "guards": [
+    "약속 날짜가 2026-10-15로 잡혀 메시지의 날짜 표현(2026-10-16)과 달라 고쳤습니다."
+   ],
+   "comments": [
+    "고른 도구: create_reminder",
+    "due_at: 정답 2026-10-15T21:00, 결과 2026-10-16T21:00:00+09:00"
+   ]
+  },
+  "T33": {
+   "tools_right": 1,
+   "exact": 0,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "보고서 제출",
+       "due_at": "2026-10-19T09:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder",
+    "due_at: 정답 2026-10-19T08:00, 결과 2026-10-19T09:00:00+09:00"
+   ]
+  },
+  "T32": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "엄마한테 전화하기",
+       "due_at": "2026-10-15T19:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder"
+   ]
+  },
+  "T31": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "빨래 꺼내기",
+       "due_at": "2026-10-12T14:30:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder"
+   ]
+  },
+  "T30": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "물 마시기",
+       "due_at": "2026-10-13T08:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder"
+   ]
+  },
+  "T29": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_holidays",
+      "args": {}
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_holidays"
+   ]
+  },
+  "T28": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_holidays",
+      "args": {}
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_holidays"
+   ]
+  },
+  "T27": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_holidays",
+      "args": {}
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_holidays"
+   ]
+  },
+  "T26": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_holidays",
+      "args": {}
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_holidays"
+   ]
+  },
+  "T25": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-12"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_air_quality"
+   ]
+  },
+  "T24": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_air_quality"
+   ]
+  },
+  "T23": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-12"
+      }
+     }
+    ],
+    "confidence": 0.8,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_air_quality"
+   ]
+  },
+  "T22": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "대구",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_air_quality"
+   ]
+  },
+  "T21": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-12"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_air_quality"
+   ]
+  },
+  "T20": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T19": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-14"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T18": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "강릉",
+       "date": "2026-10-17"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T17": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T16": {
+   "tools_right": 0,
+   "exact": 0,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T15": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "제주",
+       "date": "2026-10-14"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T14": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "부산",
+       "date": "2026-10-12"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T13": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T12": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.7,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T11": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T10": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T09": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.5,
+    "prompt": "tool-router v3 (v3)",
+    "guards": [
+     "확신도 0.50가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+    ]
+   },
+   "guards": [
+    "확신도 0.50가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+   ],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T08": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T07": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T06": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T05": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T04": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T03": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.5,
+    "prompt": "tool-router v3 (v3)",
+    "guards": [
+     "확신도 0.50가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+    ]
+   },
+   "guards": [
+    "확신도 0.50가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+   ],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T02": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": [
+     "확신도 0.00가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+    ]
+   },
+   "guards": [
+    "확신도 0.00가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+   ],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T01": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  }
+ },
+ "router-full-before-v3-2": {
+  "T41": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": [
+     "확신도 0.00가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+    ]
+   },
+   "guards": [
+    "확신도 0.00가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+   ],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T40": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "우산 챙기기",
+       "due_at": "2026-10-13T07:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder"
+   ]
+  },
+  "T39": {
+   "tools_right": 0,
+   "exact": 0,
+   "output": {
+    "tools": [],
+    "confidence": 0.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": [
+     "확신도 0.00가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+    ]
+   },
+   "guards": [
+    "확신도 0.00가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+   ],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T38": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "cancel_reminder",
+      "args": {
+       "query": "엄마한테 전화하는"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: cancel_reminder"
+   ]
+  },
+  "T37": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "list_reminders",
+      "args": {}
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: list_reminders"
+   ]
+  },
+  "T36": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "list_reminders",
+      "args": {}
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: list_reminders"
+   ]
+  },
+  "T35": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "약 먹기",
+       "due_at": "2026-10-12T17:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder"
+   ]
+  },
+  "T34": {
+   "tools_right": 1,
+   "exact": 0,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "일찍 자기",
+       "due_at": "2026-10-16T21:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": [
+     "약속 날짜가 2026-10-15로 잡혀 메시지의 날짜 표현(2026-10-16)과 달라 고쳤습니다."
+    ]
+   },
+   "guards": [
+    "약속 날짜가 2026-10-15로 잡혀 메시지의 날짜 표현(2026-10-16)과 달라 고쳤습니다."
+   ],
+   "comments": [
+    "고른 도구: create_reminder",
+    "due_at: 정답 2026-10-15T21:00, 결과 2026-10-16T21:00:00+09:00"
+   ]
+  },
+  "T33": {
+   "tools_right": 1,
+   "exact": 0,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "보고서 제출",
+       "due_at": "2026-10-19T09:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder",
+    "due_at: 정답 2026-10-19T08:00, 결과 2026-10-19T09:00:00+09:00"
+   ]
+  },
+  "T32": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "엄마한테 전화하기",
+       "due_at": "2026-10-15T19:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder"
+   ]
+  },
+  "T31": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "빨래 꺼내기",
+       "due_at": "2026-10-12T14:30:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder"
+   ]
+  },
+  "T30": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "create_reminder",
+      "args": {
+       "text": "물 마시기",
+       "due_at": "2026-10-13T08:00:00+09:00"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: create_reminder"
+   ]
+  },
+  "T29": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_holidays",
+      "args": {}
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_holidays"
+   ]
+  },
+  "T28": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_holidays",
+      "args": {}
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_holidays"
+   ]
+  },
+  "T27": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_holidays",
+      "args": {}
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_holidays"
+   ]
+  },
+  "T26": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_holidays",
+      "args": {}
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_holidays"
+   ]
+  },
+  "T25": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-12"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_air_quality"
+   ]
+  },
+  "T24": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_air_quality"
+   ]
+  },
+  "T23": {
+   "tools_right": 1,
+   "exact": 0,
+   "output": {
+    "tools": [
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-12"
+      }
+     },
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 0.8,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_air_quality,get_air_quality",
+    "day: 정답 0, 결과 2026-10-13"
+   ]
+  },
+  "T22": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "대구",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_air_quality"
+   ]
+  },
+  "T21": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_air_quality",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-12"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_air_quality"
+   ]
+  },
+  "T20": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T19": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-14"
+      }
+     }
+    ],
+    "confidence": 0.8,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T18": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "강릉",
+       "date": "2026-10-17"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T17": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T16": {
+   "tools_right": 0,
+   "exact": 0,
+   "output": {
+    "tools": [],
+    "confidence": 0.8,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T15": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "제주",
+       "date": "2026-10-14"
+      }
+     }
+    ],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T14": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "부산",
+       "date": "2026-10-12"
+      }
+     }
+    ],
+    "confidence": 0.8,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T13": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [
+     {
+      "name": "get_weather",
+      "args": {
+       "location": "서울",
+       "date": "2026-10-13"
+      }
+     }
+    ],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: get_weather"
+   ]
+  },
+  "T12": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.5,
+    "prompt": "tool-router v3 (v3)",
+    "guards": [
+     "확신도 0.50가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+    ]
+   },
+   "guards": [
+    "확신도 0.50가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+   ],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T11": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T10": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T09": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T08": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 1.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T07": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T06": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T05": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.5,
+    "prompt": "tool-router v3 (v3)",
+    "guards": [
+     "확신도 0.50가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+    ]
+   },
+   "guards": [
+    "확신도 0.50가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+   ],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T04": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T03": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T02": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.0,
+    "prompt": "tool-router v3 (v3)",
+    "guards": [
+     "확신도 0.00가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+    ]
+   },
+   "guards": [
+    "확신도 0.00가 기준 0.6 미만이라 도구를 쓰지 않고 되묻습니다."
+   ],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  },
+  "T01": {
+   "tools_right": 1,
+   "exact": 1,
+   "output": {
+    "tools": [],
+    "confidence": 0.9,
+    "prompt": "tool-router v3 (v3)",
+    "guards": []
+   },
+   "guards": [],
+   "comments": [
+    "고른 도구: 도구 없음"
+   ]
+  }
+ }
+}
