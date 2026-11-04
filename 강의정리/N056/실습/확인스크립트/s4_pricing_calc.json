@@ -1,0 +1,140 @@
+{
+ "교안 기본값(원가 1.5원)": {
+  "cost_won": 1.5,
+  "rows": {
+   "기본(무료 10·10원)": {
+    "margin_per_credit": 8.126,
+    "credits_sold": 15000.0,
+    "paid_share": 99390,
+    "free_cost": 427500,
+    "fixed": 75000,
+    "pnl": -403110
+   },
+   "가격 2배(20원)": {
+    "margin_per_credit": 17.752,
+    "credits_sold": 15000.0,
+    "paid_share": 243780,
+    "free_cost": 427500,
+    "fixed": 75000,
+    "pnl": -258720
+   },
+   "무료 3개": {
+    "margin_per_credit": 8.126,
+    "credits_sold": 25500.0,
+    "paid_share": 200463,
+    "free_cost": 128250,
+    "fixed": 75000,
+    "pnl": -2787
+   },
+   "무료 5개": {
+    "margin_per_credit": 8.126,
+    "credits_sold": 22500.0,
+    "paid_share": 171585,
+    "free_cost": 213750,
+    "fixed": 75000,
+    "pnl": -117165
+   },
+   "무료 0개": {
+    "margin_per_credit": 8.126,
+    "credits_sold": 30000.0,
+    "paid_share": 243780,
+    "free_cost": 0,
+    "fixed": 75000,
+    "pnl": 168780
+   }
+  },
+  "breakeven_free_per_day": 2.95
+ },
+ "내 서비스 상위10%(0.000519달러)": {
+  "cost_won": 0.727,
+  "rows": {
+   "기본(무료 10·10원)": {
+    "margin_per_credit": 8.899,
+    "credits_sold": 15000.0,
+    "paid_share": 122592,
+    "free_cost": 207081,
+    "fixed": 75000,
+    "pnl": -159489
+   },
+   "가격 2배(20원)": {
+    "margin_per_credit": 18.525,
+    "credits_sold": 15000.0,
+    "paid_share": 266982,
+    "free_cost": 207081,
+    "fixed": 75000,
+    "pnl": -15099
+   },
+   "무료 3개": {
+    "margin_per_credit": 8.899,
+    "credits_sold": 25500.0,
+    "paid_share": 223665,
+    "free_cost": 62124,
+    "fixed": 75000,
+    "pnl": 86541
+   },
+   "무료 5개": {
+    "margin_per_credit": 8.899,
+    "credits_sold": 22500.0,
+    "paid_share": 194787,
+    "free_cost": 103540,
+    "fixed": 75000,
+    "pnl": 16246
+   },
+   "무료 0개": {
+    "margin_per_credit": 8.899,
+    "credits_sold": 30000.0,
+    "paid_share": 266982,
+    "free_cost": 0,
+    "fixed": 75000,
+    "pnl": 191982
+   }
+  },
+  "breakeven_free_per_day": 5.46
+ },
+ "내 서비스 gpt-4o 평균(0.007355달러)": {
+  "cost_won": 10.297,
+  "rows": {
+   "기본(무료 10·10원)": {
+    "margin_per_credit": -0.671,
+    "credits_sold": 15000.0,
+    "paid_share": -164520,
+    "free_cost": 2934645,
+    "fixed": 75000,
+    "pnl": -3174165
+   },
+   "가격 2배(20원)": {
+    "margin_per_credit": 8.955,
+    "credits_sold": 15000.0,
+    "paid_share": -20130,
+    "free_cost": 2934645,
+    "fixed": 75000,
+    "pnl": -3029775
+   },
+   "무료 3개": {
+    "margin_per_credit": -0.671,
+    "credits_sold": 25500.0,
+    "paid_share": -63447,
+    "free_cost": 880394,
+    "fixed": 75000,
+    "pnl": -1018840
+   },
+   "무료 5개": {
+    "margin_per_credit": -0.671,
+    "credits_sold": 22500.0,
+    "paid_share": -92325,
+    "free_cost": 1467322,
+    "fixed": 75000,
+    "pnl": -1634648
+   },
+   "무료 0개": {
+    "margin_per_credit": -0.671,
+    "credits_sold": 30000.0,
+    "paid_share": -20130,
+    "free_cost": 0,
+    "fixed": 75000,
+    "pnl": -95130
+   }
+  },
+  "breakeven_free_per_day": 0.0
+ }
+}

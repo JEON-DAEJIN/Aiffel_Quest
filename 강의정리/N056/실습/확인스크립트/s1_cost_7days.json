@@ -1,0 +1,2772 @@
+[
+ {
+  "trace": "b45fc20a…",
+  "env": "local",
+  "user": "user-0",
+  "session": "user-0:2026-11-03",
+  "time": "2026-11-03 06:43:35.583000+00:00",
+  "cost_usd": 0.0003651,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.82e-05,
+    "in": 548,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.00010455,
+    "in": 537,
+    "out": 40
+   },
+   "choose-tools": {
+    "cost": 0.00017235,
+    "in": 1005,
+    "out": 36
+   }
+  }
+ },
+ {
+  "trace": "45598baf…",
+  "env": "local",
+  "user": "user-3",
+  "session": "user-3:2026-11-03",
+  "time": "2026-11-03 06:43:29.912000+00:00",
+  "cost_usd": 0.00039645,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.51e-05,
+    "in": 582,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0001254,
+    "in": 536,
+    "out": 75
+   },
+   "choose-tools": {
+    "cost": 0.00017595,
+    "in": 1005,
+    "out": 42
+   }
+  }
+ },
+ {
+  "trace": "550536b0…",
+  "env": "local",
+  "user": "n055-step1b",
+  "session": "n055-step1b:2026-11-03",
+  "time": "2026-11-03 02:14:00.924000+00:00",
+  "cost_usd": 0.000411149999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.57e-05,
+    "in": 518,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.000130949999,
+    "in": 753,
+    "out": 30
+   },
+   "choose-tools": {
+    "cost": 0.0001845,
+    "in": 1014,
+    "out": 54
+   }
+  }
+ },
+ {
+  "trace": "0aa36f26…",
+  "env": "local",
+  "user": "n055-step1b",
+  "session": "n055-step1b:2026-11-03",
+  "time": "2026-11-03 02:13:57.683000+00:00",
+  "cost_usd": 0.0004032,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.555e-05,
+    "in": 517,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.00013035,
+    "in": 753,
+    "out": 29
+   },
+   "choose-tools": {
+    "cost": 0.0001773,
+    "in": 1014,
+    "out": 42
+   }
+  }
+ },
+ {
+  "trace": "eeacbd42…",
+  "env": "local",
+  "user": "n055-step1b",
+  "session": "n055-step1b:2026-11-03",
+  "time": "2026-11-03 02:13:54.373000+00:00",
+  "cost_usd": 0.00040095,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.51e-05,
+    "in": 514,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.00012855,
+    "in": 753,
+    "out": 26
+   },
+   "choose-tools": {
+    "cost": 0.0001773,
+    "in": 1014,
+    "out": 42
+   }
+  }
+ },
+ {
+  "trace": "cde18491…",
+  "env": "local",
+  "user": "n055-step1b",
+  "session": "n055-step1b:2026-11-03",
+  "time": "2026-11-03 02:13:50.229000+00:00",
+  "cost_usd": 0.00040994999899999997,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.57e-05,
+    "in": 518,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.000130949999,
+    "in": 753,
+    "out": 30
+   },
+   "choose-tools": {
+    "cost": 0.0001833,
+    "in": 1014,
+    "out": 52
+   }
+  }
+ },
+ {
+  "trace": "ab004da4…",
+  "env": "local",
+  "user": "n055-step1b",
+  "session": "n055-step1b:2026-11-03",
+  "time": "2026-11-03 02:13:47.120000+00:00",
+  "cost_usd": 0.000410849999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.9e-05,
+    "in": 516,
+    "out": 36
+   },
+   "reply": {
+    "cost": 0.000129749999,
+    "in": 753,
+    "out": 28
+   },
+   "choose-tools": {
+    "cost": 0.0001821,
+    "in": 1014,
+    "out": 50
+   }
+  }
+ },
+ {
+  "trace": "0a3537c2…",
+  "env": "local",
+  "user": "n055-step1b",
+  "session": "n055-step1b:2026-11-03",
+  "time": "2026-11-03 02:13:42.776000+00:00",
+  "cost_usd": 0.0004053,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.525e-05,
+    "in": 515,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.00012915,
+    "in": 753,
+    "out": 27
+   },
+   "choose-tools": {
+    "cost": 0.0001809,
+    "in": 1014,
+    "out": 48
+   }
+  }
+ },
+ {
+  "trace": "ec891f0e…",
+  "env": "local",
+  "user": "n055-step1b",
+  "session": "n055-step1b:2026-11-03",
+  "time": "2026-11-03 02:13:39.536000+00:00",
+  "cost_usd": 0.00040754999999999996,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.63e-05,
+    "in": 522,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.00013335,
+    "in": 753,
+    "out": 34
+   },
+   "choose-tools": {
+    "cost": 0.0001779,
+    "in": 1014,
+    "out": 43
+   }
+  }
+ },
+ {
+  "trace": "8de25a95…",
+  "env": "local",
+  "user": "n055-step1b",
+  "session": "n055-step1b:2026-11-03",
+  "time": "2026-11-03 02:13:30.232000+00:00",
+  "cost_usd": 0.000408149999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.57e-05,
+    "in": 518,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.000130949999,
+    "in": 753,
+    "out": 30
+   },
+   "choose-tools": {
+    "cost": 0.0001815,
+    "in": 1014,
+    "out": 49
+   }
+  }
+ },
+ {
+  "trace": "f7492723…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:12:29.119000+00:00",
+  "cost_usd": 0.00039525,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.64e-05,
+    "in": 524,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00013335,
+    "in": 753,
+    "out": 34
+   },
+   "choose-tools": {
+    "cost": 0.0001755,
+    "in": 1014,
+    "out": 39
+   }
+  }
+ },
+ {
+  "trace": "34fdb2d3…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:12:25.574000+00:00",
+  "cost_usd": 0.00043694999899999997,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.000114299999,
+    "in": 534,
+    "out": 57
+   },
+   "reply": {
+    "cost": 0.00013905,
+    "in": 755,
+    "out": 43
+   },
+   "choose-tools": {
+    "cost": 0.0001836,
+    "in": 1016,
+    "out": 52
+   }
+  }
+ },
+ {
+  "trace": "3abe59b8…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:12:22.018000+00:00",
+  "cost_usd": 0.0004155,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.00010185,
+    "in": 539,
+    "out": 35
+   },
+   "reply": {
+    "cost": 0.00011685,
+    "in": 611,
+    "out": 42
+   },
+   "choose-tools": {
+    "cost": 0.0001968,
+    "in": 1020,
+    "out": 73
+   }
+  }
+ },
+ {
+  "trace": "39b5d5cd…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:12:18.686000+00:00",
+  "cost_usd": 0.00040005,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.7e-05,
+    "in": 540,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.00011805,
+    "in": 611,
+    "out": 44
+   },
+   "choose-tools": {
+    "cost": 0.000195,
+    "in": 1020,
+    "out": 70
+   }
+  }
+ },
+ {
+  "trace": "b7e5abe9…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:12:15.377000+00:00",
+  "cost_usd": 0.00040425,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.0001044,
+    "in": 520,
+    "out": 44
+   },
+   "reply": {
+    "cost": 0.00010545,
+    "in": 611,
+    "out": 23
+   },
+   "choose-tools": {
+    "cost": 0.0001944,
+    "in": 1020,
+    "out": 69
+   }
+  }
+ },
+ {
+  "trace": "58e6361a…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:12:11.927000+00:00",
+  "cost_usd": 0.00042345,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.93e-05,
+    "in": 542,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.000144,
+    "in": 752,
+    "out": 52
+   },
+   "choose-tools": {
+    "cost": 0.00018015,
+    "in": 1013,
+    "out": 47
+   }
+  }
+ },
+ {
+  "trace": "fc7de37a…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:12:08.569000+00:00",
+  "cost_usd": 0.00042239999999999997,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.00010065,
+    "in": 539,
+    "out": 33
+   },
+   "reply": {
+    "cost": 0.0001416,
+    "in": 752,
+    "out": 48
+   },
+   "choose-tools": {
+    "cost": 0.00018015,
+    "in": 1013,
+    "out": 47
+   }
+  }
+ },
+ {
+  "trace": "fd9fc1cf…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:12:04.354000+00:00",
+  "cost_usd": 0.00042105,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.75e-05,
+    "in": 530,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.0001368,
+    "in": 752,
+    "out": 40
+   },
+   "choose-tools": {
+    "cost": 0.00018675,
+    "in": 1013,
+    "out": 58
+   }
+  }
+ },
+ {
+  "trace": "72ce920e…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:12:00.080000+00:00",
+  "cost_usd": 0.0004038,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.555e-05,
+    "in": 517,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.00013035,
+    "in": 753,
+    "out": 29
+   },
+   "choose-tools": {
+    "cost": 0.0001779,
+    "in": 1014,
+    "out": 43
+   }
+  }
+ },
+ {
+  "trace": "98daa841…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:11:56.852000+00:00",
+  "cost_usd": 0.0004017,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.525e-05,
+    "in": 515,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.00012915,
+    "in": 753,
+    "out": 27
+   },
+   "choose-tools": {
+    "cost": 0.0001773,
+    "in": 1014,
+    "out": 42
+   }
+  }
+ },
+ {
+  "trace": "5735ceab…",
+  "env": "local",
+  "user": "n055-step1",
+  "session": "n055-step1:2026-11-03",
+  "time": "2026-11-03 02:11:47.572000+00:00",
+  "cost_usd": 0.000405,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.615e-05,
+    "in": 521,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.00013275,
+    "in": 753,
+    "out": 33
+   },
+   "choose-tools": {
+    "cost": 0.0001761,
+    "in": 1014,
+    "out": 40
+   }
+  }
+ },
+ {
+  "trace": "0fa1a665…",
+  "env": "staging",
+  "user": "0955eaf7…",
+  "session": "0955eaf7…:2026-11-02",
+  "time": "2026-11-02 03:26:35.223000+00:00",
+  "cost_usd": 0.0004185,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.63e-05,
+    "in": 522,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.0001368,
+    "in": 780,
+    "out": 33
+   },
+   "choose-tools": {
+    "cost": 0.0001854,
+    "in": 1036,
+    "out": 50
+   }
+  }
+ },
+ {
+  "trace": "cf7341a5…",
+  "env": "local",
+  "user": "local-user",
+  "session": "local-user:2026-11-02",
+  "time": "2026-11-02 03:20:31.749000+00:00",
+  "cost_usd": 0.000368399998,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.685e-05,
+    "in": 527,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.000106199999,
+    "in": 556,
+    "out": 38
+   },
+   "choose-tools": {
+    "cost": 0.000175349999,
+    "in": 1045,
+    "out": 31
+   }
+  }
+ },
+ {
+  "trace": "42100533…",
+  "env": "local",
+  "user": "local-user",
+  "session": "local-user:2026-11-02",
+  "time": "2026-11-02 03:20:27.313000+00:00",
+  "cost_usd": 0.0003504,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.49e-05,
+    "in": 514,
+    "out": 13
+   },
+   "reply": {
+    "cost": 9.285e-05,
+    "in": 515,
+    "out": 26
+   },
+   "choose-tools": {
+    "cost": 0.00017265,
+    "in": 1011,
+    "out": 35
+   }
+  }
+ },
+ {
+  "trace": "23ce7cce…",
+  "env": "local",
+  "user": "02604922…",
+  "session": "02604922…:2026-11-02",
+  "time": "2026-11-02 03:15:52.223000+00:00",
+  "cost_usd": 0.0007596,
+  "calls": 4,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-summary": {
+    "cost": 0.00022005,
+    "in": 759,
+    "out": 177
+   },
+   "memory-update": {
+    "cost": 9.12e-05,
+    "in": 556,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00023925,
+    "in": 1387,
+    "out": 52
+   },
+   "choose-tools": {
+    "cost": 0.0002091,
+    "in": 1118,
+    "out": 69
+   }
+  }
+ },
+ {
+  "trace": "1e47dc9a…",
+  "env": "local",
+  "user": "215a1bd8…",
+  "session": "215a1bd8…:2026-11-02",
+  "time": "2026-11-02 03:13:35.558000+00:00",
+  "cost_usd": 0.0003642,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.64e-05,
+    "in": 524,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00010245,
+    "in": 543,
+    "out": 35
+   },
+   "choose-tools": {
+    "cost": 0.00017535,
+    "in": 1033,
+    "out": 34
+   }
+  }
+ },
+ {
+  "trace": "f9c95c99…",
+  "env": "local",
+  "user": "02604922…",
+  "session": "02604922…:2026-11-02",
+  "time": "2026-11-02 03:11:18.437000+00:00",
+  "cost_usd": 0.0005229,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.85e-05,
+    "in": 550,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.0002343,
+    "in": 1382,
+    "out": 45
+   },
+   "choose-tools": {
+    "cost": 0.0002001,
+    "in": 1110,
+    "out": 56
+   }
+  }
+ },
+ {
+  "trace": "33d07f19…",
+  "env": "local",
+  "user": "02604922…",
+  "session": "02604922…:2026-11-02",
+  "time": "2026-11-02 03:09:03.442000+00:00",
+  "cost_usd": 0.0005174999990000001,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.745e-05,
+    "in": 543,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.000229949999,
+    "in": 1373,
+    "out": 40
+   },
+   "choose-tools": {
+    "cost": 0.0002001,
+    "in": 1102,
+    "out": 58
+   }
+  }
+ },
+ {
+  "trace": "06d14aa4…",
+  "env": "local",
+  "user": "local-user",
+  "session": "local-user:2026-11-02",
+  "time": "2026-11-02 02:59:00.944000+00:00",
+  "cost_usd": 0.000357749999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.625e-05,
+    "in": 523,
+    "out": 13
+   },
+   "reply": {
+    "cost": 9.8249999e-05,
+    "in": 515,
+    "out": 35
+   },
+   "choose-tools": {
+    "cost": 0.00017325,
+    "in": 1011,
+    "out": 36
+   }
+  }
+ },
+ {
+  "trace": "f9027963…",
+  "env": "staging",
+  "user": "3fe6a59b…",
+  "session": "3fe6a59b…:2026-11-02",
+  "time": "2026-11-02 02:53:21.926000+00:00",
+  "cost_usd": 0.000674399999,
+  "calls": 4,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-summary": {
+    "cost": 0.0001986,
+    "in": 620,
+    "out": 176
+   },
+   "memory-update": {
+    "cost": 9.045e-05,
+    "in": 551,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.000197849999,
+    "in": 1135,
+    "out": 46
+   },
+   "choose-tools": {
+    "cost": 0.0001875,
+    "in": 1118,
+    "out": 33
+   }
+  }
+ },
+ {
+  "trace": "fc84d563…",
+  "env": "staging",
+  "user": "3fe6a59b…",
+  "session": "3fe6a59b…:2026-11-02",
+  "time": "2026-11-02 02:53:02.666000+00:00",
+  "cost_usd": 0.000527999999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.000102,
+    "in": 544,
+    "out": 34
+   },
+   "reply": {
+    "cost": 0.000228599999,
+    "in": 1372,
+    "out": 38
+   },
+   "choose-tools": {
+    "cost": 0.0001974,
+    "in": 1116,
+    "out": 50
+   }
+  }
+ },
+ {
+  "trace": "cfc35729…",
+  "env": "staging",
+  "user": "3fe6a59b…",
+  "session": "3fe6a59b…:2026-11-02",
+  "time": "2026-11-02 02:45:13.980000+00:00",
+  "cost_usd": 0.000525149999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.00010185,
+    "in": 543,
+    "out": 34
+   },
+   "reply": {
+    "cost": 0.0002277,
+    "in": 1370,
+    "out": 37
+   },
+   "choose-tools": {
+    "cost": 0.000195599999,
+    "in": 1120,
+    "out": 46
+   }
+  }
+ },
+ {
+  "trace": "4585432f…",
+  "env": "staging",
+  "user": "3fe6a59b…",
+  "session": "3fe6a59b…:2026-11-02",
+  "time": "2026-11-02 02:44:44.846000+00:00",
+  "cost_usd": 0.0005091,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.135e-05,
+    "in": 557,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.000216,
+    "in": 1240,
+    "out": 50
+   },
+   "choose-tools": {
+    "cost": 0.00020175,
+    "in": 1117,
+    "out": 57
+   }
+  }
+ },
+ {
+  "trace": "31f0c51a…",
+  "env": "staging",
+  "user": "3fe6a59b…",
+  "session": "3fe6a59b…:2026-11-02",
+  "time": "2026-11-02 02:44:36.126000+00:00",
+  "cost_usd": 0.00051585,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.925e-05,
+    "in": 543,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0002274,
+    "in": 1368,
+    "out": 37
+   },
+   "choose-tools": {
+    "cost": 0.0001992,
+    "in": 1128,
+    "out": 50
+   }
+  }
+ },
+ {
+  "trace": "75ee9ea1…",
+  "env": "staging",
+  "user": "3fe6a59b…",
+  "session": "3fe6a59b…:2026-11-02",
+  "time": "2026-11-02 02:34:52.132000+00:00",
+  "cost_usd": 0.00047445,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.09e-05,
+    "in": 554,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0001974,
+    "in": 1120,
+    "out": 49
+   },
+   "choose-tools": {
+    "cost": 0.00018615,
+    "in": 1113,
+    "out": 32
+   }
+  }
+ },
+ {
+  "trace": "a22b71a3…",
+  "env": "staging",
+  "user": "3fe6a59b…",
+  "session": "3fe6a59b…:2026-11-02",
+  "time": "2026-11-02 02:34:27.316000+00:00",
+  "cost_usd": 0.0005139,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.000102,
+    "in": 544,
+    "out": 34
+   },
+   "reply": {
+    "cost": 0.0002094,
+    "in": 1244,
+    "out": 38
+   },
+   "choose-tools": {
+    "cost": 0.0002025,
+    "in": 1118,
+    "out": 58
+   }
+  }
+ },
+ {
+  "trace": "6fe59224…",
+  "env": "staging",
+  "user": "3fe6a59b…",
+  "session": "3fe6a59b…:2026-11-02",
+  "time": "2026-11-02 02:28:50.679000+00:00",
+  "cost_usd": 0.0004866,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.895e-05,
+    "in": 541,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0001998,
+    "in": 1192,
+    "out": 35
+   },
+   "choose-tools": {
+    "cost": 0.00019785,
+    "in": 1123,
+    "out": 49
+   }
+  }
+ },
+ {
+  "trace": "d63b607c…",
+  "env": "staging",
+  "user": "3fe6a59b…",
+  "session": "3fe6a59b…:2026-11-02",
+  "time": "2026-11-02 02:28:26.882000+00:00",
+  "cost_usd": 0.0004554,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.675e-05,
+    "in": 525,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.00016125,
+    "in": 931,
+    "out": 36
+   },
+   "choose-tools": {
+    "cost": 0.0001974,
+    "in": 1136,
+    "out": 45
+   }
+  }
+ },
+ {
+  "trace": "f897d4f2…",
+  "env": "local",
+  "user": "02604922…",
+  "session": "02604922…:2026-11-02",
+  "time": "2026-11-02 02:04:29.790000+00:00",
+  "cost_usd": 0.0005142,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.57e-05,
+    "in": 526,
+    "out": 28
+   },
+   "reply": {
+    "cost": 0.00020685,
+    "in": 1243,
+    "out": 34
+   },
+   "choose-tools": {
+    "cost": 0.00021165,
+    "in": 1099,
+    "out": 78
+   }
+  }
+ },
+ {
+  "trace": "01e53ab5…",
+  "env": "local",
+  "user": "02604922…",
+  "session": "02604922…:2026-11-02",
+  "time": "2026-11-02 01:53:49.917000+00:00",
+  "cost_usd": 0.0005376,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.51e-05,
+    "in": 522,
+    "out": 28
+   },
+   "reply": {
+    "cost": 0.00021765,
+    "in": 1331,
+    "out": 30
+   },
+   "choose-tools": {
+    "cost": 0.00022485,
+    "in": 1123,
+    "out": 94
+   }
+  }
+ },
+ {
+  "trace": "11723639…",
+  "env": "local",
+  "user": "02604922…",
+  "session": "02604922…:2026-11-02",
+  "time": "2026-11-02 01:39:29.019000+00:00",
+  "cost_usd": 0.000530699999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.51e-05,
+    "in": 582,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00023265,
+    "in": 1435,
+    "out": 29
+   },
+   "choose-tools": {
+    "cost": 0.000202949999,
+    "in": 1149,
+    "out": 51
+   }
+  }
+ },
+ {
+  "trace": "b70e397f…",
+  "env": "local",
+  "user": "02604922…",
+  "session": "02604922…:2026-11-02",
+  "time": "2026-11-02 01:39:11.491000+00:00",
+  "cost_usd": 0.000519449998,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.7199999e-05,
+    "in": 608,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.0002289,
+    "in": 1346,
+    "out": 45
+   },
+   "choose-tools": {
+    "cost": 0.000193349999,
+    "in": 1149,
+    "out": 35
+   }
+  }
+ },
+ {
+  "trace": "2dad0dea…",
+  "env": "local",
+  "user": "02604922…",
+  "session": "02604922…:2026-11-02",
+  "time": "2026-11-02 01:38:51.525000+00:00",
+  "cost_usd": 0.000515699999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.87e-05,
+    "in": 606,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.000226799999,
+    "in": 1352,
+    "out": 40
+   },
+   "choose-tools": {
+    "cost": 0.0001902,
+    "in": 1124,
+    "out": 36
+   }
+  }
+ },
+ {
+  "trace": "6752b9db…",
+  "env": "local",
+  "user": "02604922…",
+  "session": "02604922…:2026-11-02",
+  "time": "2026-11-02 01:38:18.348000+00:00",
+  "cost_usd": 0.00052605,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.795e-05,
+    "in": 601,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00023085,
+    "in": 1355,
+    "out": 46
+   },
+   "choose-tools": {
+    "cost": 0.00019725,
+    "in": 1143,
+    "out": 43
+   }
+  }
+ },
+ {
+  "trace": "119322be…",
+  "env": "local",
+  "user": "02604922…",
+  "session": "02604922…:2026-11-02",
+  "time": "2026-11-02 01:37:52.273000+00:00",
+  "cost_usd": 0.000543,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.0001008,
+    "in": 560,
+    "out": 28
+   },
+   "reply": {
+    "cost": 0.0002292,
+    "in": 1428,
+    "out": 25
+   },
+   "choose-tools": {
+    "cost": 0.000213,
+    "in": 1148,
+    "out": 68
+   }
+  }
+ },
+ {
+  "trace": "454e1bde…",
+  "env": "local",
+  "user": "attrs-check-user",
+  "session": "attrs-check-user:2026-11-02",
+  "time": "2026-11-02 01:36:09.880000+00:00",
+  "cost_usd": 0.000399449999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.57e-05,
+    "in": 518,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.0001305,
+    "in": 754,
+    "out": 29
+   },
+   "choose-tools": {
+    "cost": 0.000173249999,
+    "in": 1015,
+    "out": 35
+   }
+  }
+ },
+ {
+  "trace": "e162b91a…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:33:39.278000+00:00",
+  "cost_usd": 0.00070905,
+  "calls": 4,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-summary": {
+    "cost": 0.000165,
+    "in": 580,
+    "out": 130
+   },
+   "memory-update": {
+    "cost": 9.93e-05,
+    "in": 610,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00024885,
+    "in": 1399,
+    "out": 65
+   },
+   "choose-tools": {
+    "cost": 0.0001959,
+    "in": 1114,
+    "out": 48
+   }
+  }
+ },
+ {
+  "trace": "d2c5575a…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:33:12.556000+00:00",
+  "cost_usd": 0.00050805,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.12e-05,
+    "in": 568,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.000228,
+    "in": 1376,
+    "out": 36
+   },
+   "choose-tools": {
+    "cost": 0.00018885,
+    "in": 1099,
+    "out": 40
+   }
+  }
+ },
+ {
+  "trace": "0a96823b…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:27:07.446000+00:00",
+  "cost_usd": 0.0004911,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.24e-05,
+    "in": 564,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0002049,
+    "in": 1238,
+    "out": 32
+   },
+   "choose-tools": {
+    "cost": 0.0001938,
+    "in": 1100,
+    "out": 48
+   }
+  }
+ },
+ {
+  "trace": "288579be…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:26:36.775000+00:00",
+  "cost_usd": 0.000498749999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.24e-05,
+    "in": 564,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00020625,
+    "in": 1247,
+    "out": 32
+   },
+   "choose-tools": {
+    "cost": 0.000200099999,
+    "in": 1142,
+    "out": 48
+   }
+  }
+ },
+ {
+  "trace": "12315b99…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:26:06.083000+00:00",
+  "cost_usd": 0.0004981499989999999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.255e-05,
+    "in": 565,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.000205649999,
+    "in": 1239,
+    "out": 33
+   },
+   "choose-tools": {
+    "cost": 0.00019995,
+    "in": 1153,
+    "out": 45
+   }
+  }
+ },
+ {
+  "trace": "5891a103…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:59.178000+00:00",
+  "cost_usd": 0.0003702,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.58e-05,
+    "in": 520,
+    "out": 13
+   },
+   "reply": {
+    "cost": 9.87e-05,
+    "in": 538,
+    "out": 30
+   },
+   "choose-tools": {
+    "cost": 0.0001857,
+    "in": 1014,
+    "out": 56
+   }
+  }
+ },
+ {
+  "trace": "13b7ebab…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:56.488000+00:00",
+  "cost_usd": 0.000363449999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.445e-05,
+    "in": 511,
+    "out": 13
+   },
+   "reply": {
+    "cost": 9.3299999e-05,
+    "in": 538,
+    "out": 21
+   },
+   "choose-tools": {
+    "cost": 0.0001857,
+    "in": 1014,
+    "out": 56
+   }
+  }
+ },
+ {
+  "trace": "d09c40c6…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:53.836000+00:00",
+  "cost_usd": 0.0003669,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.49e-05,
+    "in": 514,
+    "out": 13
+   },
+   "reply": {
+    "cost": 9.51e-05,
+    "in": 538,
+    "out": 24
+   },
+   "choose-tools": {
+    "cost": 0.0001869,
+    "in": 1014,
+    "out": 58
+   }
+  }
+ },
+ {
+  "trace": "b1af0ff4…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:50.899000+00:00",
+  "cost_usd": 0.000390449999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.6699999e-05,
+    "in": 526,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00011385,
+    "in": 623,
+    "out": 34
+   },
+   "choose-tools": {
+    "cost": 0.0001899,
+    "in": 1014,
+    "out": 63
+   }
+  }
+ },
+ {
+  "trace": "105a2056…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:48.033000+00:00",
+  "cost_usd": 0.00037454999999999997,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.58e-05,
+    "in": 520,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00011025,
+    "in": 623,
+    "out": 28
+   },
+   "choose-tools": {
+    "cost": 0.0001785,
+    "in": 1014,
+    "out": 44
+   }
+  }
+ },
+ {
+  "trace": "fa3e3b11…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:43.989000+00:00",
+  "cost_usd": 0.00037995,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.58e-05,
+    "in": 520,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00011025,
+    "in": 623,
+    "out": 28
+   },
+   "choose-tools": {
+    "cost": 0.0001839,
+    "in": 1014,
+    "out": 53
+   }
+  }
+ },
+ {
+  "trace": "a5a9eabb…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:25.317000+00:00",
+  "cost_usd": 0.00038985,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.6e-05,
+    "in": 520,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.0001122,
+    "in": 624,
+    "out": 31
+   },
+   "choose-tools": {
+    "cost": 0.00018165,
+    "in": 1015,
+    "out": 49
+   }
+  }
+ },
+ {
+  "trace": "a237a17f…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:22.623000+00:00",
+  "cost_usd": 0.0003897,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.645e-05,
+    "in": 523,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.000114,
+    "in": 624,
+    "out": 34
+   },
+   "choose-tools": {
+    "cost": 0.00017925,
+    "in": 1015,
+    "out": 45
+   }
+  }
+ },
+ {
+  "trace": "a7de5ece…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:19.567000+00:00",
+  "cost_usd": 0.00038729999900000004,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.585e-05,
+    "in": 519,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.0001116,
+    "in": 624,
+    "out": 30
+   },
+   "choose-tools": {
+    "cost": 0.000179849999,
+    "in": 1015,
+    "out": 46
+   }
+  }
+ },
+ {
+  "trace": "9e891e1a…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:16.557000+00:00",
+  "cost_usd": 0.0003855,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.585e-05,
+    "in": 519,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.0001116,
+    "in": 624,
+    "out": 30
+   },
+   "choose-tools": {
+    "cost": 0.00017805,
+    "in": 1015,
+    "out": 43
+   }
+  }
+ },
+ {
+  "trace": "725af9c5…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:13.475000+00:00",
+  "cost_usd": 0.000403499999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.000107849999,
+    "in": 531,
+    "out": 47
+   },
+   "reply": {
+    "cost": 0.000117,
+    "in": 628,
+    "out": 38
+   },
+   "choose-tools": {
+    "cost": 0.00017865,
+    "in": 1019,
+    "out": 43
+   }
+  }
+ },
+ {
+  "trace": "e6a5a678…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:09.692000+00:00",
+  "cost_usd": 0.00040065,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.84e-05,
+    "in": 536,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.0001194,
+    "in": 628,
+    "out": 42
+   },
+   "choose-tools": {
+    "cost": 0.00018285,
+    "in": 1019,
+    "out": 50
+   }
+  }
+ },
+ {
+  "trace": "d43e02d6…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:06.293000+00:00",
+  "cost_usd": 0.00041745,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.0001098,
+    "in": 544,
+    "out": 47
+   },
+   "reply": {
+    "cost": 0.0001248,
+    "in": 628,
+    "out": 51
+   },
+   "choose-tools": {
+    "cost": 0.00018285,
+    "in": 1019,
+    "out": 50
+   }
+  }
+ },
+ {
+  "trace": "c7996886…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:19:01.297000+00:00",
+  "cost_usd": 0.0004116,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.00010815,
+    "in": 533,
+    "out": 47
+   },
+   "reply": {
+    "cost": 0.0001176,
+    "in": 628,
+    "out": 39
+   },
+   "choose-tools": {
+    "cost": 0.00018585,
+    "in": 1019,
+    "out": 55
+   }
+  }
+ },
+ {
+  "trace": "eb90b006…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:18:40.335000+00:00",
+  "cost_usd": 0.00036915,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.81e-05,
+    "in": 538,
+    "out": 29
+   },
+   "reply": {
+    "cost": 0.00010485,
+    "in": 523,
+    "out": 44
+   },
+   "choose-tools": {
+    "cost": 0.0001662,
+    "in": 976,
+    "out": 33
+   }
+  }
+ },
+ {
+  "trace": "a10c0b34…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:18:37.146000+00:00",
+  "cost_usd": 0.00036494999899999996,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.69e-05,
+    "in": 530,
+    "out": 29
+   },
+   "reply": {
+    "cost": 0.000100049999,
+    "in": 523,
+    "out": 36
+   },
+   "choose-tools": {
+    "cost": 0.000168,
+    "in": 976,
+    "out": 36
+   }
+  }
+ },
+ {
+  "trace": "cecb1f18…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:18:32.817000+00:00",
+  "cost_usd": 0.000383549999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.0001059,
+    "in": 542,
+    "out": 41
+   },
+   "reply": {
+    "cost": 0.000107249999,
+    "in": 523,
+    "out": 48
+   },
+   "choose-tools": {
+    "cost": 0.0001704,
+    "in": 976,
+    "out": 40
+   }
+  }
+ },
+ {
+  "trace": "dfc2b1bb…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:18:28.470000+00:00",
+  "cost_usd": 0.000395849999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.885e-05,
+    "in": 539,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.000121199999,
+    "in": 628,
+    "out": 45
+   },
+   "choose-tools": {
+    "cost": 0.0001758,
+    "in": 976,
+    "out": 49
+   }
+  }
+ },
+ {
+  "trace": "2efb4b57…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:18:09.270000+00:00",
+  "cost_usd": 0.0003567,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.525e-05,
+    "in": 515,
+    "out": 30
+   },
+   "reply": {
+    "cost": 9.345e-05,
+    "in": 519,
+    "out": 26
+   },
+   "choose-tools": {
+    "cost": 0.000168,
+    "in": 972,
+    "out": 37
+   }
+  }
+ },
+ {
+  "trace": "421a582b…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:18:06.164000+00:00",
+  "cost_usd": 0.00039495000000000003,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.00010755,
+    "in": 529,
+    "out": 47
+   },
+   "reply": {
+    "cost": 0.0001176,
+    "in": 624,
+    "out": 40
+   },
+   "choose-tools": {
+    "cost": 0.0001698,
+    "in": 972,
+    "out": 40
+   }
+  }
+ },
+ {
+  "trace": "b4158a28…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:18:02.602000+00:00",
+  "cost_usd": 0.000374399999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.48e-05,
+    "in": 512,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.0001074,
+    "in": 624,
+    "out": 23
+   },
+   "choose-tools": {
+    "cost": 0.000172199999,
+    "in": 972,
+    "out": 44
+   }
+  }
+ },
+ {
+  "trace": "b817a83a…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:17:59.107000+00:00",
+  "cost_usd": 0.00037695000000000003,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.93e-05,
+    "in": 538,
+    "out": 31
+   },
+   "reply": {
+    "cost": 0.00010485,
+    "in": 523,
+    "out": 44
+   },
+   "choose-tools": {
+    "cost": 0.0001728,
+    "in": 976,
+    "out": 44
+   }
+  }
+ },
+ {
+  "trace": "0df420e8…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:17:55.181000+00:00",
+  "cost_usd": 0.00037545,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.96e-05,
+    "in": 544,
+    "out": 30
+   },
+   "reply": {
+    "cost": 0.00010845,
+    "in": 523,
+    "out": 50
+   },
+   "choose-tools": {
+    "cost": 0.0001674,
+    "in": 976,
+    "out": 35
+   }
+  }
+ },
+ {
+  "trace": "04f7f817…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:17:50.669000+00:00",
+  "cost_usd": 0.00036839999999999996,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.735e-05,
+    "in": 533,
+    "out": 29
+   },
+   "reply": {
+    "cost": 0.00010185,
+    "in": 523,
+    "out": 39
+   },
+   "choose-tools": {
+    "cost": 0.0001692,
+    "in": 976,
+    "out": 38
+   }
+  }
+ },
+ {
+  "trace": "caa2683c…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:04:24.138000+00:00",
+  "cost_usd": 0.00048345,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.87e-05,
+    "in": 606,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00019965,
+    "in": 1051,
+    "out": 70
+   },
+   "choose-tools": {
+    "cost": 0.0001851,
+    "in": 994,
+    "out": 60
+   }
+  }
+ },
+ {
+  "trace": "2ed49adb…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 01:04:10.433000+00:00",
+  "cost_usd": 0.0004794,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.42e-05,
+    "in": 576,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0001815,
+    "in": 1054,
+    "out": 39
+   },
+   "choose-tools": {
+    "cost": 0.0002037,
+    "in": 1014,
+    "out": 86
+   }
+  }
+ },
+ {
+  "trace": "2a66c7cb…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:58:42.556000+00:00",
+  "cost_usd": 0.00045044999999999997,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.63e-05,
+    "in": 590,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00018465,
+    "in": 1019,
+    "out": 53
+   },
+   "choose-tools": {
+    "cost": 0.0001695,
+    "in": 978,
+    "out": 38
+   }
+  }
+ },
+ {
+  "trace": "23f86c3b…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:58:31.357000+00:00",
+  "cost_usd": 0.000440549999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.69e-05,
+    "in": 594,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00018495,
+    "in": 985,
+    "out": 62
+   },
+   "choose-tools": {
+    "cost": 0.000158699999,
+    "in": 942,
+    "out": 29
+   }
+  }
+ },
+ {
+  "trace": "d2116e2f…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:58:18.470000+00:00",
+  "cost_usd": 0.00046049999999999997,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.12e-05,
+    "in": 556,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00017505,
+    "in": 1071,
+    "out": 24
+   },
+   "choose-tools": {
+    "cost": 0.00019425,
+    "in": 947,
+    "out": 87
+   }
+  }
+ },
+ {
+  "trace": "b04323db…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:58:01.188000+00:00",
+  "cost_usd": 0.0004644,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.21e-05,
+    "in": 562,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00018195,
+    "in": 1105,
+    "out": 27
+   },
+   "choose-tools": {
+    "cost": 0.00019035,
+    "in": 945,
+    "out": 81
+   }
+  }
+ },
+ {
+  "trace": "7326e945…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:56:05.564000+00:00",
+  "cost_usd": 0.00043335,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.985e-05,
+    "in": 559,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.000165,
+    "in": 992,
+    "out": 27
+   },
+   "choose-tools": {
+    "cost": 0.0001785,
+    "in": 958,
+    "out": 58
+   }
+  }
+ },
+ {
+  "trace": "0c4818da…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:55:55.373000+00:00",
+  "cost_usd": 0.0004485,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.165e-05,
+    "in": 559,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0001605,
+    "in": 966,
+    "out": 26
+   },
+   "choose-tools": {
+    "cost": 0.00019635,
+    "in": 957,
+    "out": 88
+   }
+  }
+ },
+ {
+  "trace": "055bb18b…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:55:31+00:00",
+  "cost_usd": 0.00041865,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.405e-05,
+    "in": 575,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0001527,
+    "in": 882,
+    "out": 34
+   },
+   "choose-tools": {
+    "cost": 0.0001719,
+    "in": 954,
+    "out": 48
+   }
+  }
+ },
+ {
+  "trace": "d8f2455f…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:53:10.846000+00:00",
+  "cost_usd": 0.00041160000000000003,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.985e-05,
+    "in": 559,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.00014745,
+    "in": 871,
+    "out": 28
+   },
+   "choose-tools": {
+    "cost": 0.0001743,
+    "in": 954,
+    "out": 52
+   }
+  }
+ },
+ {
+  "trace": "cc48659d…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:52:54.825000+00:00",
+  "cost_usd": 0.00041655,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.045e-05,
+    "in": 563,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.0001389,
+    "in": 806,
+    "out": 30
+   },
+   "choose-tools": {
+    "cost": 0.0001872,
+    "in": 1000,
+    "out": 62
+   }
+  }
+ },
+ {
+  "trace": "184d58cc…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:50:07.471000+00:00",
+  "cost_usd": 0.00039285,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.3e-05,
+    "in": 568,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00013125,
+    "in": 735,
+    "out": 35
+   },
+   "choose-tools": {
+    "cost": 0.0001686,
+    "in": 996,
+    "out": 32
+   }
+  }
+ },
+ {
+  "trace": "9ed775d6…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:49:48.463000+00:00",
+  "cost_usd": 0.000411599999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.000118799999,
+    "in": 564,
+    "out": 57
+   },
+   "reply": {
+    "cost": 0.00012555,
+    "in": 617,
+    "out": 55
+   },
+   "choose-tools": {
+    "cost": 0.00016725,
+    "in": 999,
+    "out": 29
+   }
+  }
+ },
+ {
+  "trace": "ddf34038…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:49:16.785000+00:00",
+  "cost_usd": 0.000354899998,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 8.61e-05,
+    "in": 522,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.000102149999,
+    "in": 549,
+    "out": 33
+   },
+   "choose-tools": {
+    "cost": 0.000166649999,
+    "in": 971,
+    "out": 35
+   }
+  }
+ },
+ {
+  "trace": "bf1528e6…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:37:29.001000+00:00",
+  "cost_usd": 0.000335699999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.525e-05,
+    "in": 539,
+    "out": 24
+   },
+   "reply": {
+    "cost": 9.165e-05,
+    "in": 443,
+    "out": 42
+   },
+   "choose-tools": {
+    "cost": 0.000148799999,
+    "in": 876,
+    "out": 29
+   }
+  }
+ },
+ {
+  "trace": "76af597d…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:36:30.548000+00:00",
+  "cost_usd": 0.000335699999,
+  "calls": 3,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 9.525e-05,
+    "in": 539,
+    "out": 24
+   },
+   "reply": {
+    "cost": 9.165e-05,
+    "in": 443,
+    "out": 42
+   },
+   "choose-tools": {
+    "cost": 0.000148799999,
+    "in": 876,
+    "out": 29
+   }
+  }
+ },
+ {
+  "trace": "1907fd0d…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:34:59.866000+00:00",
+  "cost_usd": 0.0,
+  "calls": 3,
+  "models": [
+   "fake"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   },
+   "reply": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   },
+   "choose-tools": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   }
+  }
+ },
+ {
+  "trace": "62f598d8…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:34:59.676000+00:00",
+  "cost_usd": 0.0,
+  "calls": 3,
+  "models": [
+   "fake"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   },
+   "reply": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   },
+   "choose-tools": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   }
+  }
+ },
+ {
+  "trace": "ed66d8c7…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:34:56.354000+00:00",
+  "cost_usd": 0.0,
+  "calls": 3,
+  "models": [
+   "fake"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   },
+   "reply": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   },
+   "choose-tools": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   }
+  }
+ },
+ {
+  "trace": "4cc1b4a8…",
+  "env": "default",
+  "user": "",
+  "session": "",
+  "time": "2026-11-02 00:34:55.098000+00:00",
+  "cost_usd": 0.0,
+  "calls": 3,
+  "models": [
+   "fake"
+  ],
+  "steps": {
+   "memory-update": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   },
+   "reply": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   },
+   "choose-tools": {
+    "cost": 0.0,
+    "in": 0,
+    "out": 0
+   }
+  }
+ }
+]

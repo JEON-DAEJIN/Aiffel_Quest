@@ -1,0 +1,370 @@
+[
+ {
+  "turn": 1,
+  "message": "안녕! 나 오늘 처음 왔어",
+  "cost_usd": 0.0003417,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 8.445e-05,
+    "in": 511,
+    "out": 13
+   },
+   "reply": {
+    "cost": 8.925e-05,
+    "in": 519,
+    "out": 19
+   },
+   "choose-tools": {
+    "cost": 0.000168,
+    "in": 988,
+    "out": 33
+   }
+  }
+ },
+ {
+  "turn": 2,
+  "message": "오늘 서울 날씨 어때?",
+  "cost_usd": 0.000405599999,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 8.925e-05,
+    "in": 543,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0001311,
+    "in": 658,
+    "out": 54
+   },
+   "choose-tools": {
+    "cost": 0.000185249999,
+    "in": 1015,
+    "out": 55
+   }
+  }
+ },
+ {
+  "turn": 3,
+  "message": "그럼 우산 챙겨야 할까?",
+  "cost_usd": 0.00041445,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 8.76e-05,
+    "in": 532,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00013305,
+    "in": 731,
+    "out": 39
+   },
+   "choose-tools": {
+    "cost": 0.0001938,
+    "in": 1084,
+    "out": 52
+   }
+  }
+ },
+ {
+  "turn": 4,
+  "message": "요즘 회사 일이 많아서 좀 지쳐",
+  "cost_usd": 0.000397799999,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 8.73e-05,
+    "in": 530,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0001251,
+    "in": 682,
+    "out": 38
+   },
+   "choose-tools": {
+    "cost": 0.000185399999,
+    "in": 1104,
+    "out": 33
+   }
+  }
+ },
+ {
+  "turn": 5,
+  "message": "팀장님이 일을 자꾸 나한테만 몰아줘",
+  "cost_usd": 0.00041595,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 8.925e-05,
+    "in": 543,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0001395,
+    "in": 742,
+    "out": 47
+   },
+   "choose-tools": {
+    "cost": 0.0001872,
+    "in": 1096,
+    "out": 38
+   }
+  }
+ },
+ {
+  "turn": 6,
+  "message": "어떻게 말하면 기분 안 상하게 얘기할 수 있을까?",
+  "cost_usd": 0.0004476,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9.225e-05,
+    "in": 563,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00016125,
+    "in": 815,
+    "out": 65
+   },
+   "choose-tools": {
+    "cost": 0.0001941,
+    "in": 1110,
+    "out": 46
+   }
+  }
+ },
+ {
+  "turn": 7,
+  "message": "다음 공휴일 언제야?",
+  "cost_usd": 0.000451649999,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9.75e-05,
+    "in": 518,
+    "out": 33
+   },
+   "reply": {
+    "cost": 0.00015645,
+    "in": 923,
+    "out": 30
+   },
+   "choose-tools": {
+    "cost": 0.000197699999,
+    "in": 1134,
+    "out": 46
+   }
+  }
+ },
+ {
+  "turn": 8,
+  "message": "그날 친구랑 영화 보기로 했어. 오후 3시에 알려 줘",
+  "cost_usd": 0.00048315,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9.72e-05,
+    "in": 536,
+    "out": 28
+   },
+   "reply": {
+    "cost": 0.0001779,
+    "in": 1038,
+    "out": 37
+   },
+   "choose-tools": {
+    "cost": 0.00020805,
+    "in": 1119,
+    "out": 67
+   }
+  }
+ },
+ {
+  "turn": 9,
+  "message": "아 그리고 나 고양이 키워. 이름은 보리야",
+  "cost_usd": 0.0004971,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9.75e-05,
+    "in": 550,
+    "out": 25
+   },
+   "reply": {
+    "cost": 0.00017805,
+    "in": 1035,
+    "out": 38
+   },
+   "choose-tools": {
+    "cost": 0.00022155,
+    "in": 1089,
+    "out": 97
+   }
+  }
+ },
+ {
+  "turn": 10,
+  "message": "보리가 요즘 밥을 잘 안 먹어서 걱정이야",
+  "cost_usd": 0.00047955,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9.42e-05,
+    "in": 588,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.0002013,
+    "in": 1106,
+    "out": 59
+   },
+   "choose-tools": {
+    "cost": 0.00018405,
+    "in": 1107,
+    "out": 30
+   }
+  }
+ },
+ {
+  "turn": 11,
+  "message": "아까 내가 회사 얘기한 거 기억나?",
+  "cost_usd": 0.000471149999,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9.0599999e-05,
+    "in": 552,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.00019455,
+    "in": 1185,
+    "out": 28
+   },
+   "choose-tools": {
+    "cost": 0.000186,
+    "in": 1124,
+    "out": 29
+   }
+  }
+ },
+ {
+  "turn": 12,
+  "message": "주말에 뭐 하면 기분 전환이 될까?",
+  "cost_usd": 0.00048554999899999996,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9.2249999e-05,
+    "in": 575,
+    "out": 10
+   },
+   "reply": {
+    "cost": 0.0002097,
+    "in": 1198,
+    "out": 50
+   },
+   "choose-tools": {
+    "cost": 0.0001836,
+    "in": 1112,
+    "out": 28
+   }
+  }
+ },
+ {
+  "turn": 13,
+  "message": "12월에 연휴 있어?",
+  "cost_usd": 0.0005061,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9.045e-05,
+    "in": 551,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0002013,
+    "in": 1222,
+    "out": 30
+   },
+   "choose-tools": {
+    "cost": 0.00021435,
+    "in": 1093,
+    "out": 84
+   }
+  }
+ },
+ {
+  "turn": 14,
+  "message": "그때 부모님 댁에 갈까 생각 중이야",
+  "cost_usd": 0.00047835,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9.255e-05,
+    "in": 565,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0002016,
+    "in": 1188,
+    "out": 39
+   },
+   "choose-tools": {
+    "cost": 0.0001842,
+    "in": 1100,
+    "out": 32
+   }
+  }
+ },
+ {
+  "turn": 15,
+  "message": "오늘 얘기한 것 중에 내가 제일 걱정하는 게 뭐 같아?",
+  "cost_usd": 0.0004971,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9.555e-05,
+    "in": 585,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.0002124,
+    "in": 1200,
+    "out": 54
+   },
+   "choose-tools": {
+    "cost": 0.00018915,
+    "in": 1097,
+    "out": 41
+   }
+  }
+ },
+ {
+  "turn": 16,
+  "message": "고마워, 오늘 얘기 들어줘서",
+  "cost_usd": 0.00047355,
+  "calls": 3,
+  "steps": {
+   "memory-update": {
+    "cost": 9e-05,
+    "in": 548,
+    "out": 13
+   },
+   "reply": {
+    "cost": 0.000195,
+    "in": 1204,
+    "out": 24
+   },
+   "choose-tools": {
+    "cost": 0.00018855,
+    "in": 1121,
+    "out": 34
+   }
+  }
+ }
+]
