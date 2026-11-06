@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N058 오늘 학습 정리 정리 노트</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>N058 오늘 학습 정리 — 시범 매장에서 진짜 매장으로, 그리고 개업 신고서의 빈칸</h1>
+<p class="footer-note" style="text-align:left;margin:0 0 24px">버전 v1.0 · 2026-11-06 · 강의 N058 「Expo 앱 빌드하고 출시 준비하기」와 오늘 실습을 내 방식으로 한 장에 정리했다. 28년 기획·경영 경험에 빗대 쓰고, 사실은 오늘 실습 진행기록에서 가져왔다.</p>
+<nav class="toc" id="목차"><h2>목차</h2><ol><li><a href="#오늘의-한-문장">오늘의 한 문장</a></li><li><a href="#1-경영-경험으로-풀면">1. 경영 경험으로 풀면</a></li><li><a href="#2-오늘-직접-해서-알게-된-것">2. 오늘 직접 해서 알게 된 것</a></li><li><a href="#3-오늘-틀린-것고친-것">3. 오늘 틀린 것·고친 것</a></li><li><a href="#4-이어-한다면제안">4. 이어 한다면(제안)</a></li><li><a href="#5-아직-모르는-것">5. 아직 모르는 것</a></li><li><a href="#6-가장-오래-막힌-곳">6. 가장 오래 막힌 곳</a></li></ol></nav>
+<h2 id="오늘의-한-문장">오늘의 한 문장</h2>
+<div class="callout summary"><p><span class="label">📌 요약</span> — Expo Go는 <strong>개발 서버가 있어야 도는 시범 매장</strong>이고, preview 빌드는 <strong>코드를 앱 파일 안에 고정해 혼자 서는 진짜 매장</strong>이다. 그런데 매장을 여는 데 가장 큰 변수는 앱이 아니라 <strong>본사(백엔드)가 살아 있는가</strong>였고, 스토어에 올리려면 앱 기능보다 <strong>사용자 보호 장치(삭제·신고·AI 표시·개인정보방침)</strong>의 빈칸을 메워야 한다.</p></div>
+<h2 id="1-경영-경험으로-풀면">1. 경영 경험으로 풀면</h2>
+<div class="table-scroll"><table><thead><tr><th>오늘 배운 것</th><th>경영에 빗대면</th></tr></thead><tbody><tr><td><strong>Expo Go → preview 빌드</strong></td><td><strong>시범 매장 → 정식 개점.</strong> 시범 매장은 본사 직원이 옆에서 도와줘야 돌고, 정식 매장은 매뉴얼(코드)을 통째로 들고 혼자 선다</td></tr><tr><td><strong><code>eas.json</code>의 <code>env</code></strong></td><td><strong>개점 서류에 적는 본사 연락처.</strong> 개발 때 쓰던 메모(<code>.env</code>)는 본사 밖으로 못 나가므로, 개점 서류에 직접 적어야 한다</td></tr><tr><td><strong>서명 키(클라우드 보관)</strong></td><td><strong>영업허가 도장을 금고(Expo)에 맡김.</strong> 내 책상에 두지 않으니 잃어버릴 일은 적지만, 금고 열쇠(계정)가 곧 도장이다</td></tr><tr><td><strong>패키지 이름</strong></td><td><strong>사업자등록번호.</strong> 한 번 정하면 바꾸기 어렵다</td></tr><tr><td><strong>결제 꺼짐으로 죽은 백엔드</strong></td><td><strong>본사 전기요금 미납으로 단전.</strong> 매장을 아무리 잘 차려도 본사가 꺼지면 영업이 안 된다</td></tr><tr><td><strong><code>build:configure</code>가 넣은 마이크 권한</strong></td><td><strong>대행사가 개업 서류에 내가 안 쓰는 설비 신고까지 적어 넣음.</strong> 제출 전에 서류를 다시 읽어야 한다</td></tr><tr><td><strong>출시 준비 점검표</strong></td><td><strong>개업 전 인허가 체크리스트.</strong> 인테리어(앱 화면)가 좋아도 환불 규정·위생 신고가 없으면 문을 못 연다</td></tr></tbody></table></div>
+<div class="callout tip"><p><span class="label">💡 팁</span> — 비유의 한계: 개점 서류는 사람이 읽고 걸러 내지만, 도구가 자동으로 넣은 권한은 <strong>조용히</strong> 들어온다. 그래서 "도구가 무엇을 더했는지"를 <code>git diff</code>로 보는 습관이 필요하다.</p></div>
+<h2 id="2-오늘-직접-해서-알게-된-것">2. 오늘 직접 해서 알게 된 것</h2>
+<ol><li><strong>시작 전에 막힌 건 앱이 아니라 백엔드였다.</strong> staging이 500이었고 원인은 결제 꺼짐이었다. 새 결제 계정을 연결해도 약 15분 503·429였다가, <strong>새 리비전을 배포하자</strong> 바로 살아났다.</li><li><strong>로그인은 터미널이 아니라 브라우저에서 끝난다.</strong> 대기 중 터미널은 입력을 받지 않는 게 정상이다.</li><li><strong>설정을 만들어 주는 명령도 파일을 바꾼다.</strong> <code>build:configure</code>가 프로젝트 ID 말고 마이크 권한까지 넣었다.</li><li><strong>서명 키는 클라우드에서 만들어졌다.</strong> 로컬에 <code>keytool</code>이 없어도 된다.</li><li><strong>빌드는 19분 8초 걸렸고 무료 월 빌드 1회를 썼다.</strong> 검사(<code>tsc</code>·<code>expo-doctor</code>)를 먼저 돌려 한 번에 끝냈다.</li><li><strong>설치한 앱이 노트북 없이 백엔드와 직접 대화했다</strong>(사용자 보고). 카메라 권한도 뜨고 글자도 읽혔다.</li><li><strong>마이크는 두 군데에서 들어올 수 있었다.</strong> 내가 지운 배열 말고도 이미지 피커 플러그인의 기본값이 있었다. 권한 목록에서 "허용되지 않음: 마이크"로 보였다.</li><li><strong>삭제·신고는 "없음"이 아니라 "API만 있음"이었다.</strong> 백엔드는 이미 만들어 놨고 앱 화면이 없다. 대화 원문이 관측 도구(Langfuse)로도 간다는 것은 해설서 표에 없던 데이터 경로였다.</li></ol>
+<h2 id="3-오늘-틀린-것고친-것">3. 오늘 틀린 것·고친 것</h2>
+<div class="table-scroll"><table><thead><tr><th>틀린 것</th><th>어떻게 알았나</th><th>고친 것·배운 것</th></tr></thead><tbody><tr><td><strong>(Claude) 결제를 연결하면 바로 살아날 줄 알았다</strong></td><td>연결 뒤에도 503·429가 15분 이어짐</td><td>새 리비전을 배포해 깨움. 반영 지연인지 서비스 문제인지는 못 가림</td></tr><tr><td><strong>(사용자) 로그인 대기 화면을 입력창으로 알았다</strong></td><td>"터미널에 입력할 수가 없어"</td><td>브라우저에서 허용 화면을 눌러야 끝남</td></tr><tr><td><strong>(도구) <code>build:configure</code>가 마이크 권한을 넣음</strong></td><td><code>git diff</code>로 변경 확인</td><td><code>permissions</code> 배열을 지움</td></tr><tr><td><strong>(Claude) 마이크를 다 막았다고 여겼다</strong></td><td>설치 앱 권한 목록에 마이크가 있음 → 플러그인 코드를 읽음</td><td>이미지 피커 플러그인의 <code>microphonePermission</code> 기본값이 원인. 재빌드가 필요해 기록만 함</td></tr></tbody></table></div>
+<h2 id="4-이어-한다면제안">4. 이어 한다면(제안)</h2>
+<ol><li>설정 화면에 데이터 삭제 버튼 연결(API는 있음).</li><li>답마다 AI 표시와 신고 버튼, 신고를 확인할 사람 정하기.</li><li>개인정보처리방침 문서와 공개 URL.</li><li>이미지 피커 플러그인에 <code>"microphonePermission": false</code> 후 재빌드.</li><li>새 결제 계정 예산 알림 걸기.</li></ol>
+<h2 id="5-아직-모르는-것">5. 아직 모르는 것</h2>
+<ul><li>결제 연결 뒤 15분 동안 503·429가 이어진 이유(반영 지연인지 서비스가 못 깨어난 것인지)</li><li>개발 서버를 끈 상태에서 시험했는지, 처음 열 때 새 게스트였는지</li><li>"근처 기기" 권한이 어느 라이브러리에서 오는지</li><li>시스템 프롬프트가 사람 사칭을 막는지, 사진을 서버에 저장하는지</li></ul>
+<h2 id="6-가장-오래-막힌-곳">6. 가장 오래 막힌 곳</h2>
+<p>(직접 쓰는 칸입니다. 오늘 가장 오래 막힌 곳과 어떻게 풀었는지를 본인 말로 적어 주세요.)</p>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N058 실습과제 제출보고서 정리 노트</title>
+<style>
+  :root {
+    --accent: #1f6feb;
+    --accent-soft: #eaf2ff;
+    --bg: #ffffff;
+    --bg-alt: #f6f8fb;
+    --text: #1c2128;
+    --text-muted: #57606a;
+    --border: #d8dee6;
+    --code-bg: #f0f3f7;
+    --tip-bg: #eaf5ff; --tip-border: #4a9eea; --tip-text: #0b4a8f;
+    --warn-bg: #fff6e8; --warn-border: #e8a33d; --warn-text: #7a4a05;
+    --example-bg: #eafaf0; --example-border: #3fb872; --example-text: #0d5a30;
+    --summary-bg: #f3edfb; --summary-border: #9163d6; --summary-text: #4b2e82;
+    --table-header: #eef2f7;
+    --table-zebra: #f8fafc;
+    --svg-fill1: #eaf2ff; --svg-fill2: #eafaf0; --svg-fill3: #f3edfb; --svg-fill4: #fff6e8;
+    --svg-stroke: #9aa7b2;
+  }
+  :root[data-theme="dark"] {
+    --accent: #6ea8fe;
+    --accent-soft: #16233a;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --text: #e6edf3;
+    --text-muted: #9aa7b2;
+    --border: #30363d;
+    --code-bg: #161b22;
+    --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+    --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+    --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+    --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+    --table-header: #1c2430;
+    --table-zebra: #131920;
+    --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+    --svg-stroke: #57606a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #6ea8fe;
+      --accent-soft: #16233a;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --text: #e6edf3;
+      --text-muted: #9aa7b2;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --tip-bg: #10233b; --tip-border: #4a9eea; --tip-text: #a9d4ff;
+      --warn-bg: #3a2a0c; --warn-border: #e8a33d; --warn-text: #ffd699;
+      --example-bg: #0d3320; --example-border: #3fb872; --example-text: #a8e6c2;
+      --summary-bg: #241a3a; --summary-border: #9163d6; --summary-text: #d9c7f7;
+      --table-header: #1c2430;
+      --table-zebra: #131920;
+      --svg-fill1: #16233a; --svg-fill2: #0d3320; --svg-fill3: #241a3a; --svg-fill4: #3a2a0c;
+      --svg-stroke: #57606a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  h1 { font-size: 28px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 19px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; }
+  strong { font-weight: 700; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 14px; }
+  li { margin: 4px 0; }
+
+  .subtitle { color: var(--text-muted); font-size: 16px; margin-bottom: 24px; }
+  .lede { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; margin-bottom: 28px; font-size: 15px; }
+  .keysum { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 24px 0; font-size: 16px; }
+  .keysum strong { color: var(--accent); }
+
+  nav.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  nav.toc h2 { margin: 0 0 10px; font-size: 16px; border: none; padding: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  nav.toc ol { margin: 0; padding-left: 1.2em; }
+  nav.toc a { font-size: 15px; }
+  nav.toc .appendix-links { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 14px; }
+  nav.toc .appendix-links a { margin-right: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; margin: 18px 0; }
+  .table-scroll table { margin: 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--table-header); font-weight: 700; }
+  tbody tr:nth-child(even) { background: var(--table-zebra); }
+
+  blockquote { margin: 16px 0; padding: 10px 18px; border-left: 4px solid var(--accent); background: var(--bg-alt); border-radius: 0 8px 8px 0; }
+  blockquote p { margin: 6px 0; }
+  blockquote p:first-child { margin-top: 0; }
+  blockquote p:last-child { margin-bottom: 0; }
+
+  code { font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 0.88em; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.4em; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  pre code { border: none; background: none; padding: 0; }
+
+  .callout { border-radius: 10px; border: 1px solid; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+  .callout .label { font-weight: 700; margin-right: 4px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.tip { background: var(--tip-bg); border-color: var(--tip-border); color: var(--tip-text); }
+  .callout.warning { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .callout.example { background: var(--example-bg); border-color: var(--example-border); color: var(--example-text); }
+  .callout.summary { background: var(--summary-bg); border-color: var(--summary-border); color: var(--summary-text); }
+  .callout a { color: inherit; text-decoration: underline; }
+
+  .diagram-wrap { margin: 24px 0; text-align: center; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .svg-text { fill: var(--text); font-family: -apple-system, "Malgun Gothic", sans-serif; }
+  .svg-muted { fill: var(--text-muted); }
+  .svg-accent { fill: var(--accent); }
+  .svg-box { stroke: var(--svg-stroke); stroke-width: 1.5; }
+  .svg-arrow { stroke: var(--svg-stroke); stroke-width: 1.8; fill: none; }
+
+  .ascii-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-family: "SF Mono", Consolas, ui-monospace, monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin: 10px 0 20px; color: var(--text-muted); }
+
+  details { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  details p { margin: 8px 0 4px; font-size: 14.5px; }
+
+  .backlink { display: inline-block; margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 10; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .footer-note { color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 48px; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="(function(){var r=document.documentElement;var c=r.getAttribute('data-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var next=(c==='dark'||(!c&&d))?'light':'dark';r.setAttribute('data-theme',next);})()">🌗 테마</button>
+<main>
+<h1>N058 실습과제 제출보고서 — 노트북 없이 도는 앱을 만들려면 무엇이 필요하고, 출시 전에는 무엇이 비어 있는가?</h1>
+<p class="footer-note" style="text-align:left;margin:0 0 24px">버전 1.0 · 2026-11-06 · 대상 앱 friend-agent-mobile(하루친구)과 staging 백엔드 · 근거 <code>실습\N058_실습_진행기록.md</code> 1~8절 · 근거 표시는 <a href="명령 출력·파일로 본 것">확인</a> · <a href="폰에서 사용자가 말해 준 것">사용자 보고</a> · [추론] · [미확인]</p>
+<nav class="toc" id="목차"><h2>목차</h2><ol><li><a href="#1-시작-전에-무엇이-막혀-있었나-교안-4-2절-시작-상태">1. 시작 전에 무엇이 막혀 있었나? (교안 4-2절 "시작 상태")</a></li><li><a href="#2-설정은-무엇을-바꿨나-교안-4-3절">2. 설정은 무엇을 바꿨나? (교안 4-3절)</a></li><li><a href="#3-expo-계정-연결에서-무엇이-달랐나-교안-4-4절">3. Expo 계정 연결에서 무엇이 달랐나? (교안 4-4절)</a></li><li><a href="#4-빌드는-어떻게-흘렀나-교안-4-44-5절">4. 빌드는 어떻게 흘렀나? (교안 4-4·4-5절)</a></li><li><a href="#5-설치한-앱은-노트북-없이-돌았나-교안-4-6절">5. 설치한 앱은 노트북 없이 돌았나? (교안 4-6절)</a></li><li><a href="#6-출시-준비-점검표는-무엇이-비어-있었나-교안-5-6절">6. 출시 준비 점검표는 무엇이 비어 있었나? (교안 5-6절)</a></li><li><a href="#7-지금-상태와-다음-일">7. 지금 상태와 다음 일</a></li><li><a href="#8-시작-질문에-다시-답하면">8. 시작 질문에 다시 답하면</a></li></ol></nav>
+<p><strong>한눈에 보기</strong></p>
+<p><strong>Android preview APK 빌드 성공(19분 8초, 빌드 1회) · 설치한 앱에서 대화 답이 옴 · 카메라 권한·글자 인식 동작 · 출시 준비 점검표 7항목 작성 · 쓰지 않는 마이크 권한 선언 1건 발견(고치지 않고 기록)</strong></p>
+<p>↳ 시작 전에 staging 백엔드가 결제 꺼짐으로 죽어 있어, 새 결제 계정을 연결하고 서비스를 새 리비전으로 깨운 뒤 시작했다</p>
+<ul><li><strong>문제</strong> — Expo Go로 보던 앱은 노트북의 개발 서버가 켜져 있어야 돈다. 남의 폰에서 혼자 돌게 하려면 앱 파일을 만들어 설치해야 하고, 스토어에 올리려면 앱이 돌아가는 것 말고도 갖출 것이 많다.</li><li><strong>원인</strong> — 앱 파일에는 코드가 빌드 시점에 고정되고, 백엔드 주소는 <code>.env</code>가 아니라 <code>eas.json</code>의 프로필 <code>env</code>로 넣는다. 또 설정을 만드는 도구와 라이브러리 플러그인이 <strong>내가 쓰지 않는 권한을 기본값으로 넣을 수 있다</strong>.</li><li><strong>해결</strong> — 앱 이름·패키지 이름·백엔드 주소 5곳을 바꾸고 <code>tsc</code>·<code>expo-doctor</code>로 검사한 뒤 한 번 빌드했다. 설치 앱은 staging 백엔드와 직접 통신했다. 도구가 넣은 마이크 권한 배열은 지웠다.</li><li><strong>현재 판단 [추론]</strong> — 이 앱은 "노트북 없이 대화"의 기술적 조건은 채웠다. 다만 스토어 출시 기준으로는 개인정보처리방침·삭제 버튼·AI 신고 버튼·AI 표시가 비어 있다(백엔드 API는 일부 있고 앱 화면이 없다).</li></ul>
+<p><code>근거 [확인] 22 · [사용자 보고] 4 · [추론] 2 · [미확인] 8 (본문 1~8절의 표시를 센 값) · 요구 7개 중 3개 완료·2개 일부·2개 하지 않음</code></p>
+<div class="table-scroll"><table><thead><tr><th>요구(교안 챕터 04·05·06)</th><th>상태</th><th>근거</th></tr></thead><tbody><tr><td>① 앱 이름·패키지 이름·백엔드 주소 설정</td><td>✅</td><td>다섯 값만 바뀜(<code>git diff --stat</code> app.json 6줄·eas.json 4줄) [확인]</td></tr><tr><td>② 빌드 전 <code>tsc</code>·<code>expo-doctor</code></td><td>✅</td><td>오류 없음, 20/20 [확인]</td></tr><tr><td>③ Expo 계정 연결 후 preview APK 빌드</td><td>✅</td><td><code>eas build:list</code> finished·SDK 58.0.0·APK [확인]</td></tr><tr><td>④ 폰에 설치하고 노트북 없이 대화</td><td>🔶</td><td>설치 앱에서 답이 옴 [사용자 보고]. 개발 서버를 끈 상태였는지는 [미확인]</td></tr><tr><td>⑤ 출시 준비 점검표 + 빈칸 하나 채우기</td><td>🔶</td><td>7항목 작성 [확인]. "빈칸 하나를 실제로 채우기"(예: 삭제 버튼)는 하지 않음</td></tr><tr><td>⑥ 내 앱을 처음부터 만들어 빌드(6장 스테이지 0~4)</td><td>⚪</td><td>하지 않음(N057 앱으로 대신)</td></tr><tr><td>⑦ 스토어 배포(production, 개발자 계정)</td><td>⚪</td><td>선택 과제, 하지 않음</td></tr></tbody></table></div>
+<p>▸ 이 문서에 대해 (접기)</p>
+<p>- 숫자와 사건은 <code>실습\N058_실습_진행기록.md</code>에서만 가져왔고, 없는 것은 "기록 없음"이라 적었다.</p>
+<p>- <strong>증거 화면(스크린샷)은 폴더에 저장하지 않았다.</strong> 사용자가 대화에서 보여 준 화면은 결제 계정 3장, Expo 가입(사용자 이름)·조직 만들기·로그인 허용·대시보드 4장, 모두 7장이다.</p>
+<p>- 가린 정보: 결제 계정 번호·프로젝트 번호·이메일·EAS 프로젝트 ID는 적지 않았다. <code>.env</code>는 열지 않았다(권한 규칙이 막음).</p>
+<p>- 환경: Node v24.18.0·npm 11.16.0, Expo SDK 58, Android 폰(기종 기록 없음), 백엔드 staging(Cloud Run, gpt-4o-mini 기본), eas-cli 27.5.0.</p>
+<blockquote><p>🏷️ 근거 표시 — [확인] · [사용자 보고] · [추론] · [미확인] (위 머리말 참고)</p></blockquote>
+<blockquote><p>❓ 시작 질문 — 아침에 적는 시작 질문은 이번에 기록하지 않았다. 노트 7-3절의 회고 칸은 비어 있다.</p></blockquote>
+<h2 id="1-시작-전에-무엇이-막혀-있었나-교안-4-2절-시작-상태">1. 시작 전에 무엇이 막혀 있었나? (교안 4-2절 "시작 상태")</h2>
+<div class="table-scroll"><table><thead><tr><th>한 일</th><th>결과</th><th>누가</th><th>한계</th></tr></thead><tbody><tr><td><code>node -v</code>·<code>npm -v</code></td><td>v24.18.0 · 11.16.0 [확인]</td><td>Claude</td><td>—</td></tr><tr><td>앱 저장소 상태</td><td>N057 앱, <code>node_modules</code> 있음, 이름·패키지·주소는 템플릿 기본값 [확인]</td><td>Claude</td><td>—</td></tr><tr><td>staging <code>/health</code></td><td><strong>500</strong>, <code>/version</code> 503. 로그 "billing is disabled for this project", 결제 계정 <code>OPEN: False</code> [확인]</td><td>Claude</td><td>무료 체험 종료로 보임 [추론]</td></tr><tr><td>결제 계정</td><td>콘솔에 열린 계정이 없어 새 계정 추가(카드 정보는 사용자가 직접), 프로젝트를 새 계정에 연결(<code>gcloud billing projects link</code>, 사용자 승인) → <code>billingEnabled: true</code> [확인]</td><td>사용자·Claude</td><td>옛 계정에 연결돼 있던 다른 두 프로젝트는 옮기지 않았다</td></tr><tr><td>서비스 깨우기</td><td>결제 연결 뒤에도 약 15분 503·429(로그 "사용 가능한 인스턴스를 기다리다 중단됨") → 라벨만 바꿔 새 리비전 배포 → <code>/health</code> 200 [확인]</td><td>Claude(승인 후)</td><td>결제 반영이 늦었는지 서비스가 못 깨어났는지는 가르지 못함 [미확인]</td></tr></tbody></table></div>
+<blockquote><p>▶ <strong>한 줄 요약</strong> — 교안은 "내 백엔드의 /health가 열린다"를 전제로 시작하지만, 실제로는 결제가 꺼져 백엔드가 죽어 있었고, 그것을 살리는 데 가장 많은 시간이 들었다.</p></blockquote>
+<h2 id="2-설정은-무엇을-바꿨나-교안-4-3절">2. 설정은 무엇을 바꿨나? (교안 4-3절)</h2>
+<div class="table-scroll"><table><thead><tr><th>파일</th><th>바꾼 곳</th><th>값</th></tr></thead><tbody><tr><td><code>app.json</code></td><td><code>name</code></td><td>"대진이의 하루친구"(사용자 정함)</td></tr><tr><td><code>app.json</code></td><td><code>android.package</code>·<code>ios.bundleIdentifier</code></td><td><code>kr.study.harufriend.djeon</code>(Claude 추천, 둘이 같음)</td></tr><tr><td><code>eas.json</code></td><td><code>preview</code> env <code>EXPO_PUBLIC_API_URL</code></td><td>staging 주소, 끝에 <code>/</code> 없음</td></tr><tr><td><code>eas.json</code></td><td><code>production</code> env <code>EXPO_PUBLIC_API_URL</code></td><td>운영 주소 [미확인: 응답 여부는 호출하지 않음]</td></tr></tbody></table></div>
+<ul><li>바뀐 줄이 이 다섯 값뿐인지 <code>git diff</code>로 확인했다 [확인].</li><li>패키지 이름은 스토어에 올린 뒤 바꿀 수 없으므로 에이전트가 짓지 않고 사람이 정한 값을 넣게 했다(교안 원칙).</li></ul>
+<h2 id="3-expo-계정-연결에서-무엇이-달랐나-교안-4-4절">3. Expo 계정 연결에서 무엇이 달랐나? (교안 4-4절)</h2>
+<div class="table-scroll"><table><thead><tr><th>교안</th><th>실제</th></tr></thead><tbody><tr><td><code>login</code> — 계정에 로그인</td><td>가입 중 사용자 이름을 정함(<code>DJ-Jeon</code>), 조직 만들기 화면은 <strong>건너뜀</strong>. 로그인은 <strong>브라우저 로그인</strong>이었고, 대기 중 터미널이 입력을 안 받아 "입력할 수가 없다"는 질문이 나옴 → 브라우저의 허용 화면(Redirects to localhost)을 승인하자 <code>Logged in</code> [확인]</td></tr><tr><td><code>build:configure</code> — 프로젝트 ID가 들어감</td><td>프로젝트 <code>@dj-jeon/friend-agent-mobile</code> 생성·연결, 플랫폼 Android. 그런데 <code>app.json</code>에 <strong><code>android.permissions</code>(<code>CAMERA</code>·<code>RECORD_AUDIO</code>)와 <code>extra.router</code>도 더해짐</strong> [확인]</td></tr><tr><td>(교안에 없음)</td><td>이 앱은 카메라 플러그인에 <code>microphonePermission: false</code>를 걸어 마이크를 일부러 막았으므로 <code>permissions</code> 배열을 지웠다. <code>tsc</code>·<code>expo-doctor</code> 다시 통과 [확인]</td></tr></tbody></table></div>
+<blockquote><p>▶ <strong>한 줄 요약</strong> — 설정을 만들어 주는 명령은 <strong>끝난 뒤 <code>git diff</code>로 무엇을 더했는지 본다</strong>. 이번에는 쓰지 않는 마이크 권한이 들어와 있었다.</p></blockquote>
+<h2 id="4-빌드는-어떻게-흘렀나-교안-4-44-5절">4. 빌드는 어떻게 흘렀나? (교안 4-4·4-5절)</h2>
+<p>▼ 그림 1 · 빌드의 큰 흐름 — 앞 둘은 사람이 한 일, 뒤 셋은 EAS 서버가 한 일이다</p>
+<div class="diagram-wrap"><svg viewBox="0 0 981 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="그림 1. 빌드의 흐름. 앞 두 칸은 로컬에서, 뒤 세 칸은 EAS 클라우드에서 일어난다."><defs><marker id="ah50" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="var(--svg-stroke)"/></marker></defs><rect class="svg-box" x="10" y="14" width="165" height="62" rx="10" fill="var(--svg-fill1)"/><text class="svg-text" x="92.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">검사</text><text class="svg-text svg-muted" x="92.5" y="60" text-anchor="middle" font-size="11">tsc · expo-doctor</text><path class="svg-arrow" d="M179 45 L205 45" marker-end="url(#ah50)"/><rect class="svg-box" x="209" y="14" width="165" height="62" rx="10" fill="var(--svg-fill2)"/><text class="svg-text" x="291.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">업로드</text><text class="svg-text svg-muted" x="291.5" y="60" text-anchor="middle" font-size="11">1.1 MB · 1초</text><path class="svg-arrow" d="M378 45 L404 45" marker-end="url(#ah50)"/><rect class="svg-box" x="408" y="14" width="165" height="62" rx="10" fill="var(--svg-fill3)"/><text class="svg-text" x="490.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">서명 키</text><text class="svg-text svg-muted" x="490.5" y="60" text-anchor="middle" font-size="11">클라우드에서 생성</text><path class="svg-arrow" d="M577 45 L603 45" marker-end="url(#ah50)"/><rect class="svg-box" x="607" y="14" width="165" height="62" rx="10" fill="var(--svg-fill4)"/><text class="svg-text" x="689.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">컴파일</text><text class="svg-text svg-muted" x="689.5" y="60" text-anchor="middle" font-size="11">gradlew · 약 19분</text><path class="svg-arrow" d="M776 45 L802 45" marker-end="url(#ah50)"/><rect class="svg-box" x="806" y="14" width="165" height="62" rx="10" fill="var(--svg-fill1)"/><text class="svg-text" x="888.5" y="41" text-anchor="middle" font-size="12.5" font-weight="700">완료</text><text class="svg-text svg-muted" x="888.5" y="60" text-anchor="middle" font-size="11">APK · 설치 링크</text></svg><div class="diagram-caption">그림 1. 빌드의 흐름. 앞 두 칸은 로컬에서, 뒤 세 칸은 EAS 클라우드에서 일어난다.</div></div>
+<p>읽는 법: 사용자가 직접 <code>build --profile preview --platform android</code>를 실행했고(서명 키 질문에 대화형으로 답해야 해서), 질문은 <strong>서명 키를 새로 만들까</strong> 하나였다.</p>
+<div class="table-scroll"><table><thead><tr><th>관찰</th><th>뜻</th></tr></thead><tbody><tr><td><code>Environment variables loaded from the "preview" build profile "env" configuration: EXPO_PUBLIC_API_URL</code></td><td>빌드 주소는 <code>eas.json</code>에서 읽힘 [확인]</td></tr><tr><td><code>No environment variables … on EAS</code></td><td>EAS 웹에 따로 등록한 값이 없다는 뜻, 문제 아님 [확인]</td></tr><tr><td><code>Initialized versionCode with 1</code></td><td>첫 빌드라 번호를 만듦 [확인]</td></tr><tr><td><code>Detected that you do not have keytool installed locally</code> → <code>Generating keystore in the cloud</code></td><td>서명 키는 클라우드에서 만들고 Expo가 보관, 노트북에 파일 없음 [확인]</td></tr><tr><td><code>eas build:list</code></td><td>finished · Android · preview · internal · SDK 58.0.0 · 1.0.0(코드 1) · 10:38:07 → 10:57:15(<strong>19분 8초</strong>) [확인]</td></tr></tbody></table></div>
+<ul><li>무료 플랜 월 빌드 횟수를 <strong>1회</strong> 썼다. 이 빌드는 커밋하지 않은 설정 변경을 포함해 올라간 것으로 보인다(결과의 커밋 표시는 83c9aef 그대로) [추론].</li></ul>
+<h2 id="5-설치한-앱은-노트북-없이-돌았나-교안-4-6절">5. 설치한 앱은 노트북 없이 돌았나? (교안 4-6절)</h2>
+<div class="table-scroll"><table><thead><tr><th>확인</th><th>결과</th><th>근거</th></tr></thead><tbody><tr><td>폰 카메라로 QR → 설치</td><td>설치함</td><td>[사용자 보고]</td></tr><tr><td>터미널이 "에뮬레이터에 설치할까요? (Y/n)"에서 멈춤</td><td>n 또는 Ctrl+C로 끝냄, 빌드·앱에 영향 없음</td><td>[확인]</td></tr><tr><td>메시지 "안녕 폰에 앱을 설치하고 처음으로 써봐"</td><td>"안녕! 앱 처음 써보는 거구나. 어떤 기능이 궁금해?"</td><td>[사용자 보고]</td></tr><tr><td>카메라 찍기</td><td>권한을 요구함, 찍은 사진의 글씨를 인식함</td><td>[사용자 보고]</td></tr><tr><td>앱 권한 목록</td><td>허용됨: 카메라 / 앱이 계속 작동하도록 허용됨: 근처 기기 / <strong>허용되지 않음: 마이크</strong></td><td>[사용자 보고]</td></tr><tr><td>개발 서버를 끈 상태에서 한 시험인지</td><td>질문했으나 답을 받지 못함. 이 세션에서는 개발 서버를 켠 적이 없음</td><td>[미확인]</td></tr><tr><td>처음 열었을 때 새 게스트(캐릭터 화면부터)였는지</td><td>확인 못 함</td><td>[미확인]</td></tr><tr><td>홈 화면 앱 이름</td><td>확인 못 함</td><td>[미확인]</td></tr></tbody></table></div>
+<p><strong>마이크가 선언된 이유(코드로 확인)</strong>: <code>expo-image-picker</code> 플러그인은 <code>microphonePermission</code>이 <code>false</code>가 아니면 <code>android.permission.RECORD_AUDIO</code>를 넣는다. <code>app.json</code>에는 카메라 플러그인에만 <code>false</code>가 있었다. 즉 3절의 <code>permissions</code> 배열과 <strong>별개의 원인</strong>이었다 [확인]. 사용자가 허용하지 않으면 동작하지 않으나, 쓰지 않는 선언은 스토어 데이터 안전 신고와 어긋난다. 고치려면 설정 한 줄과 재빌드(빌드 1회)가 필요해 이번에는 <strong>고치지 않고 점검표에 기록</strong>했다(사용자 선택). "근처 기기" 권한의 출처는 조사하지 않았다 [미확인].</p>
+<blockquote><p>▶ <strong>한 줄 요약</strong> — 설치 앱이 백엔드와 직접 통신한다는 것은 확인했다. 그러나 "노트북을 껐을 때"라는 조건은 사용자 답을 받지 못해 확정하지 못했다.</p></blockquote>
+<h2 id="6-출시-준비-점검표는-무엇이-비어-있었나-교안-5-6절">6. 출시 준비 점검표는 무엇이 비어 있었나? (교안 5-6절)</h2>
+<p><code>friend-agent-mobile/docs/store-readiness.md</code>에 7개 항목과 데이터 경로를 코드를 읽어 채웠다.</p>
+<div class="table-scroll"><table><thead><tr><th>항목</th><th>상태</th><th>근거</th></tr></thead><tbody><tr><td>개인정보처리방침</td><td>없음</td><td>백엔드 docs·static·README에서 못 찾음 [확인]</td></tr><tr><td>데이터 안전 신고</td><td>없음</td><td>아래 데이터 경로가 근거</td></tr><tr><td>계정·데이터 삭제</td><td><strong>API만 있음</strong></td><td><code>DELETE /api/data</code>·<code>/api/memories</code>·<code>/api/reminders/{id}</code> 있음, 앱 화면 버튼 없음 [확인]</td></tr><tr><td>AI 콘텐츠 신고</td><td><strong>API만 있음</strong></td><td><code>POST /api/report</code>(사유 300자)·<code>/api/feedback</code> 있음, 앱 화면 없음 [확인]</td></tr><tr><td>AI임을 밝히기</td><td>없음(확인 필요)</td><td>앱 소스에서 "AI" 표시 문구를 못 찾음 [확인]. 시스템 프롬프트는 안 봄 [미확인]</td></tr><tr><td>앱 안 판매</td><td>미결정</td><td>백엔드에 토스페이먼츠 크레딧 결제(N056)가 있음 [확인]</td></tr><tr><td>연령 등급</td><td>없음</td><td>설문 미작성</td></tr></tbody></table></div>
+<p><strong>앱이 모으는 데이터와 가는 곳</strong>: 대화는 내 백엔드·DB와 외부 LLM 제공사로, <strong>대화 원문은 관측 도구(Langfuse)에도</strong> 간다(이메일·카드·전화번호 패턴은 가림). 사진은 <code>/api/ocr</code>로 내 백엔드에 가고 글자 읽기는 코드상 백엔드의 tesseract가 한다(사진 저장 여부는 [미확인]). 로그인 정보는 기기 저장소에 남는다 [확인].</p>
+<blockquote><p>▶ <strong>한 줄 요약</strong> — 해설서의 예시표는 삭제·신고를 "없음"이라 적지만 이 앱은 <strong>백엔드엔 있고 앱 화면에만 없었다</strong>. 그래서 다음 일은 새 기능이 아니라 화면 연결이다.</p></blockquote>
+<h2 id="7-지금-상태와-다음-일">7. 지금 상태와 다음 일</h2>
+<div class="table-scroll"><table><thead><tr><th>항목</th><th>상태</th></tr></thead><tbody><tr><td>새로 생긴 것</td><td>GCP 새 결제 계정 · Expo 계정 <code>dj-jeon</code>과 EAS 프로젝트 · 클라우드에 보관된 서명 키 · staging의 새 리비전(라벨 <code>wake</code>)</td></tr><tr><td>커밋 안 한 것</td><td><code>friend-agent-mobile</code>의 <code>app.json</code>·<code>eas.json</code>·<code>docs/store-readiness.md</code>, 이 폴더의 새 문서</td></tr><tr><td>하지 않은 것</td><td>6장 스테이지 0~4, production 빌드·스토어, iPhone, 에이전트로 빌드 조회, EAS Update, 마이크 선언 제거와 재빌드</td></tr></tbody></table></div>
+<p>이어 한다면:</p>
+<ol><li>설정 화면에 데이터 삭제 버튼을 연결한다(백엔드 API는 이미 있음).</li><li>답마다 "AI가 만든 답" 표시와 신고 버튼을 붙이고, 신고를 누가 확인할지 정한다.</li><li>개인정보처리방침 문서와 공개 URL을 만든다.</li><li>이미지 피커 플러그인에 <code>"microphonePermission": false</code>를 넣고 재빌드한다.</li><li>새 결제 계정에 예산 알림을 건다(걸었는지 기록 없음 [미확인]).</li></ol>
+<h2 id="8-시작-질문에-다시-답하면">8. 시작 질문에 다시 답하면</h2>
+<p>(이번 실습에는 아침에 적은 시작 질문 기록이 없다.) 실습 뒤에 말할 수 있는 것: <strong>"Expo Go에서 도는 것"과 "설치한 앱이 도는 것"은 다른 단계이고, 둘 사이에는 코드 고정·주소 주입·권한 설정·서명이라는 네 가지 관문이 있다.</strong> 그리고 출시 전에 비어 있는 것은 앱의 기능보다 <strong>사용자 보호 장치(삭제·신고·표시·방침)의 화면</strong>이었다.</p>
+
+</main>
+</body>
+</html>
